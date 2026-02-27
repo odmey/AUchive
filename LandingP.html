@@ -7,26 +7,71 @@
 </head>
 <body>
         <style>
-            nav{background-color:rgb(255, 244, 79);
+            *{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: Georgia,serif;
+            }
+            body{
+                background-color: black;
+
+            }
+            .Hero{
+                color: rgb(255, 244, 79);
+                text-align: center;
+                justify-content: center;
+                font-size: 80px;
+                margin-top: 80px;
+            }
+            .bar{
+                padding-top: 10px;
+                padding-bottom:10px;
                 display: flex;
-                justify-content: right;
+                background-color: rgb(255, 244, 79);
+                justify-content: flex-end;
+            }
+            .nav-right{
+                display: flex;
                 gap: 10px;
             }
+            .r{
+                margin-right: 10px;
+            }
+            .card{
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+                padding: 60px;
+            }
+            .S1{
+                margin-top:80px;
+                margin-left:80px;
+                font-size: 22px;
+                background-color: rgb(255, 244, 79);
+                color: black;
+                width: 250px;
+                height: 250px;
+                border-radius: 20px;
+                padding: 20px;
+            }
         </style>
-        <nav>
-            <a href="Login.html">Write</a>
-            <a href="#">Read</a>
+        <nav class="bar">
+            <div class="nav-right">
+                <button class="w">write</button>
+                <button class="r">read</button>
+            </div>
         </nav>
         <main>
             <section class="Hero">
-                <h1 style="text-align: center;
-                font-size: 180px;
-                background-color: black;
-                background-size: 100px;
-                color: rgb(255, 244, 79);
-                ">AUchive</h1>
+                <h1>AUchive</h1>
+            </section>
+            <section class="Card">
+                <div class="S1">
+                    <h3>Make your own story</h3>
+                </div>
+
             </section>
         </main>
-    </header>
 </body>
 </html>
