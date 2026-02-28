@@ -10,11 +10,12 @@ body{
     background-color: rgb(28, 28, 28);  
     }
 .Hero{
-    min-height: 100vh;
+    min-height: 90vh;
     font-size: 80px;
     justify-content: center;
     align-items: center;
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     position: relative ;
     overflow: hidden;
@@ -23,17 +24,34 @@ body{
         url("Pic/icon1.png");
     background-size: cover, 100px;
     background-repeat: no-repeat, repeat;
+    gap: 30px;
 }
 .Hero h1{
+    font-family: Bitter;
     color: rgb(255, 255, 255);
     text-shadow: 4px 8px 10px rgba(255, 244, 79, 0.15);
     position: relative ;
 }
 .Hero h1 span{
+    font-family: Bitter;
     color: #fff44f;
     text-shadow: 4px 8px 10px rgba(255, 255, 255, 0.15);
     position: relative;
     }
+.getstarted{
+    padding: 14px 35px;
+    background-color: #fff44f;
+    color: black;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 30px;
+    transition: 0.3s;
+}
+.getstarted:hover{
+    background-color: white;
+    transform: translateY(-3px);
+}
 .bar{
     display: flex;
     justify-content: flex-end;
@@ -41,6 +59,7 @@ body{
     padding-top: 20px;
 }
 .menubar a{
+    font-family: Lora;
     color: #ffffff;
     text-decoration: none;
     margin-left: 10px;
@@ -69,6 +88,7 @@ body{
     padding: 20px;
     }
 .S1 h3{
+    font-family: Poppins;
     min-height: 60px;
     background-color: white;
     color: #000000;
@@ -78,30 +98,50 @@ body{
     object-fit: contain;
 }
 .S1 P{
+    font-family: Poppins;
     font-size: 20px;
     font: bold;
     text-align: center;
 }
-.Lpcp{
-    min-height: 100px;
-    background-color: rgb(28, 28, 28);
+.footerlp{
+  background-color: #000000;
+  color: #ffffff;
+  padding: 60px 80px 20px 80px;
+}
+.footercont{
     display: flex;
+    justify-content: space-between;
     flex-wrap: wrap;
+    gap: 40px;
 }
-.Lpcp p{
-    padding-top: 10px;
-    padding-left: 10px;
+.footer-brand p{
+    font-family: Lora;
+}
+.footer-brand h2{
+    font-family: Bitter;
+}
+.footer-brand h2 span{
+    font-family: Bitter;
     color: #fff44f;
+}
+.footer-contactlp{
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.footer-contactlp h4{
+    font-family: Lora;
+}
+.footer-contactlp{
+    font-family: Lora;
+}
+.footer-btm{
+    margin-top: 40px;
     text-align: center;
-}
-.Lpcpcont{
-    display:flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-.Lpcpcont p{
-    padding-top: 20px;
-    color: #ffffff;
-    justify-content: center;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 15px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
 }
 
