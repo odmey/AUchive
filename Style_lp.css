@@ -4,27 +4,35 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: rgb(28, 28, 28);   
 }
 body{
     font-family:Helvetica;
+    background-color: rgb(28, 28, 28);  
     }
 .Hero{
-    height: 100vh;
+    min-height: 100vh;
     font-size: 80px;
-    color: rgb(255, 255, 255);
     justify-content: center;
     align-items: center;
-    position: relative;
-    z-index: 2;
     display: flex;
+    flex-wrap: wrap;
+    position: relative ;
+    overflow: hidden;
+    background:
+        linear-gradient(rgba(28,28,28,0.100), rgba(28,28,28,0.95)),
+        url("Pic/icon1.png");
+    background-size: cover, 100px;
+    background-repeat: no-repeat, repeat;
+}
+.Hero h1{
+    color: rgb(255, 255, 255);
     text-shadow: 4px 8px 10px rgba(255, 244, 79, 0.15);
-    }
+    position: relative ;
+}
 .Hero h1 span{
     color: #fff44f;
     text-shadow: 4px 8px 10px rgba(255, 255, 255, 0.15);
     position: relative;
-    z-index: 2;
     }
 .bar{
     display: flex;
@@ -38,33 +46,47 @@ body{
     margin-left: 10px;
 }
 .Card{
-    height: 75vh;
+    min-height: 75vh;
     display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
     justify-content: center;
     gap: 50px;
     background-color:white;
     }
 .S1{
     margin-top:80px;
+    margin-bottom: 80px;
     text-align: center;
-    justify-content: center;
+    justify-content: flex-start;
+    flex-direction: column;
     font-size: 18px;
     background-color: white;
     width: 280px;
-    height: 280px;
+    min-height: 280px;
     border-radius: 20px;
     box-shadow:0 10px 40px rgb(0, 0, 0,0.15);
     padding: 20px;
-    flex-wrap: wrap;
-    max-width: 1200px;
     }
 .S1 h3{
+    min-height: 60px;
     background-color: white;
     color: #000000;
 }
+.S1 img{
+    width: 190px;
+    object-fit: contain;
+}
+.S1 P{
+    font-size: 20px;
+    font: bold;
+    text-align: center;
+}
 .Lpcp{
-    height: 100px;
+    min-height: 100px;
     background-color: rgb(28, 28, 28);
+    display: flex;
+    flex-wrap: wrap;
 }
 .Lpcp p{
     padding-top: 10px;
@@ -74,6 +96,7 @@ body{
 }
 .Lpcpcont{
     display:flex;
+    flex-wrap: wrap;
     justify-content: center;
 }
 .Lpcpcont p{
@@ -81,7 +104,4 @@ body{
     color: #ffffff;
     justify-content: center;
 }
-.bg-icon1{
-    position: absolute;
 
-}
