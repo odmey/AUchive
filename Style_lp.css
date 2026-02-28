@@ -1,0 +1,87 @@
+/* landing page */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(28, 28, 28);   
+}
+body{
+    font-family:Helvetica;
+    }
+.Hero{
+    height: 100vh;
+    font-size: 80px;
+    color: rgb(255, 255, 255);
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    text-shadow: 4px 8px 10px rgba(255, 244, 79, 0.15);
+    }
+.Hero h1 span{
+    color: #fff44f;
+    text-shadow: 4px 8px 10px rgba(255, 255, 255, 0.15);
+    position: relative;
+    z-index: 2;
+    }
+.bar{
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 20px;
+    padding-top: 20px;
+}
+.menubar a{
+    color: #ffffff;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.Card{
+    height: 75vh;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    background-color:white;
+    }
+.S1{
+    margin-top:80px;
+    text-align: center;
+    justify-content: center;
+    font-size: 18px;
+    background-color: white;
+    width: 280px;
+    height: 280px;
+    border-radius: 20px;
+    box-shadow:0 10px 40px rgb(0, 0, 0,0.15);
+    padding: 20px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    }
+.S1 h3{
+    background-color: white;
+    color: #000000;
+}
+.Lpcp{
+    height: 100px;
+    background-color: rgb(28, 28, 28);
+}
+.Lpcp p{
+    padding-top: 10px;
+    padding-left: 10px;
+    color: #fff44f;
+    text-align: center;
+}
+.Lpcpcont{
+    display:flex;
+    justify-content: center;
+}
+.Lpcpcont p{
+    padding-top: 20px;
+    color: #ffffff;
+    justify-content: center;
+}
+.bg-icon1{
+    position: absolute;
+
+}
