@@ -4,24 +4,30 @@
     <title>AUchive</title>
     <style>
         body {
-            background-color: black;
+            background-color: white;
             margin: 0;
             font-family: Georgia,serif;
         }
         .header-wrapper {
-            background-color: rgb(255, 244, 79);
+            background-color: rgb(28,28,28);
             border-radius: 0 0 20px 20px;
         }
         .banner {
-            height: 150px;
+            height: 100px;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
         }
-        .banner h1 {
-            font-size: 90px;
-            color: black;
+        .banner h2 {
+            font-size: 60px;
+            color: white;
             margin: 0;
+            font-family: Bitter;
+        }
+        .banner h2 span{
+            color: rgb(255, 244, 79);
+            font-family: Bitter;
         }
         .white-banner {
             background-color: white;
@@ -29,6 +35,7 @@
             width: 100%;
             margin: 0 auto;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             border-radius: 20px;
@@ -55,7 +62,7 @@
         .card-box {
             width: 260px;
             height: 150px;
-            background-color: #ffffff;
+            background-color: rgb(255, 244, 79);
         }
     </style>
 </head>
@@ -63,7 +70,7 @@
 <body>
     <div class="header-wrapper">
         <div class="banner">
-            <h1>AUchive</h1>
+            <h2><span>AU</span>chive</h2>
         </div>
         <div class="white-banner">
             <div class="search-bar"></div>
