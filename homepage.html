@@ -1,311 +1,110 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-
-<title>Homepage</title>
-
-<style>
-
-body {
-    background-color: white;
-    margin: 0;
-    font-family: Bitter, Lora, Poppins;
-}
-
-.header-wrapper {
-    background-color: rgb(28,28,28);
-    border-radius: 0 0 20px 20px;
-}
-
-.banner {
-    height: 120px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.banner h2 {
-    font-size: 60px;
-    color: white;
-    margin: 0;
-}
-
-.banner span {
-    color: rgb(255,244,79);
-}
-
-.white-banner {
-    background-color: white;
-    height: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 2px solid rgba(0,0,0,0.1);
-}
-
-.search-container {
-    width: 90%;
-    max-width: 1000px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.right-icons { gap:20px; display:flex; }
-.icon { font-size:30px; cursor:pointer; transition:.3s; }
-.icon:hover { transform:scale(1.2); }
-
-.search-bar {
-    flex:1;
-    height:55px;
-    background:rgb(255,244,79);
-    border-radius:50px;
-    display:flex;
-    align-items:center;
-    padding:0 20px;
-    box-shadow:0 5px 15px rgba(0,0,0,.15);
-}
-
-.search-bar input{
-    border:none;
-    outline:none;
-    background:transparent;
-    margin-left:15px;
-    flex:1;
-    font-family:Poppins;
-}
-
-.gradasi{
-    width:90%;
-    height:300px;
-    margin:50px auto;
-    border-radius:20px;
-    overflow:hidden;
-    position:relative;
-}
-
-.gradasi img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.overlay-baca{
-    position:absolute;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.btn-baca{
-    padding:15px 40px;
-    border:none;
-    border-radius:50px;
-    background:black;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.btn-baca:hover{
-    transform:scale(1.1);
-}
-
-
-.story-section{
-    width:85%;
-    margin:40px auto;
-}
-
-.slider-container{
-    position:relative;
-}
-
-.slider{
-    display:flex;
-    gap:30px;
-    overflow-x:auto;
-    scroll-behavior:smooth;
-}
-
-.slider::-webkit-scrollbar{
-    display:none;
-}
-
-.card-slider{
-    min-width:200px;
-    height:300px;
-    border-radius:15px;
-    overflow:hidden;
-    box-shadow:0 5px 15px rgba(0,0,0,.2);
-    flex-shrink:0;
-    transition:.3s;
-}
-
-.card-slider img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-.card-slider:hover{
-    transform:translateY(-10px);
-}
-
-.arrow-btn{
-    position:absolute;
-    right:-20px;
-    top:40%;
-    width:45px;
-    height:45px;
-    border-radius:50%;
-    border:none;
-    background:black;
-    color:white;
-    cursor:pointer;
-    font-size:20px;
-}
-
-
-.footer{
-    background:black;
-    color:white;
-    padding:60px 8%;
-    margin-top:80px;
-}
-
-.footer h2{
-    margin:0;
-    font-size:36px;
-}
-
-.footer h2 span{
-    color:rgb(255,244,79);
-}
-
-.footer p{
-    margin:8px 0;
-    font-size:18px;
-}
-
-.footer hr{
-    margin:40px 0 20px;
-    border:0;
-    border-top:1px solid rgba(255,255,255,.2);
-}
-
-.footer-bottom{
-    text-align:center;
-    color:#ccc;
-}
-
-</style>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Homepage</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+        <link rel="stylesheet" href="CSS/style_homep.css">
 </head>
 
 <body>
 
-<div class="header-wrapper">
+    <div class="header-wrapper">
+        <div class="banner">
+            <h2><span>AU</span>chive</h2>
+        </div>
 
-    <div class="banner">
-        <h2><span>AU</span>chive</h2>
-    </div>
+        <div class="white-banner">
+            <div class="search-container">
+                <span class="material-symbols-outlined icon">
+                    library_books
+                </span>
 
-    <div class="white-banner">
-        <div class="search-container">
+                <div class="search-bar">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" placeholder="Search AU...">
+                </div>
 
-            <span class="material-symbols-outlined icon">
-                library_books
-            </span>
-
-            <div class="search-bar">
-                <span class="material-symbols-outlined">search</span>
-                <input type="text" placeholder="Search AU...">
+                <div class="right-icons">
+                    <span class="material-symbols-outlined icon">notifications</span>
+                    <span class="material-symbols-outlined icon">settings</span>
+                    <span class="material-symbols-outlined icon">account_circle</span>
+                </div>
             </div>
-
-            <div class="right-icons">
-                <span class="material-symbols-outlined icon">notifications</span>
-                <span class="material-symbols-outlined icon">settings</span>
-                <span class="material-symbols-outlined icon">account_circle</span>
-            </div>
-
         </div>
     </div>
 
-</div>
-
-<div class="gradasi">
-    <img src="Pic/cover-utama.jpg">
-    <div class="overlay-baca">
-        <button class="btn-baca">Mulai Baca</button>
+    <div class="gradasi">
+        <img src="Pic/cover-utama.jpg">
+        <div class="overlay-baca">
+            <button class="btn-baca">Mulai Baca</button>
+        </div>
     </div>
-</div>
 
-<section class="story-section">
-<h3>Cerita Populer</h3>
+    <section class="story-section">
+        <h3>Cerita Populer</h3>
 
-<div class="slider-container">
-<button class="arrow-btn" onclick="scrollSlider(this)">❯</button>
+        <div class="slider-container">
+            <button class="arrow-btn" onclick="scrollSlider(this)">❯</button>
 
-<div class="slider">
-<div class="card-slider"><img src="Pic/karya1.jpg"></div>
-<div class="card-slider"><img src="Pic/karya2.jpg"></div>
-<div class="card-slider"><img src="Pic/karya3.jpg"></div>
-<div class="card-slider"><img src="Pic/karya4.jpg"></div>
-</div>
+            <div class="slider">
+                <div class="card-slider"><img src="Pic/karya1.jpg"></div>
+                <div class="card-slider"><img src="Pic/karya2.jpg"></div>
+                <div class="card-slider"><img src="Pic/karya3.jpg"></div>
+                <div class="card-slider"><img src="Pic/karya4.jpg"></div>
+            </div>
 
-</div>
-</section>
+        </div>
+    </section>
 
-<section class="story-section">
-<h3>Cerita Terbaru</h3>
+    <section class="story-section">
+        <h3>Cerita Terbaru</h3>
 
-<div class="slider-container">
-<button class="arrow-btn" onclick="scrollSlider(this)">❯</button>
+        <div class="slider-container">
+            <button class="arrow-btn" onclick="scrollSlider(this)">❯</button>
 
-<div class="slider">
-<div class="card-slider"><img src="Pic/karya5.jpg"></div>
-<div class="card-slider"><img src="Pic/karya6.jpg"></div>
-<div class="card-slider"><img src="Pic/karya7.jpg"></div>
-<div class="card-slider"><img src="Pic/karya8.jpg"></div>
-</div>
+            <div class="slider">
+                <div class="card-slider"><img src="Pic/karya5.jpg"></div>
+                <div class="card-slider"><img src="Pic/karya6.jpg"></div>
+                <div class="card-slider"><img src="Pic/karya7.jpg"></div>
+                <div class="card-slider"><img src="Pic/karya8.jpg"></div>
+            </div>
 
-</div>
-</section>
+        </div>
+    </section>
 
-<footer class="footer">
+    <footer class="footer">
 
-<h2><span>AU</span>chive</h2>
-<p>Create. Share. Express your story.</p>
+        <h2><span>AU</span>chive</h2>
+        <p>Create. Share. Express your story.</p>
 
-<br>
+        <br>
 
-<p><b>contact person</b></p>
-<p>auchivecp@gmail.com</p>
-<p>(021)09808882</p>
+        <p><b>contact person</b></p>
+        <p>auchivecp@gmail.com</p>
+        <p>(021)09808882</p>
 
-<hr>
+        <hr>
 
-<div class="footer-bottom">
-© 2026 AUchive. All rights reserved.
-</div>
+        <div class="footer-bottom">
+            © 2026 AUchive. All rights reserved.
+        </div>
 
-</footer>
+    </footer>
 
-<script>
-function scrollSlider(button){
-    const slider = button.parentElement.querySelector('.slider');
-    slider.scrollBy({left:300,behavior:'smooth'});
-}
-</script>
+    <script>
+        function scrollSlider(button) {
+            const slider = button.parentElement.querySelector('.slider');
+            slider.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+    </script>
 
 </body>
+
 </html>

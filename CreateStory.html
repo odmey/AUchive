@@ -1,57 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreateStory</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/style_story.css">
 </head>
+
 <body>
 
-<header>
-    <a href="#" class="back-link">
-        <span class="material-symbols-outlined">arrow_back</span>
-        Back Dashboard
-    </a>
-    <div class="right">AUchive</div>
-</header>
+    <header>
+        <a href="#" class="back-link">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Back Dashboard
+        </a>
+        <div class="right">AUchive</div>
+    </header>
 
-<div class="container-upload">
+    <div class="container-upload">
 
-    <div class="cover-box">
-        <span class="icon">image</span>
-        <label for="cover" class="upload-btn-label">Upload Cover</label>
-        <input type="file" id="cover" class="real-file">
+        <div class="cover-box">
+            <span class="icon">image</span>
+            <label for="cover" class="upload-btn-label">Upload Cover</label>
+            <input type="file" id="cover" class="real-file">
+        </div>
+
+        <div class="form-box">
+
+            <label>Judul Cerita</label>
+            <input type="text">
+
+            <label>Deskripsi</label>
+            <textarea></textarea>
+
+            <label>Genre</label>
+            <select>
+                <option>Pilih Genre</option>
+                <option>Romance</option>
+                <option>Action</option>
+                <option>Fantasy</option>
+                <option>Drama</option>
+            </select>
+
+            <label>Tagar</label>
+            <input type="text" placeholder="spasi untuk memisahkan tagar">
+
+            <a href="Editor.html" class="next-btn">next</a>
+        </div>
     </div>
 
-    <div class="form-box">
-
-        <label>Judul Cerita</label>
-        <input type="text">
-
-        <label>Deskripsi</label>
-        <textarea></textarea>
-
-        <label>Genre</label>
-        <select>
-            <option>Pilih Genre</option>
-            <option>Romance</option>
-            <option>Action</option>
-            <option>Fantasy</option>
-            <option>Drama</option>
-        </select>
-
-        <label>Tagar</label>
-        <input type="text" placeholder="spasi untuk memisahkan tagar">
-
-        <a href="Editor.html" class="next-btn">next</a>
-    </div>
-</div>
-
-<footer>
-    AUchive Originals | ©2026
-</footer>
+    <footer>
+        AUchive Originals | ©2026
+    </footer>
 
 </body>
+
 </html>

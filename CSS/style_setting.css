@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    margin-top: 0;
+    background: #1C1C1C;
+
+}
+header{
+    background-color: #fff44f;
+    margin-top: 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 10px 24px;   
+}
+.plain{
+    margin: auto;
+}
+
+.profile-card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #292928;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+.profile-card img{
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+.profile-desc{
+    text-align: center;
+    margin-top: 10px;
+}
+
+.profile-desc h3{
+    margin: 0;
+    font-size: 16;
+}
+
+.profile-desc p{
+    margin: 0;
+    font-size:12px;
+}
+
+.section-settings{
+    background-color: #292928;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.section-settings h4{
+    font-size: 14px;
+    color: gray;
+    margin: 5px 10px;
+}
+
+.item-set{
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.item-set:hover{
+    background: rgb(218, 228, 76);
+    color: black;
+    transform: translateY(5px);
+}
+
+ .item-set:hover span{
+    color: black;
+}
+footer{
+    text-align: center;
+    color:#444;
+    margin-top:40px;
+    padding-bottom:20px;
+}
