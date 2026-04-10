@@ -5,10 +5,10 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    font-family: "Comforter Brush", cursive;
-    background:
-        radial-gradient(circle at center, rgba(255, 223, 70, 0.4) 0%, transparent 60%),
-        linear-gradient(to bottom, #2b2400, #6e5c00, #c9a300, #6e5c00, #2b2400);
+    font-family: Arial, Helvetica, serif;
+    background: url("/AUchive/Pic/icon1.png");
+    background-size: 100px;
+    background-repeat: repeat;
 }
 
 .main {
@@ -16,7 +16,7 @@ body {
     height: 500px;
     background: rgb(88, 63, 1);
     overflow: hidden;
-    background: url("Pic/loginbg.jpg") no-repeat center / cover;
+    background: url("/AUchive/Pic/loginbg.jpg") no-repeat center / cover;
     border-radius: 10px;
     box-shadow: 5px 20px 50px #000;
 }
@@ -35,12 +35,19 @@ label {
     color: white;
     font-size: 40px;
     justify-content: center;
+    align-items: center;
     display: flex;
     margin: 60px;
     font-weight: bold;
     cursor: pointer;
     /* blm tau fungsi spesifiknya gmn */
     transition: .5s ease-in-out;
+}
+
+.label-icon {
+    width: 65px;
+    margin-top: 12px;
+    height: auto;
 }
 
 input {
