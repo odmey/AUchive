@@ -20,8 +20,8 @@ body{
     position: relative ;
     overflow: hidden;
     background:
-        linear-gradient(rgba(28,28,28,0.100), rgba(28,28,28,0.95)),
-        url("Pic/icon1.png");
+        linear-gradient(rgb(28,28,28,0.100), rgba(28,28,28,0.95)),
+        url("/Pic/icon1.png");
     background-size: cover, 100px;
     background-repeat: no-repeat, repeat;
     gap: 30px;
