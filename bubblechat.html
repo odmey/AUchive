@@ -17,8 +17,8 @@
   <span class="nav-title">AUchive — Bubble Chat Editor</span>
 </div>
 
+<!-- preview -->
 <div class="layout">
-  <!-- ═══ LEFT: PREVIEW ═══ -->
   <div class="preview-panel">
     <div class="chat-header" id="chatHeader">
       <span class="header-back">‹</span>
@@ -35,8 +35,8 @@
       <div class="date-chip"><span>Today</span></div>
     </div>
     <div class="chat-inputbar" id="chatInputbar">
-      <button class="ibar-icon"></button>
-      <button class="ibar-icon">📎</button>
+      <span class="material-symbols-outlined">mood</span>
+      <span class="material-symbols-outlined">attach_file </span>
       <input class="ibar-field" id="ibarField" type="text" placeholder="Type a message" disabled>
       <button class="ibar-send" id="ibarSend">
         <svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 014 4v6a4 4 0 01-8 0V5a4 4 0 014-4zm-1 17.93V21h2v-2.07A8 8 0 0020 11h-2a6 6 0 01-12 0H4a8 8 0 007 7.93z"/></svg>
@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  <!-- ═══ RIGHT: EDITOR ═══ -->
+  <!-- editor -->
   <div class="editor-panel">
     <div class="editor-header"><h2>Bubble Chat Editor</h2></div>
     
@@ -55,11 +55,11 @@
         <div class="theme-picker">
           <div class="theme-card tc-wa active" onclick="setTheme('wa',this)">
             <div class="tcp"><div class="tcp-bub in"></div><div class="tcp-bub out"></div></div>
-            <div class="tc-label">WhatsApp</div>
+            <div class="tc-label">Dark</div>
           </div>
           <div class="theme-card tc-im" onclick="setTheme('im',this)">
             <div class="tcp"><div class="tcp-bub in"></div><div class="tcp-bub out"></div></div>
-            <div class="tc-label">iMessage</div>
+            <div class="tc-label">Light</div>
           </div>
         </div>
       </div>

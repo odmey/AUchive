@@ -287,9 +287,59 @@ body {
 .story-status select {
     background: #FFF44F;
     border: none;
-    padding: 5px 10px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
     font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: 0.2s;
+}
+
+.status-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-left: 8px;
+}
+
+.status-publish {
+    background: #FFF44F;
+    color: black;
+}
+
+.status-draft {
+    background: #444;
+    color: white;
+}
+
+.story-card {
+    transition: 0.2s;
+}
+
+.story-card:hover {
+    background: #181818;
+    transform: scale(1.01);
+}
+.story-status select option {
+    background: #1C1C1C;
+    color: white;
+}
+
+/* khusus HAPUS biar beda */
+.story-status select option[value="hapus"] {
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+/* hover */
+.story-status select:hover {
+    background: #e6d93f;
+}
+
+/* pas diklik */
+.story-status select:focus {
+    box-shadow: 0 0 0 2px rgba(255, 244, 79, 0.4);
 }
 
 .add-story {
@@ -306,4 +356,175 @@ body {
     background: #FFF44F;
     font-size: 24px;
     cursor: pointer;
+}
+
+.popup {
+  display: flex; /* jangan none lagi */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.25s ease;
+}
+
+/* aktif */
+.popup.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.popup-content {
+  background: #1C1C1C;
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  animation: popupFade 0.25s ease;
+}
+
+/* teks */
+.popup-content p {
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* tombol */
+.popup-content button {
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: none;
+  margin: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+/* YES button */
+.popup-content button:first-child {
+  background: #FFF44F;
+  color: black;
+}
+
+.popup-content button:first-child:hover {
+  background: #e6d93f;
+}
+
+/* NO button */
+.popup-content button:last-child {
+  background: #444;
+  color: white;
+}
+
+.popup-content button:last-child:hover {
+  background: #666;
+}
+
+/* animasi */
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.edit-menu{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    border-radius: 15px;
+    z-index: 1001;
+    background-color: #1C1C1C;
+    width: 500px;
+    max-width: 80%;
+    color: white;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: 0.25s ease;
+}
+
+/* aktif (muncul) */
+.edit-menu.active{
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* HEADER */
+.edit-menu-header{
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.edit-menu-header .title{
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFF44F;
+}
+
+.edit-menu-header .close-button{
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 20px;
+    color: white;
+    transition: 0.2s;
+}
+
+.edit-menu-header .close-button:hover{
+    color: #FFF44F;
+}
+
+/* BODY */
+.edit-menu-body{
+    padding: 15px;
+}
+
+/* input & textarea biar nyatu */
+.edit-menu-body input,
+.edit-menu-body textarea{
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #2a2a2a;
+    color: white;
+}
+
+/* OVERLAY */
+#overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s ease;
+    z-index: 1000;
+}
+
+#overlay.active{
+    opacity: 1;
+    pointer-events: all;
 }

@@ -6,7 +6,7 @@ body {
     align-items: center;
     min-height: 100vh;
     font-family: Arial, Helvetica, serif;
-    background: url("/AUchive/Pic/icon1.png");
+    background: url("/Pic/icon1.png");
     background-size: 100px;
     background-repeat: repeat;
 }
@@ -16,7 +16,7 @@ body {
     height: 500px;
     background: rgb(88, 63, 1);
     overflow: hidden;
-    background: url("/AUchive/Pic/loginbg.jpg") no-repeat center / cover;
+    background: url("/Pic/loginbg.jpg") no-repeat center / cover;
     border-radius: 10px;
     box-shadow: 5px 20px 50px #000;
 }

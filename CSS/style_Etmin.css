@@ -1,0 +1,150 @@
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #111111;
+      color: white;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px;
+      background: #1a1a1a;
+      padding: 30px 20px;
+      border-right: 2px solid rgba(255, 244, 79, 0.15);
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 50px;
+    }
+
+    .logo span {
+      color: #fff44f;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 14px;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: #fff44f;
+      color: black;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 35px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 35px;
+    }
+
+    .topbar h1 {
+      font-size: 32px;
+    }
+
+    .admin-box {
+      background: #fff44f;
+      color: black;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+
+    /* CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+
+    .card {
+      background: #1b1b1b;
+      border: 1px solid rgba(255, 244, 79, 0.12);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+      font-size: 16px;
+      color: #cccccc;
+      margin-bottom: 10px;
+    }
+
+    .card h2 {
+      font-size: 32px;
+      color: #fff44f;
+    }
+
+    /* TABLE */
+    .table-box {
+      background: #1b1b1b;
+      border-radius: 20px;
+      padding: 25px;
+      border: 1px solid rgba(255, 244, 79, 0.12);
+    }
+
+    .table-box h2 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    th {
+      color: #fff44f;
+      font-weight: 600;
+    }
+
+    .status {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .approved {
+      background: rgba(255, 244, 79, 0.15);
+      color: #fff44f;
+    }
+
+    .pending {
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+    }

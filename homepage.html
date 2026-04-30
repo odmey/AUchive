@@ -1,54 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Homepage</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-        <link rel="stylesheet" href="CSS/style_homep.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUchive Landing Page</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="CSS/style_homep.css">
+</head>
 <body>
 
+    <!-- HEADER -->
     <div class="header-wrapper">
+
         <div class="banner">
             <h2><span>AU</span>chive</h2>
         </div>
 
         <div class="white-banner">
             <div class="search-container">
+
                 <span class="material-symbols-outlined icon">
                     library_books
                 </span>
 
                 <div class="search-bar">
                     <span class="material-symbols-outlined">search</span>
-                    <input type="text" placeholder="Search AU...">
+                    <input type="text" placeholder="Search AU Story...">
                 </div>
 
+                <!-- Guest Mode -->
                 <div class="right-icons">
-                    <span class="material-symbols-outlined icon">notifications</span>
-                    <span class="material-symbols-outlined icon">settings</span>
-                    <span class="material-symbols-outlined icon">account_circle</span>
+                    <button class="nav-btn">Login</button>
+                    <button class="nav-btn signup">Sign Up</button>
                 </div>
+
             </div>
         </div>
+
     </div>
 
-    <div class="gradasi">
-        <img src="Pic/cover-utama.jpg">
-        <div class="overlay-baca">
-            <button class="btn-baca">Mulai Baca</button>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+
+        <img src="Pic/cover-utama.jpg" alt="Cover">
+
+        <div class="hero-overlay">
+            <h1>Read, Write, and Share Your AU Story</h1>
+
+            <p>
+                Discover thousands of Alternate Universe stories
+                from your favorite fandoms and start your own journey.
+            </p>
+
+            <div class="hero-buttons">
+                <button class="btn-primary">Start Reading</button>
+                <button class="btn-secondary">Join Now</button>
+            </div>
         </div>
-    </div>
 
+    </section>
+
+
+    <!-- POPULAR STORIES -->
     <section class="story-section">
-        <h3>Cerita Populer</h3>
+        <h3>Popular Stories</h3>
 
         <div class="slider-container">
             <button class="arrow-btn" onclick="scrollSlider(this)">❯</button>
@@ -59,12 +79,13 @@
                 <div class="card-slider"><img src="Pic/karya3.jpg"></div>
                 <div class="card-slider"><img src="Pic/karya4.jpg"></div>
             </div>
-
         </div>
     </section>
 
+
+    <!-- NEW STORIES -->
     <section class="story-section">
-        <h3>Cerita Terbaru</h3>
+        <h3>Newest Stories</h3>
 
         <div class="slider-container">
             <button class="arrow-btn" onclick="scrollSlider(this)">❯</button>
@@ -75,10 +96,11 @@
                 <div class="card-slider"><img src="Pic/karya7.jpg"></div>
                 <div class="card-slider"><img src="Pic/karya8.jpg"></div>
             </div>
-
         </div>
     </section>
 
+
+    <!-- FOOTER -->
     <footer class="footer">
 
         <h2><span>AU</span>chive</h2>
@@ -86,9 +108,15 @@
 
         <br>
 
-        <p><b>contact person</b></p>
+        <p><b>Contact Person</b></p>
         <p>auchivecp@gmail.com</p>
-        <p>(021)09808882</p>
+        <p>(021) 09808882</p>
+
+        <br>
+
+        <p class="cta-footer">
+            Join AUchive today and start your story journey.
+        </p>
 
         <hr>
 
@@ -98,13 +126,17 @@
 
     </footer>
 
+
+    <!-- JS -->
     <script>
         function scrollSlider(button) {
             const slider = button.parentElement.querySelector('.slider');
-            slider.scrollBy({ left: 300, behavior: 'smooth' });
+            slider.scrollBy({
+                left: 300,
+                behavior: 'smooth'
+            });
         }
     </script>
 
 </body>
-
 </html>

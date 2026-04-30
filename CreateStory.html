@@ -28,19 +28,20 @@
         <div class="cover-box">
             <span class="icon">image</span>
             <label for="cover" class="upload-btn-label">Upload Cover</label>
-            <input type="file" id="cover" class="real-file">
+            <input type="file" id="cover" class="real-file" accept="image/*" >
+            <img id="previewCover" style="display:none; max-width:200px;">
         </div>
-
+        
         <div class="form-box">
 
             <label>Judul Cerita</label>
-            <input type="text">
+            <input type="text"id="judul">
 
             <label>Deskripsi</label>
-            <textarea></textarea>
+            <textarea id="deskripsi"></textarea>
 
             <label>Genre</label>
-            <select>
+            <select id="genre">
                 <option>Pilih Genre</option>
                 <option>Romance</option>
                 <option>Action</option>
@@ -49,15 +50,17 @@
             </select>
 
             <label>Tagar</label>
-            <input type="text" placeholder="spasi untuk memisahkan tagar">
+            <input type="text" placeholder="spasi untuk memisahkan tagar" id="tagar">
 
-            <a href="Editor.html" class="next-btn">next</a>
+            <a href="Editor.html" class="next-btn" id="nextBtn">next</a>
         </div>
     </div>
 
     <footer>
         AUchive Originals | ©2026
     </footer>
+
+    <script src="JS/createStory.js"></script>
 
 </body>
 

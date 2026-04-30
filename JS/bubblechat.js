@@ -1,14 +1,10 @@
 const avatars={me:null,contact:null};
 
 const THEMES={
-  wa:{status:'online',icons:['📹','📞','⋮'],placeholder:'Type a message',
+  wa:{status:'online',placeholder:'Type a message',
       sendSvg:'<svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 014 4v6a4 4 0 01-8 0V5a4 4 0 014-4zm-1 17.93V21h2v-2.07A8 8 0 0020 11h-2a6 6 0 01-12 0H4a8 8 0 007 7.93z"/></svg>',
       defColor:'#005c4b'},
-  ig:{status:'Active now',icons:['📞','🎥','ℹ️'],placeholder:'Message…',
-      sendSvg:'<svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>',
-      defColor:'#833ab4'},
-  im:{status:'iMessage',icons:['📞','🎥','ℹ️'],placeholder:'iMessage',
-      sendSvg:'<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+  im:{status:'',sendSvg:'<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
       defColor:'#007aff'},
 };
 
