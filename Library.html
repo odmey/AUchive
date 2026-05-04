@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUchive - Library</title>
+
+    <link rel="stylesheet" href="CSS/lib_style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="menu">
+
+                <a href="homepage.html" class="menu-item">
+                    <span class="material-icons">home</span>
+                    <span>Homepage</span>
+                </a>
+
+                <a href="search.html" class="menu-item">
+                    <span class="material-icons">search</span>
+                    <span>Search</span>
+                </a>
+
+                <a href="library.html" class="menu-item active">
+                    <span class="material-icons">menu_book</span>
+                    <span>Library</span>
+                </a>
+
+                <a href="setting.html" class="menu-item">
+                    <span class="material-icons">settings</span>
+                    <span>Setting</span>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+                <span class="material-icons back-btn" onclick="goBack()">arrow_back</span>
+                <img src="Pic/Logo.png" class="logo toggle-btn" id="toggleSidebar">
+                <h1>Library</h1>
+            </div>
+
+            <div class="header-right">
+                <a href="notification.html" class="icon-btn">
+                    <span class="material-icons">notifications</span>
+                </a>
+                <a href="profile.html" class="avatar icon-btn">A</a>
+            </div>
+
+        </div>
+
+        <div class="filter">
+            <a href="#" class="filter-btn active" data-filter="all">
+                <span class="material-icons">menu_book</span>Semua
+            </a>
+
+            <a href="#" class="filter-btn" data-filter="favorite">
+                <span class="material-icons">favorite</span>Favorit
+            </a>
+
+            <a href="#" class="filter-btn" data-filter="latest">
+                <span class="material-icons">schedule</span>Latest
+            </a>
+        </div>
+
+        <h2>Lanjutkan Membaca</h2>
+        <div class="card-container" id="continue-reading"></div>
+
+        <h2>Semua Cerita</h2>
+        <div class="card-container" id="all-story"></div>
+
+    </div>
+
+    <script src="Js/Lib.js"></script>
+</body>
+
+</html>

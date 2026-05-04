@@ -1,0 +1,131 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #1C1C1C;
+    color: #ffffff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between; /* ini yang bikin kiri-kanan */
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.back-btn {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Bitter', serif;
+    font-size: 24px;
+}
+
+.logo-au {
+    color: #fff44f;
+}
+
+.logo-chive {
+    color: #ffffff;
+}
+
+.logo-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.icon-btn {
+    cursor: pointer;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    padding: 10px 20px;
+}
+
+.tab {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+}
+
+.tab.active {
+    background: #fff44f;
+    color: #000;
+}
+
+.container {
+    padding: 10px 20px;
+}
+
+.notification {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.notification:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.notification.unread {
+    border-left: 3px solid #fff44f;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff44f;
+}
+
+.content {
+    flex: 1;
+}
+
+.title {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.preview {
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.time {
+    font-size: 11px;
+    opacity: 0.5;
+}
+
+.empty {
+    text-align: center;
+    margin-top: 50px;
+    opacity: 0.6;
+}
+
+.empty .material-icons {
+    font-size: 50px;
+    color: #fff44f;
+}

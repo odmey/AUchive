@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,14 +7,12 @@
     <title>CreateStory</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap"rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/style_story.css">
 </head>
 
 <body>
-
     <header>
         <a href="#" class="back-link">
             <span class="material-symbols-outlined">arrow_back</span>
@@ -23,36 +21,46 @@
         <div class="right">AUchive</div>
     </header>
 
+<section class="page-title">
+    <h1>Create Your Story</h1>
+    <p>Start your writing journey and share your universe with readers.</p>
+</section>
+
     <div class="container-upload">
 
         <div class="cover-box">
-            <span class="icon">image</span>
+            <span class="material-symbols-outlined cover-icon">image</span>
+            
             <label for="cover" class="upload-btn-label">Upload Cover</label>
             <input type="file" id="cover" class="real-file" accept="image/*" >
-            <img id="previewCover" style="display:none; max-width:200px;">
+            
+            <img id="previewCover" class="preview-cover">
         </div>
         
         <div class="form-box">
+            <h2>Story Information</h2>
 
-            <label>Judul Cerita</label>
-            <input type="text"id="judul">
+            <label for="judul">Story Title</label>
+            <input type="text"id="judul" placeholder="Enter your story title">
 
-            <label>Deskripsi</label>
-            <textarea id="deskripsi"></textarea>
+            <label for="deskripsi">Description</label>
+            <textarea id="deskripsi" placeholder="Tell readers about your story..."></textarea>
 
-            <label>Genre</label>
+            <label for="genre">Genre</label>
             <select id="genre">
-                <option>Pilih Genre</option>
+                <option>Choose Genre</option>
                 <option>Romance</option>
                 <option>Action</option>
                 <option>Fantasy</option>
                 <option>Drama</option>
+                <option>Comedy</option>
+                <option>Mystery</option>
+                <option>Fanfiction</option>
             </select>
+            <label for="tagar">Tags</label>
+            <input type="text" id="tagar" placeholder="space to divide the tags...">
 
-            <label>Tagar</label>
-            <input type="text" placeholder="spasi untuk memisahkan tagar" id="tagar">
-
-            <a href="Editor.html" class="next-btn" id="nextBtn">next</a>
+            <a href="Editor.html" class="next-btn" id="nextBtn">Next</a>
         </div>
     </div>
 
@@ -64,4 +72,4 @@
 
 </body>
 
-</html>
+</html> -->

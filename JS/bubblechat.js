@@ -85,10 +85,17 @@ function addBubble(){
 
 function clearChat(){document.getElementById('chatArea').innerHTML='<div class="date-chip"><span>Today</span></div>';}
 
-function saveStory(){
-  const btn=document.querySelector('.btn-save');
-  btn.textContent='✓ SAVED!';btn.style.background='#06cf9c';
-  setTimeout(()=>{btn.textContent='SAVE STORY';btn.style.background='';},2000);
+function saveStory() {
+    const chatArea = document.getElementById("chatArea");
+
+    localStorage.setItem("bubbleChatData", chatArea.innerHTML);
+
+    const btn = document.querySelector(".btn-save");
+    btn.textContent = "✓ SAVED!";
+
+    setTimeout(() => {
+        window.location.href = "Editor.html";
+    }, 1000);
 }
 
 function scrollBottom(){const a=document.getElementById('chatArea');a.scrollTop=a.scrollHeight;}

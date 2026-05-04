@@ -11,51 +11,116 @@
     <title>Setting</title>
 </head>
 <body>
+
+    <!-- OVERLAY -->
+    <div id="overlay"></div>
+
+    <!-- POPUP -->
+    <div class="menu-popup" id="menuPopup" aria-hidden="true">
+        <div class="menu-popup-box" role="dialog" aria-modal="true" aria-labelledby="menuPopupTitle">
+            <div class="menu-popup-header">
+                <h2 class="menu-popup-title" id="menuPopupTitle"></h2>
+                <button class="menu-popup-close" id="menuPopupClose" type="button">&times;</button>
+            </div>
+
+            <div class="menu-popup-body" id="menuPopupBody"></div>
+            <div class="menu-popup-actions" id="menuPopupActions"></div>
+        </div>
+    </div>
+
     <header>
         <div class="left">
-            <a href="#" class="back-link">
+            <a href="homepage.html" class="back-link" aria-label="Back">
                 <span class="material-symbols-outlined">arrow_back</span>
             </a>
         </div>
     </header>
+
     <div class="plain">
-        <!-- settings header -->
-        <div class="profile-card">
-            <img src="Pic/profileicon.jpg" alt="profileicon">
-            <div class="profile-desc">
-                <h3>Esya SYantics-</h3>
-                <p>esya@gmail.com</p>
+
+        <!-- GUEST -->
+        <div class="guest-view">
+            <div class="profile-card">
+                <img src="Pic/profileicon.jpg" alt="Profile icon">
+                <div class="profile-desc">
+                    <h3>Welcome</h3>
+                    <p>Please login first</p>
+                </div>
+            </div>
+
+            <div class="section-settings">
+                <div class="item-set" onclick="goLogin()">
+                    <span>Login</span>
+                </div>
+                <div class="item-set" onclick="goSignup()">
+                    <span>Sign Up</span>
+                </div>
+            </div>
+
+            <div class="section-settings">
+                <h4>Help</h4>
+                <div class="item-set" data-popup="faq">
+                    <span>FAQ</span>
+                </div>
+                <div class="item-set" data-popup="contact">
+                    <span>Contact Us</span>
+                </div>
             </div>
         </div>
-        <div class="section-settings">
-            <h4>Account</h4>
-            <div class="item-set">
-                <span>Email</span>
+
+        <!-- USER -->
+        <div class="user-view">
+            <div class="profile-card">
+                <img src="Pic/profileicon.jpg" alt="Profile icon">
+                <div class="profile-desc">
+                    <h3>Esya SYantics-</h3>
+                    <p>esya@gmail.com</p>
+                </div>
             </div>
-            <div class="item-set">
-                <span>Password & Security</span>
+
+            <div class="section-settings">
+                <h4>Account</h4>
+
+                <div class="item-set" data-popup="account">
+                    <span>Profile</span>
+                </div>
+
+                <div class="item-set" data-popup="email">
+                    <span>Email</span>
+                </div>
+
+                <div class="item-set" data-popup="password">
+                    <span>Password & Security</span>
+                </div>
+
+                <div class="item-set" data-popup="notifications">
+                    <span>Notifications</span>
+                </div>
             </div>
-            <div class="item-set">
-                <span>Notifications</span>
+
+            <div class="section-settings">
+                <h4>Help Center</h4>
+                <div class="item-set" data-popup="faq">
+                    <span>FAQ</span>
+                </div>
+                <div class="item-set" data-popup="contact">
+                    <span>Contact Us</span>
+                </div>
+            </div>
+
+            <div class="section-settings">
+                <div class="item-set" data-popup="logout">
+                    <span>Log Out</span>
+                </div>
             </div>
         </div>
-        <div class="section-settings">
-            <h4>Help Center</h4>
-            <div class="item-set">
-                <span>FAQ</span>
-            </div>
-            <div class="item-set">
-                <span>Contact Us</span>
-            </div>
-        </div>
-        <div class="section-settings">
-            <div class="item-set">
-                <span>Log Out</span>
-            </div>
-        </div>
+
     </div>
+
     <footer>
-         AUchive Originals | ©2026
+        AUchive Originals | ©2026
     </footer>
+
+    <script src="JS/setting.js"></script>
 </body>
 </html>
