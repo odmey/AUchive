@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <link rel="stylesheet" href="CSS/profile_person.css">
+    <script src="JS/profile_person.js" defer></script>
+
+    <title>Other Profile</title>
+</head>
+
+<body>
+    <header class="profile-header">
+        <div class="left">
+            <a href="homepage.html" class="back-link">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+        </div>
+
+        <div class="center">
+            <h3>odmey_</h3>
+            <p>465 posts</p>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <div class="cover">
+            <img src="Pic/profilebanner.jpg" class="cover-img">
+        </div>
+
+        <div class="profile-info">
+            <img src="Pic/profileicon.jpg" class="profile-pic">
+            <div class="top-row">
+                <div>
+                    <div class="name-wrap">
+                        <h2 class="name">odmey_</h2>
+                    </div>
+                    <p class="username">@dambee395444</p>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="follow-btn" id="followBtn">
+                        Follow
+                    </button>
+                    <button class="message-btn">
+                        Message
+                    </button>
+                </div>
+            </div>
+
+            <p class="bio">
+                Writer of fantasy worlds and tragic romances ✨<br>
+                Sometimes reality is more fictional than fiction.
+            </p>
+
+            <p class="join">Joined October 2023</p>
+
+            <div class="stats">
+                <span class="stat-btn" id="followingBtn">
+                    <b>13</b> Following
+                </span>
+                <span class="stat-btn" id="followersBtn">
+                    <b>30</b> Followers
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="story-section">
+
+        <div class="story-card">
+            <div class="story-cover">
+                <img src="Pic/karya1.jpg">
+            </div>
+            <div class="story-content">
+                <div class="story-title">
+                    The Last Moon
+                </div>
+                <div class="story-desc">
+                    Tak kala gelap yang dirasakannya berubah menjadi sebuah rona cemerlang...
+                </div>
+                <div class="story-tags">
+                    <span class="story-tag">Fantasy</span>
+                    <span class="story-tag">Drama</span>
+                    <span class="story-tag">Adventure</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STORY 2 -->
+        <div class="story-card">
+            <div class="story-cover">
+                <img src="Pic/karya1.jpg">
+            </div>
+            <div class="story-content">
+                <div class="story-title">
+                    Silent Rain
+                </div>
+                <div class="story-desc">
+                    Sebuah kisah tentang kehilangan, hujan, dan seseorang yang tidak pernah kembali.
+                </div>
+                <div class="story-tags">
+                    <span class="story-tag">Romance</span>
+                    <span class="story-tag">Drama</span>
+                    <span class="story-tag">Sad</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="follow-modal" id="followModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Followers</h3>
+            <span class="material-symbols-outlined close-modal" id="closeModal">
+                close
+            </span>
+            </div>
+            <div class="user-list" id="userList">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
