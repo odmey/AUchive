@@ -271,29 +271,55 @@ closeModalButtons.forEach(button => {
 });
 
 if (saveProfileBtn) {
-    saveProfileBtn.addEventListener("click", () => {
+    saveProfileBtn.addEventListener("click", async () => {
         const newName = editNameInput ? editNameInput.value.trim() : "";
         const newUsername = editUsernameInput ? editUsernameInput.value.trim() : "";
         const newBio = editBioInput ? editBioInput.value.trim() : "";
 
-        if (newName && profileName) {
-            profileName.textContent = newName;
-            currentProfileData.name = newName;
+        if (!newName || !newUsername) {
+            alert("Nama dan username wajib diisi.");
+            return;
         }
 
-        if (newUsername && profileUsername) {
-            const formattedUsername = newUsername.startsWith("@") ? newUsername : "@" + newUsername;
-            profileUsername.textContent = formattedUsername;
-            currentProfileData.username = newUsername.replace("@", "");
+        // ── Simpan ke server ──────────────────────────────────
+        saveProfileBtn.disabled = true;
+        saveProfileBtn.textContent = "Menyimpan...";
 
-            if (headerUsername) {
-                headerUsername.textContent = newUsername.replace("@", "");
+        const fd = new FormData();
+        fd.append("name", newName);
+        fd.append("username", newUsername);
+        fd.append("bio", newBio);
+
+        try {
+            const res = await fetch("PHP/update_profile.php", { method: "POST", body: fd });
+            const data = await res.json();
+            if (!data.success) {
+                alert(data.message);
+                saveProfileBtn.disabled = false;
+                saveProfileBtn.textContent = "Save";
+                return;
             }
+        } catch {
+            alert("Gagal menyimpan. Coba lagi.");
+            saveProfileBtn.disabled = false;
+            saveProfileBtn.textContent = "Save";
+            return;
         }
+
+        // ── Update DOM setelah server berhasil ────────────────
+        if (profileName) profileName.textContent = newName;
+        currentProfileData.name = newName;
+
+        if (profileUsername) {
+            profileUsername.textContent = "@" + newUsername;
+            currentProfileData.username = newUsername;
+        }
+        const headerUsername = document.getElementById("headerUsername");
+        if (headerUsername) headerUsername.textContent = newUsername;
 
         if (profileBio) {
             profileBio.textContent = newBio || "Your bio goes here...";
-            currentProfileData.bio = newBio || "Your bio goes here...";
+            currentProfileData.bio = newBio;
         }
 
         if (profilePicImg && tempProfileImage) {
@@ -305,6 +331,8 @@ if (saveProfileBtn) {
         }
 
         closeModal(editMenu);
+        saveProfileBtn.disabled = false;
+        saveProfileBtn.textContent = "Save";
     });
 }
 
@@ -374,20 +402,20 @@ function resizeImage(file, callback) {
 
 }
 // 1. pantau input file
-document.getElementById("cover").addEventListener("change", function() {
-    
+document.getElementById("cover").addEventListener("change", function () {
+
     // 2. ambil file yang dipilih
     const file = this.files[0];
-    
+
     // 3. buat pembaca file
     const reader = new FileReader();
-    
+
     // 4. setelah file selesai dibaca, taruh ke gambar
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         document.getElementById("previewCover").src = e.target.result;
         document.getElementById("previewCover").style.display = "block";
     };
-    
+
     // 5. mulai baca file
     reader.readAsDataURL(file);
 });

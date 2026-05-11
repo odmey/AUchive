@@ -6,16 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const popupActions = document.getElementById("menuPopupActions");
     const popupClose = document.getElementById("menuPopupClose");
 
-    // Simulasi login
-    const isLoggedIn = true; // ganti false untuk guest
-
-    const guestView = document.querySelector(".guest-view");
-    const userView = document.querySelector(".user-view");
-
-    if (guestView && userView) {
-        guestView.style.display = isLoggedIn ? "none" : "block";
-        userView.style.display = isLoggedIn ? "block" : "none";
-    }
+    // ── NOTE: Tidak perlu fetch session_check lagi.
+    // Setting.php sudah handle show/hide guest-view & user-view langsung dari PHP session.
 
     function closeMenuPopup() {
         popup.classList.remove("active");
@@ -25,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function addActionButtons(buttons) {
         popupActions.innerHTML = buttons;
-
         popupActions.querySelectorAll("[data-close='true']").forEach(btn => {
             btn.addEventListener("click", closeMenuPopup);
         });
@@ -41,12 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (type === "account") {
             popupTitle.textContent = "Account Settings";
-
             popupBody.innerHTML = `
                 <h4>Profile Information</h4>
                 <input type="text" placeholder="Full Name">
                 <textarea placeholder="Bio"></textarea>
-
                 <h4>Personal Details</h4>
                 <input type="date">
                 <select>
@@ -55,12 +44,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     <option>Male</option>
                     <option>Other</option>
                 </select>
-
                 <h4 style="color:#ff6b6b;">Danger Zone</h4>
                 <p class="menu-popup-note">Deactivate or delete your account permanently.</p>
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Deactivate Account</button>
             `;
-
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
                 <button class="menu-popup-btn primary" data-close="true" type="button">Save Changes</button>
@@ -69,26 +56,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         else if (type === "email") {
             popupTitle.textContent = "Email Settings";
-
             popupBody.innerHTML = `
                 <h4>Change Email</h4>
                 <input type="email" placeholder="Current Email">
                 <input type="email" placeholder="New Email">
-
                 <h4>Secondary Email</h4>
                 <input type="email" placeholder="Backup Email">
-
                 <h4>Email Preferences</h4>
-                <div class="menu-popup-toggle">
-                    <span>Login Only</span>
-                    <input type="checkbox">
-                </div>
-                <div class="menu-popup-toggle">
-                    <span>Receive Updates</span>
-                    <input type="checkbox" checked>
-                </div>
+                <div class="menu-popup-toggle"><span>Login Only</span><input type="checkbox"></div>
+                <div class="menu-popup-toggle"><span>Receive Updates</span><input type="checkbox" checked></div>
             `;
-
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
                 <button class="menu-popup-btn primary" data-close="true" type="button">Save</button>
@@ -97,28 +74,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         else if (type === "password") {
             popupTitle.textContent = "Security Settings";
-
             popupBody.innerHTML = `
                 <h4>Change Password</h4>
                 <input type="password" placeholder="Current Password">
                 <input type="password" placeholder="New Password">
                 <input type="password" placeholder="Confirm Password">
-
                 <h4>Security</h4>
-                <div class="menu-popup-toggle">
-                    <span>Enable 2FA</span>
-                    <input type="checkbox">
-                </div>
-
-                <div class="menu-popup-toggle">
-                    <span>Biometric Login</span>
-                    <input type="checkbox">
-                </div>
-
+                <div class="menu-popup-toggle"><span>Enable 2FA</span><input type="checkbox"></div>
+                <div class="menu-popup-toggle"><span>Biometric Login</span><input type="checkbox"></div>
                 <h4>Login Activity</h4>
                 <p class="menu-popup-note">Last login: Bali • Chrome</p>
             `;
-
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
                 <button class="menu-popup-btn primary" data-close="true" type="button">Update</button>
@@ -127,24 +93,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         else if (type === "notifications") {
             popupTitle.textContent = "Notifications";
-
             popupBody.innerHTML = `
-                <div class="menu-popup-toggle">
-                    <span>Push Notifications</span>
-                    <input type="checkbox" checked>
-                </div>
-
-                <div class="menu-popup-toggle">
-                    <span>In-App Notifications</span>
-                    <input type="checkbox" checked>
-                </div>
-
-                <div class="menu-popup-toggle">
-                    <span>Marketing</span>
-                    <input type="checkbox">
-                </div>
+                <div class="menu-popup-toggle"><span>Push Notifications</span><input type="checkbox" checked></div>
+                <div class="menu-popup-toggle"><span>In-App Notifications</span><input type="checkbox" checked></div>
+                <div class="menu-popup-toggle"><span>Marketing</span><input type="checkbox"></div>
             `;
-
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Close</button>
                 <button class="menu-popup-btn primary" data-close="true" type="button">Save</button>
@@ -153,19 +106,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         else if (type === "faq") {
             popupTitle.textContent = "Help Center";
-
             popupBody.innerHTML = `
                 <input type="text" placeholder="Search..." style="margin-bottom:15px;">
-
                 <ul class="menu-popup-list">
                     <li>Create story</li>
                     <li>Change password</li>
                     <li>Delete account</li>
                 </ul>
-
                 <p class="menu-popup-note">Find guides and tutorials here.</p>
             `;
-
             addActionButtons(`
                 <button class="menu-popup-btn primary" data-close="true" type="button">Close</button>
             `);
@@ -173,14 +122,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         else if (type === "contact") {
             popupTitle.textContent = "Contact Us";
-
             popupBody.innerHTML = `
                 <p class="menu-popup-note" style="margin-bottom:8px;">Email: support@auchive.com</p>
                 <p class="menu-popup-note" style="margin-bottom:14px;">WhatsApp: +62 812-XXXX</p>
-
                 <textarea placeholder="Your message..."></textarea>
             `;
-
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
                 <button class="menu-popup-btn primary" data-close="true" type="button">Send</button>
@@ -189,18 +135,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
         else if (type === "logout") {
             popupTitle.textContent = "Log Out";
-
             popupBody.innerHTML = `
                 <p class="menu-popup-note">Are you sure you want to log out?</p>
             `;
 
-            addActionButtons(`
-                <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
-                <button class="menu-popup-btn primary" data-close="true" type="button">Yes, Log Out</button>
-            `);
+            popupActions.innerHTML = `
+                <button class="menu-popup-btn secondary" id="cancelLogout" type="button">Cancel</button>
+                <button class="menu-popup-btn primary" data-close="true" id="confirmLogout" type="button">Yes, Log Out</button>
+            `;
+
+            const cancelBtn = document.getElementById("cancelLogout");
+            const confirmBtn = document.getElementById("confirmLogout");
+            if (cancelBtn) {
+                cancelBtn.addEventListener("click", closeMenuPopup);
+            }
+
+            if (confirmBtn) {
+                confirmBtn.addEventListener("click", async function () {
+                    this.disabled = true;
+                    this.textContent = "Logging out...";
+
+                    try {
+                        const res = await fetch("/Project/AUchive/PHP/logout.php", {
+                            method: "POST",
+                            credentials: "same-origin",
+                            cache: "no-store",
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest"
+                            }
+                        });
+
+                        const data = await res.json();
+                        if (data.success) {
+                            window.location.href = "/Project/AUchive/homepage.php";
+                        }
+                    } catch (err) {
+                        alert("Logout gagal.");
+                        this.disabled = false;
+                        this.textContent = "Yes, Log Out";
+                    }
+                });
+            }
         }
     }
 
+    // ── Bind semua .item-set ──────────────────────────────────────
     document.querySelectorAll(".item-set").forEach(item => {
         item.addEventListener("click", function () {
             const type = this.dataset.popup;
@@ -208,30 +187,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    if (popupClose) {
-        popupClose.addEventListener("click", closeMenuPopup);
-    }
+    if (popupClose) popupClose.addEventListener("click", closeMenuPopup);
+    if (overlay) overlay.addEventListener("click", closeMenuPopup);
+    if (popup) popup.addEventListener("click", e => { if (e.target === popup) closeMenuPopup(); });
 
-    if (popup) {
-        popup.addEventListener("click", function (e) {
-            if (e.target === popup) closeMenuPopup();
-        });
-    }
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenuPopup(); });
 
-    if (overlay) {
-        overlay.addEventListener("click", closeMenuPopup);
-    }
-
-    document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") closeMenuPopup();
-    });
-
-    // dummy function biar click guest tidak error kalau belum kamu isi routing-nya
-    window.goLogin = function () {
-        window.location.href = "login.html";
-    };
-
-    window.goSignup = function () {
-        window.location.href = "signup.html";
-    };
+    // ── Fungsi global untuk Guest view ────────────────────────────
+    window.goLogin = () => window.location.href = "homepage.php?auth=login";
+    window.goSignup = () => window.location.href = "homepage.php?auth=signup";
 });
