@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['story_id'])) {
+    header('Location: Profile.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 

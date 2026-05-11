@@ -1,3 +1,6 @@
+<?php 
+session_start(); 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <link rel="stylesheet" href="CSS/style_profile.css">
     <script src="JS/profileuser.js" defer></script>
-    <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet"/>
-    <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+    <!-- <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet"/>
+    <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script> -->
     <title>Profile</title>
 </head>
 
@@ -25,9 +28,6 @@
     <div class="center">
         <h3>odmey_</h3>
         <p>465 posts</p>
-    </div>
-    <div class="right">
-        <span class="material-symbols-outlined">search</span>
     </div>
 </header>
 
@@ -150,12 +150,12 @@
             <h1>Create Your Story</h1>
             <p>Start your writing journey and share your universe with readers.</p>
         </section>
-
-        <div class="container-upload">
+  <form action="PHP/story_prep.php" method="POST" enctype="multipart/form-data">    
+    <div class="container-upload">
             <div class="cover-box">
                 <span class="material-symbols-outlined cover-icon">image</span>
                 <label for="cover" class="upload-btn-label">Upload Cover</label>
-                <input type="file" id="cover" class="real-file" accept="image/*">
+                <input type="file" id="cover" class="real-file" name="cover" accept="image/*">
                 <img id="previewCover" class="preview-cover" alt="Preview cover">
             </div>
 
@@ -163,14 +163,14 @@
                 <h2>Story Information</h2>
 
                 <label for="judul">Story Title</label>
-                <input type="text" id="judul" placeholder="Enter your story title">
+                <input type="text" id="judul" name="title" placeholder="Enter your story title">
 
                 <label for="deskripsi">Description</label>
-                <textarea id="deskripsi" placeholder="Tell readers about your story..."></textarea>
+                <textarea id="deskripsi" name="description" placeholder="Tell readers about your story..."></textarea>
 
                 <label for="genre">Genre</label>
-                <select id="genre">
-                    <option>Choose Genre</option>
+                <select id="genre" name="genre">
+                    <option value="">Choose Genre</option>
                     <option>Romance</option>
                     <option>Action</option>
                     <option>Fantasy</option>
@@ -181,14 +181,14 @@
                 </select>
 
                 <label for="tagar">Tags</label>
-                <input type="text" id="tagar" placeholder="space to divide the tags...">
+                <input type="text" id="tagar" name="tags" placeholder="space to divide the tags...">
 
-                <button class="next-btn" id="nextBtn">Next</a>
+                <button type="submit" class="next-btn" id="nextBtn">Next</a>
             </div>
         </div>
+    </form>  
     </div>
 </div>
-
 <!-- IMAGE EDITOR MODAL -->
 <div id="imageEditorModal" class="image-editor">
     <div class="image-editor-content">

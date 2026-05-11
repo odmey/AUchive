@@ -373,15 +373,33 @@ function resizeImage(file, callback) {
     reader.readAsDataURL(file);
 
 }
-document.getElementById("nextBtn").addEventListener("click", function () {
-    const storyData = {
-        title: document.getElementById("judul").value,
-        description: document.getElementById("deskripsi").value,
-        genre: document.getElementById("genre").value,
-        tags: document.getElementById("tagar").value
+// 1. pantau input file
+document.getElementById("cover").addEventListener("change", function() {
+    
+    // 2. ambil file yang dipilih
+    const file = this.files[0];
+    
+    // 3. buat pembaca file
+    const reader = new FileReader();
+    
+    // 4. setelah file selesai dibaca, taruh ke gambar
+    reader.onload = function(e) {
+        document.getElementById("previewCover").src = e.target.result;
+        document.getElementById("previewCover").style.display = "block";
     };
-
-    localStorage.setItem("storyData", JSON.stringify(storyData));
-
-    window.location.href = "Editor.html";
+    
+    // 5. mulai baca file
+    reader.readAsDataURL(file);
 });
+// document.getElementById("nextBtn").addEventListener("click", function () {
+//     const storyData = {
+//         title: document.getElementById("judul").value,
+//         description: document.getElementById("deskripsi").value,
+//         genre: document.getElementById("genre").value,
+//         tags: document.getElementById("tagar").value
+//     };
+
+//     localStorage.setItem("storyData", JSON.stringify(storyData));
+
+//     window.location.href = "Editor.html";
+// });
