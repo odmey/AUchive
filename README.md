@@ -28,9 +28,9 @@ The platform allows users to create stories, customize chat themes, add narrativ
 | 3 | [Member Name 3] | System / Platform Side | Develop login, register, profile, notification, settings, database structure, API integration, and system-wide support features. |
 
 ### Suggested Scrum Division
-- **Member 1**: Reader part only
-- **Member 2**: Writer part only
-- **Member 3**: System/platform part only
+- **Aleiandra Carrissa Irawan**: Reader part only
+- **Raissa Bunga Astrella**: Writer part only
+- **Meisya Ananda Puteri**: System/platform part only
 
 Each sprint can be reviewed through testing and progress checking so every part is developed step by step.
 
