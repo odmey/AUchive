@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reading Page</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap" rel="stylesheet">
-     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-     <link rel="stylesheet" href="CSS/readingpage.css">
-     <script src="JS/readingpage.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Page</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="CSS/readingpage.css">
 </head>
+
 <body>
-    <div class="reading-page">
+  <div class="reading-page">
 
     <aside class="chapter-sidebar">
       <h2>Chapters</h2>
@@ -65,14 +68,22 @@
         <h2>Comments</h2>
 
         <div class="comment-box">
-          <textarea placeholder="Write your thoughts about this chapter..."></textarea>
-          <button class="post-btn">Post Comment</button>
+          <textarea 
+          id="commentInput" 
+          placeholder="Write your thoughts about this chapter...">
+        </textarea>
+
+          <button class="post-btn" onclick="postComment()">
+            Post Comment
+          </button>
         </div>
 
         <div class="comment-item">
           <div class="comment-user">@nayla_</div>
           <p>STOPPP chapter ini bikin aku nangis 😭</p>
         </div>
+        
+        <div id="commentList"></div>
 
         <div class="comment-item">
           <div class="comment-user">@jenoverse</div>
@@ -82,5 +93,7 @@
       </section>
     </main>
   </div>
+  <script src="JS/readingpage.js"></script>
 </body>
+
 </html>

@@ -1,35 +1,72 @@
-// DATA (AUTO LOOP + LAST READ)
-const stories = [];
+// DATA
+let stories = [];
 
-for (let i = 1; i <= 7; i++) {
-    stories.push({
-        title: "Story " + i,
-        img: `https://picsum.photos/200/300?random=${i}`,
-        progress: Math.floor(Math.random() * 100),
-        link: "story" + i + ".html",
-        favorite: i % 2 === 0,
-        lastRead: i // 🔥 ini kuncinya
-    });
+// LOAD LIBRARY FROM PHP API
+async function loadLibrary() {
+    try {
+        const response = await fetch("get_library.php");
+        const data = await response.json();
+
+        stories = data;
+        render(stories);
+
+    } catch (error) {
+        console.error("Gagal mengambil library:", error);
+    }
+}
+
+
+// ADD TO LIBRARY
+async function addToLibrary(storyId) {
+    try {
+        const response = await fetch("add_to_library.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                story_id: storyId
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("Cerita berhasil ditambahkan ke library!");
+            loadLibrary();
+        } else {
+            alert(result.message || "Gagal menambahkan cerita");
+        }
+
+    } catch (error) {
+        console.error("Error add library:", error);
+    }
 }
 
 
 // CARD
 function createCard(s, showProgress = false) {
     return `
-    <div class="card" onclick="goTo('${s.link}')">
-        ${s.favorite ? '<div class="love">❤</div>' : ''}
-        <img src="${s.img}">
-        <div class="card-content">
-            <h3>${s.title}</h3>
+    <div class="card">
+        <div onclick="goTo('${s.link}')">
+            ${s.favorite ? '<div class="love">❤</div>' : ''}
+            <img src="${s.img}">
 
-            ${showProgress ? `
-            <p>Bab - ${s.progress}%</p>
-            <div class="progress">
-                <div class="progress-bar" style="width:${s.progress}%"></div>
+            <div class="card-content">
+                <h3>${s.title}</h3>
+
+                ${showProgress ? `
+                <p>Bab - ${s.progress}%</p>
+                <div class="progress">
+                    <div class="progress-bar" style="width:${s.progress}%"></div>
+                </div>
+                ` : ''}
             </div>
-            ` : ''}
-            
         </div>
+
+        <button class="library-btn" onclick="addToLibrary(${s.id})">
+            + Library
+        </button>
     </div>`;
 }
 
@@ -39,21 +76,19 @@ function render(data) {
     const allStory = document.getElementById("all-story");
     const continueReading = document.getElementById("continue-reading");
 
-    // SEMUA CERITA (tanpa progress)
     if (allStory) {
         allStory.innerHTML = data.map(s => createCard(s, false)).join("");
     }
 
-    // LANJUTKAN MEMBACA (max 5 + ada progress)
     if (continueReading) {
-        const limited = data.slice(0, 5); // ubah ke 3 kalau mau
+        const limited = data.slice(0, 5);
         continueReading.innerHTML = limited.map(s => createCard(s, true)).join("");
     }
 }
 
 
 // INIT
-render(stories);
+loadLibrary();
 
 
 // NAVIGASI
@@ -64,6 +99,7 @@ function goTo(link) {
 function goBack() {
     window.history.back();
 }
+
 
 // FILTER
 document.querySelectorAll(".filter-btn").forEach(btn => {
@@ -98,14 +134,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const overlay = document.getElementById("overlay");
     const toggle = document.getElementById("toggleSidebar");
 
-    toggle.addEventListener("click", function () {
-        sidebar.classList.toggle("active");
-        overlay.classList.toggle("active");
-    });
+    if (toggle) {
+        toggle.addEventListener("click", function () {
+            sidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        });
+    }
 
-    overlay.addEventListener("click", function () {
-        sidebar.classList.remove("active");
-        overlay.classList.remove("active");
-    });
+    if (overlay) {
+        overlay.addEventListener("click", function () {
+            sidebar.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+    }
 
 });
