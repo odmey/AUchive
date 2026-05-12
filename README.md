@@ -23,9 +23,9 @@ The platform allows users to create stories, customize chat themes, add narrativ
 
 | No | Member Name | Role | Responsibilities |
 |----|-------------|------|------------------|
-| 1 | [Member Name 1] | Reader Side | Develop reader-focused features, reading page flow, preview mode, and reader-related prototype to database structure. |
-| 2 | [Member Name 2] | Writer Side | Develop story creation, bubble chat maker, chapter editor, preview, publish/draft flow, and writing-related features. |
-| 3 | [Member Name 3] | System / Platform Side | Develop login, register, profile, notification, settings, database structure, API integration, and system-wide support features. |
+| 1 | Aleiandra Carrissa Irawan | Reader Side | Develop reader-focused features, reading page flow, preview mode, and reader-related prototype to database structure. |
+| 2 | Raissa Bunga Astrella | Writer Side | Develop story creation, bubble chat maker, chapter editor, preview, publish/draft flow, and writing-related features. |
+| 3 | Meisya Ananda Puteri | System / Platform Side | Develop login, register, profile, notification, settings, database structure, API integration, and system-wide support features. |
 
 ### Suggested Scrum Division
 - **Aleiandra Carrissa Irawan**: Reader part only
