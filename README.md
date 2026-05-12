@@ -8,7 +8,7 @@ AUchive combines all AU writing needs in one website so writers do not need to u
 ---
 
 ## Project Title
-**Development of an Integrated Web-Based System for Hybrid Chat and Narrative AU (Alternate Universe) Content in AUchive Platform**
+**Development of an Integrated Web-Based System for Hybrid Chat and Narrative AU (Alternate Universe) Content Using Scrum Method**
 
 ---
 
@@ -86,6 +86,8 @@ This project uses the **Scrum** method.
 ### 1. Guest / Visitor
 **Features:**
 - View landing page
+- Search stories
+- Read story preview and reading page
 - Read about AUchive
 - View contact person
 - Log in
@@ -128,20 +130,17 @@ This project uses the **Scrum** method.
 
 ```text
 AUchive
-├── Landing Page
-│   ├── Log In
-│   ├── Sign In / Register
-│   ├── About AUchive
-│   ├── Contact Person
-│   └── Write Button
-│
 ├── Homepage
 │   ├── Menu Bar
+│   │   ├── Log In
+│   │   ├── Sign In / Register
 │   │   ├── Account / Profile
 │   │   ├── Notification
 │   │   ├── Search
+│   │   ├── Library
 │   │   └── Logo
 │   ├── Upper Banner
+│   ├── Favorite Stories
 │   ├── Recommended Stories
 │   └── Lower Banner
 │
