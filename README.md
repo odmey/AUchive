@@ -27,10 +27,10 @@ The platform allows users to create stories, customize chat themes, add narrativ
 | 2 | Raissa Bunga Astrella | Writer Side | Develop story creation, bubble chat maker, chapter editor, preview, publish/draft flow, and writing-related features. |
 | 3 | Meisya Ananda Puteri | System / Platform Side | Develop login, register, profile, notification, settings, database structure, API integration, and system-wide support features. |
 
-### Suggested Scrum Division
-- **Aleiandra Carrissa Irawan**: Reader part only
-- **Raissa Bunga Astrella**: Writer part only
-- **Meisya Ananda Puteri**: System/platform part only
+### NIM Members Groups
+- **Aleiandra Carrissa Irawan**: F1D02410034
+- **Raissa Bunga Astrella**: F1D02410087
+- **Meisya Ananda Puteri**: F1D02410072
 
 Each sprint can be reviewed through testing and progress checking so every part is developed step by step.
 
@@ -164,10 +164,6 @@ AUchive
 │   ├── Story Update Notification
 │   ├── Like Notification
 │   └── Followers Notification
-│
-├── Search
-│   ├── Search History
-│   └── Search Result Stories
 │
 ├── Other User Profile
 │   ├── Banner
