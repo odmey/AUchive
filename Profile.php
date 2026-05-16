@@ -45,6 +45,12 @@ $joinDate = date('F Y', strtotime($user['created_at']));
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <link rel="stylesheet" href="CSS/style_profile.css">
+
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- Harus SETELAH cropper.min.js -->
     <script src="JS/profileuser.js" defer></script>
     <title>Profile – <?= htmlspecialchars($user['username']) ?></title>
 </head>

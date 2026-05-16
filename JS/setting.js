@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.textContent = "Logging out...";
 
                     try {
-                        const res = await fetch("/Project/AUchive/PHP/logout.php", {
+                        const res = await fetch("PHP/logout.php", {
                             method: "POST",
                             credentials: "same-origin",
                             cache: "no-store",
@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         const data = await res.json();
                         if (data.success) {
-                            window.location.href = "/Project/AUchive/homepage.php";
+                            window.location.href = "homepage.php";
                         }
                     } catch (err) {
                         alert("Logout gagal.");

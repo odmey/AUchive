@@ -10,7 +10,7 @@ const overlay = document.getElementById("overlay");
 const profileName = document.querySelector(".name");
 const profileUsername = document.querySelector(".username");
 const profileBio = document.querySelector(".bio");
-const headerUsername = document.querySelector(".profile-header .center h3");
+const headerUsernameEl = document.getElementById("headerUsername");
 const coverImg = document.querySelector(".cover-img");
 const profilePicImg = document.querySelector(".profile-pic");
 
@@ -36,6 +36,12 @@ let currentProfileData = {
 let tempProfileImage = defaultProfileImage;
 let tempBannerImage = defaultBannerImage;
 
+// ── File objects yang akan dikirim ke server ──────────────────
+// Diisi saat user pilih file (raw) atau setelah crop (blob).
+// Null = tidak ada perubahan, PHP tidak akan update kolom tsb.
+let pendingProfileFile = null;
+let pendingBannerFile = null;
+
 // ==========================
 // IMAGE EDITOR (CROPPER)
 // ==========================
@@ -49,10 +55,7 @@ const applyCropBtn = document.getElementById("applyCrop");
 const cropZoom = document.getElementById("cropZoom");
 
 function destroyCropper() {
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
+    if (cropper) { cropper.destroy(); cropper = null; }
 }
 
 function closeImageEditor() {
@@ -64,18 +67,14 @@ function closeImageEditor() {
 
 function openImageEditor(file, targetType) {
     if (!file) return;
-
     currentTarget = targetType;
-
     const reader = new FileReader();
     reader.onload = function (e) {
         imageEditorModal.classList.add("active");
         destroyCropper();
-
         cropperImage.onload = function () {
             setTimeout(() => {
                 destroyCropper();
-
                 cropper = new Cropper(cropperImage, {
                     aspectRatio: targetType === "profile" ? 1 : 16 / 9,
                     viewMode: 1,
@@ -103,25 +102,31 @@ function openImageEditor(file, targetType) {
                 });
             }, 150);
         };
-
         cropperImage.src = e.target.result;
     };
-
     reader.readAsDataURL(file);
 }
 
+// ── Pilih file profil → simpan raw + buka editor ─────────────
 if (editProfileImageInput) {
     editProfileImageInput.addEventListener("change", function () {
         const file = this.files && this.files[0];
-        if (file) openImageEditor(file, "profile");
+        if (file) {
+            pendingProfileFile = file;   // fallback jika user skip crop
+            openImageEditor(file, "profile");
+        }
         this.value = "";
     });
 }
 
+// ── Pilih file banner → simpan raw + buka editor ─────────────
 if (editBannerImageInput) {
     editBannerImageInput.addEventListener("change", function () {
         const file = this.files && this.files[0];
-        if (file) openImageEditor(file, "banner");
+        if (file) {
+            pendingBannerFile = file;    // fallback jika user skip crop
+            openImageEditor(file, "banner");
+        }
         this.value = "";
     });
 }
@@ -130,6 +135,7 @@ if (cancelCropBtn) {
     cancelCropBtn.addEventListener("click", closeImageEditor);
 }
 
+// ── Apply crop → simpan preview (dataURL) + file (Blob) ──────
 if (applyCropBtn) {
     applyCropBtn.addEventListener("click", function () {
         if (!cropper) return;
@@ -141,17 +147,26 @@ if (applyCropBtn) {
             imageSmoothingQuality: "high"
         });
 
-        const croppedImage = canvas.toDataURL("image/jpeg", 0.95);
+        // Preview pakai dataURL (cepat, tidak perlu server)
+        const previewUrl = canvas.toDataURL("image/jpeg", 0.92);
 
-        if (currentTarget === "profile") {
-            tempProfileImage = croppedImage;
-            if (profilePreview) profilePreview.src = croppedImage;
-        } else {
-            tempBannerImage = croppedImage;
-            if (bannerPreview) bannerPreview.src = croppedImage;
-        }
+        // File untuk dikirim ke PHP pakai toBlob (lebih efisien dari base64)
+        canvas.toBlob(function (blob) {
+            const fileName = currentTarget === "profile" ? "profile.jpg" : "banner.jpg";
+            const croppedFile = new File([blob], fileName, { type: "image/jpeg" });
 
-        closeImageEditor();
+            if (currentTarget === "profile") {
+                tempProfileImage = previewUrl;
+                pendingProfileFile = croppedFile;
+                if (profilePreview) profilePreview.src = previewUrl;
+            } else {
+                tempBannerImage = previewUrl;
+                pendingBannerFile = croppedFile;
+                if (bannerPreview) bannerPreview.src = previewUrl;
+            }
+
+            closeImageEditor();
+        }, "image/jpeg", 0.92);
     });
 }
 
@@ -173,14 +188,11 @@ if (imageEditorModal) {
 // ==========================
 function openModal(modal) {
     if (!modal) return;
-
     if (editNameInput) editNameInput.value = currentProfileData.name;
     if (editUsernameInput) editUsernameInput.value = currentProfileData.username;
     if (editBioInput) editBioInput.value = currentProfileData.bio;
-
     if (profilePreview) profilePreview.src = tempProfileImage;
     if (bannerPreview) bannerPreview.src = tempBannerImage;
-
     modal.classList.add("active");
     if (overlay) overlay.classList.add("active");
 }
@@ -199,10 +211,7 @@ function handleAction(value, storyId, selectEl) {
         selectedStory = storyId;
         openPopup();
     }
-
-    if (selectEl) {
-        selectEl.selectedIndex = 0;
-    }
+    if (selectEl) selectEl.selectedIndex = 0;
 }
 
 // ==========================
@@ -225,27 +234,20 @@ function closePopup() {
 function yesAction() {
     if (selectedStory) {
         const el = document.getElementById(selectedStory);
-
         if (el) {
             el.style.transition = "0.3s";
             el.style.opacity = "0";
             el.style.transform = "scale(0.9)";
-
-            setTimeout(() => {
-                el.remove();
-            }, 300);
+            setTimeout(() => el.remove(), 300);
         }
     }
-
     closePopup();
 }
 
 const popup = document.getElementById("confirmBox");
 if (popup) {
     popup.addEventListener("click", function (e) {
-        if (e.target === this) {
-            closePopup();
-        }
+        if (e.target === this) closePopup();
     });
 }
 
@@ -270,6 +272,9 @@ closeModalButtons.forEach(button => {
     });
 });
 
+// ==========================
+// SAVE PROFILE — UTAMA
+// ==========================
 if (saveProfileBtn) {
     saveProfileBtn.addEventListener("click", async () => {
         const newName = editNameInput ? editNameInput.value.trim() : "";
@@ -281,7 +286,6 @@ if (saveProfileBtn) {
             return;
         }
 
-        // ── Simpan ke server ──────────────────────────────────
         saveProfileBtn.disabled = true;
         saveProfileBtn.textContent = "Menyimpan...";
 
@@ -290,49 +294,58 @@ if (saveProfileBtn) {
         fd.append("username", newUsername);
         fd.append("bio", newBio);
 
+        // Lampirkan file hanya jika ada perubahan
+        if (pendingProfileFile) fd.append("profile_pic", pendingProfileFile);
+        if (pendingBannerFile) fd.append("profile_ban", pendingBannerFile);
+
         try {
             const res = await fetch("PHP/update_profile.php", { method: "POST", body: fd });
             const data = await res.json();
+
             if (!data.success) {
                 alert(data.message);
                 saveProfileBtn.disabled = false;
                 saveProfileBtn.textContent = "Save";
                 return;
             }
+
+            // ── Update DOM ──────────────────────────────────────
+            if (profileName) {
+                profileName.textContent = newName;
+                currentProfileData.name = newName;
+            }
+            if (profileUsername) {
+                profileUsername.textContent = "@" + newUsername;
+                currentProfileData.username = newUsername;
+            }
+            if (headerUsernameEl) headerUsernameEl.textContent = newUsername;
+            if (profileBio) {
+                profileBio.textContent = newBio || "Your bio goes here...";
+                currentProfileData.bio = newBio;
+            }
+
+            // Gunakan path dari server (bukan base64) supaya src-nya persistent
+            if (data.profile_pic) {
+                if (profilePicImg) profilePicImg.src = data.profile_pic;
+                tempProfileImage = data.profile_pic;
+            }
+            if (data.profile_ban) {
+                if (coverImg) coverImg.src = data.profile_ban;
+                tempBannerImage = data.profile_ban;
+            }
+
+            // Reset pending files setelah berhasil
+            pendingProfileFile = null;
+            pendingBannerFile = null;
+
+            closeModal(editMenu);
+
         } catch {
             alert("Gagal menyimpan. Coba lagi.");
+        } finally {
             saveProfileBtn.disabled = false;
             saveProfileBtn.textContent = "Save";
-            return;
         }
-
-        // ── Update DOM setelah server berhasil ────────────────
-        if (profileName) profileName.textContent = newName;
-        currentProfileData.name = newName;
-
-        if (profileUsername) {
-            profileUsername.textContent = "@" + newUsername;
-            currentProfileData.username = newUsername;
-        }
-        const headerUsername = document.getElementById("headerUsername");
-        if (headerUsername) headerUsername.textContent = newUsername;
-
-        if (profileBio) {
-            profileBio.textContent = newBio || "Your bio goes here...";
-            currentProfileData.bio = newBio;
-        }
-
-        if (profilePicImg && tempProfileImage) {
-            profilePicImg.src = tempProfileImage;
-        }
-
-        if (coverImg && tempBannerImage) {
-            coverImg.src = tempBannerImage;
-        }
-
-        closeModal(editMenu);
-        saveProfileBtn.disabled = false;
-        saveProfileBtn.textContent = "Save";
     });
 }
 
@@ -341,13 +354,9 @@ if (saveProfileBtn) {
 // ==========================
 if (overlay) {
     overlay.addEventListener("click", () => {
-        document.querySelectorAll(".edit-menu.active").forEach(modal => {
-            modal.classList.remove("active");
-        });
-
+        document.querySelectorAll(".edit-menu.active").forEach(m => m.classList.remove("active"));
         const confirmBox = document.getElementById("confirmBox");
         if (confirmBox) confirmBox.classList.remove("active");
-
         overlay.classList.remove("active");
     });
 }
@@ -360,74 +369,26 @@ const storyPrepModal = document.getElementById("storyprep");
 const closeBtn = document.getElementById("closeStoryPrep");
 
 if (openBtn && storyPrepModal && closeBtn) {
-    openBtn.addEventListener("click", function () {
-        storyPrepModal.style.display = "flex";
-    });
-
-    closeBtn.addEventListener("click", function () {
-        storyPrepModal.style.display = "none";
-    });
-
+    openBtn.addEventListener("click", () => { storyPrepModal.style.display = "flex"; });
+    closeBtn.addEventListener("click", () => { storyPrepModal.style.display = "none"; });
     storyPrepModal.addEventListener("click", function (e) {
-        if (e.target === storyPrepModal) {
-            storyPrepModal.style.display = "none";
-        }
+        if (e.target === storyPrepModal) storyPrepModal.style.display = "none";
     });
 }
 
-function resizeImage(file, callback) {
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-        img.src = e.target.result;
-    };
-
-    img.onload = function () {
-        const canvas = document.createElement("canvas");
-
-        const MAX_WIDTH = 1000; // biar ringan
-        const scale = MAX_WIDTH / img.width;
-
-        canvas.width = MAX_WIDTH;
-        canvas.height = img.height * scale;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        callback(canvas.toDataURL("image/jpeg", 0.9));
-    };
-
-    reader.readAsDataURL(file);
-
+// ==========================
+// COVER PREVIEW (Story Prep)
+// ==========================
+const coverInput = document.getElementById("cover");
+if (coverInput) {
+    coverInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const prev = document.getElementById("previewCover");
+            if (prev) { prev.src = e.target.result; prev.style.display = "block"; }
+        };
+        reader.readAsDataURL(file);
+    });
 }
-// 1. pantau input file
-document.getElementById("cover").addEventListener("change", function () {
-
-    // 2. ambil file yang dipilih
-    const file = this.files[0];
-
-    // 3. buat pembaca file
-    const reader = new FileReader();
-
-    // 4. setelah file selesai dibaca, taruh ke gambar
-    reader.onload = function (e) {
-        document.getElementById("previewCover").src = e.target.result;
-        document.getElementById("previewCover").style.display = "block";
-    };
-
-    // 5. mulai baca file
-    reader.readAsDataURL(file);
-});
-// document.getElementById("nextBtn").addEventListener("click", function () {
-//     const storyData = {
-//         title: document.getElementById("judul").value,
-//         description: document.getElementById("deskripsi").value,
-//         genre: document.getElementById("genre").value,
-//         tags: document.getElementById("tagar").value
-//     };
-
-//     localStorage.setItem("storyData", JSON.stringify(storyData));
-
-//     window.location.href = "Editor.html";
-// });
