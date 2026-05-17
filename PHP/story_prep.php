@@ -3,13 +3,12 @@ session_start();
 require_once 'database.php';
 
 // Cek user sudah login
-// if (!isset($_SESSION['user_id'])) {
-//     header('Location: ../Login.html');
-//     exit;
-// }
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../Login.html');
+    exit;
+}
 
-$user_id     = 1; // klo udh mantep jangan lupa diganti ke yang dikomen di bawah
-// $_SESSION['user_id'];
+$user_id     = $_SESSION['user_id'];
 $title       = trim($_POST['title'] ?? '');
 $description = trim($_POST['description'] ?? '');
 $genre_name  = trim($_POST['genre'] ?? '');
