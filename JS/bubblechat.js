@@ -113,6 +113,7 @@ function addBubble() {
         bubbleSortOrder++;
         postBubbleToAPI({
             chapter_id:  getChapterId(),
+            roomchat_id: getRoomchatId(), 
             message:     msg,
             sender_name: sender,
             position:    side,
@@ -166,4 +167,8 @@ function scrollBottom() {
 
 function escHtml(s) {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+}
+function getRoomchatId() {
+    const params = new URLSearchParams(window.location.search);
+    return parseInt(params.get('roomchat_id')) || 0;
 }

@@ -88,7 +88,11 @@ if ($chapter_id <= 0 && !empty($chapters)) {
 
     <!-- KONTEN UTAMA -->
     <main class="reading-content">
-
+        <div class="back-reading">
+            <a href="Detstory.php?story_id=<?= $story_id ?>">
+                ← Back to Story
+            </a>
+        </div>
         <!-- HEADER STORY -->
         <div class="story-header">
             <p>
@@ -103,11 +107,76 @@ if ($chapter_id <= 0 && !empty($chapters)) {
             <?php endif; ?>
         </div>
 
-        <!-- BUBBLE CHAT — belum dirender, menyusul -->
-        <section class="chat-story" id="chatStory">
-            <p style="color:#888; text-align:center; padding:40px;">
-                Konten chapter akan segera hadir.
-            </p>
+        <!-- KONTEN CHAPTER — BLOK NARASI DAN ROOMCHAT -->
+        <section class="chapter-blocks" id="chapterBlocks">
+            <?php if ($chapter_id > 0):
+                $stmt_blocks = $pdo->prepare("
+                    SELECT cb.block_id, cb.type, cb.content,
+                        r.roomchat_id, r.theme, r.contact_name
+                    FROM chapter_blocks cb
+                    LEFT JOIN roomchats r ON cb.block_id = r.block_id
+                    WHERE cb.chapter_id = ?
+                    ORDER BY cb.sort_order ASC
+                ");
+                $stmt_blocks->execute([$chapter_id]);
+                $blocks = $stmt_blocks->fetchAll();
+
+                foreach ($blocks as $block):
+                    if ($block['type'] === 'narration'): ?>
+                        <div class="reader-narration">
+                            <?= nl2br(htmlspecialchars($block['content'])) ?>
+                        </div>
+
+                    <?php elseif ($block['type'] === 'roomchat' && $block['roomchat_id']):
+                        $stmt_b = $pdo->prepare("
+                            SELECT bubble_text, contact_name, color, position, time_label
+                            FROM bubbles WHERE roomchat_id = ?
+                            ORDER BY sort_order ASC
+                        ");
+                        $stmt_b->execute([$block['roomchat_id']]);
+                        $bubbles = $stmt_b->fetchAll();
+                        $isWa    = $block['theme'] === 'wa';
+                    ?>
+                        <div class="reader-roomchat theme-<?= $block['theme'] ?>">
+                            <div class="reader-chat-header">
+                                <div class="reader-avatar">👤</div>
+                                <div>
+                                    <div class="reader-contact-name"><?= htmlspecialchars($block['contact_name']) ?></div>
+                                    <div class="reader-contact-status"><?= $isWa ? 'online' : 'iMessage' ?></div>
+                                </div>
+                            </div>
+                            <div class="reader-chat-area">
+                                <?php foreach ($bubbles as $b): ?>
+                                <div class="reader-bubble-row <?= $b['position'] ?>">
+                                    <?php if ($b['position'] === 'left'): ?>
+                                        <div class="reader-bubble-av">👤</div>
+                                    <?php endif; ?>
+                                    <div class="reader-bubble <?= $b['position'] ?>"
+                                        style="background:<?= htmlspecialchars($b['color']) ?>">
+                                        <?= htmlspecialchars($b['bubble_text']) ?>
+                                        <span class="reader-bubble-time"><?= htmlspecialchars($b['time_label']) ?></span>
+                                    </div>
+                                    <?php if ($b['position'] === 'right'): ?>
+                                        <div class="reader-bubble-av">🙂</div>
+                                    <?php endif; ?>
+                                </div>
+                                <?php endforeach; ?>
+                                <?php if (empty($bubbles)): ?>
+                                    <p style="color:#888;text-align:center;padding:20px;font-size:13px;">Belum ada bubble.</p>
+                                <?php endif; ?>
+                            </div>
+                            <div class="reader-chat-inputbar">
+                                <div class="reader-input-fake"><?= $isWa ? 'Type a message' : 'iMessage' ?></div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+                <?php if (empty($blocks)): ?>
+                    <p style="color:#888;text-align:center;padding:40px;font-size:13px;">
+                        Konten chapter belum tersedia.
+                    </p>
+                <?php endif; ?>
+            <?php endif; ?>
         </section>
 
         <!-- AKSI -->

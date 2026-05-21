@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once 'database.php';
-
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -10,12 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Auth check — uncomment kalau login sudah stabil
-// if (!isset($_SESSION['user_id'])) {
-//     http_response_code(401);
-//     echo json_encode(['success' => false, 'message' => 'Belum login']);
-//     exit;
-// }
+Auth check — uncomment kalau login sudah stabil
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Belum login']);
+    exit;
+}
 
 $body = json_decode(file_get_contents('php://input'), true);
 if (!$body) {
@@ -23,8 +22,9 @@ if (!$body) {
     echo json_encode(['success' => false, 'message' => 'Body tidak valid']);
     exit;
 }
-
+$body        = json_decode(file_get_contents('php://input'), true);
 $chapter_id  = isset($body['chapter_id'])  ? (int)$body['chapter_id']    : 0;
+$roomchat_id = isset($body['roomchat_id']) ? (int)$body['roomchat_id']   : 0;
 $message     = isset($body['message'])     ? trim($body['message'])       : '';
 $sender_name = isset($body['sender_name']) ? trim($body['sender_name'])   : 'Unknown';
 $position    = isset($body['position'])    ? trim($body['position'])      : 'left';
@@ -32,9 +32,9 @@ $color       = isset($body['color'])       ? trim($body['color'])         : '#00
 $sort_order  = isset($body['sort_order'])  ? (int)$body['sort_order']     : 0;
 $time_label  = isset($body['time_label'])  ? trim($body['time_label'])    : '';
 
-if ($chapter_id <= 0) {
+if ($chapter_id <= 0 || $roomchat_id<=0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid roomchat_id tidak valid']);
     exit;
 }
 if ($message === '') {
@@ -50,12 +50,13 @@ try {
     $pdo  = getDB();
     $stmt = $pdo->prepare("
         INSERT INTO bubbles
-            (chapter_id, bubble_text, contact_name, color, position, sort_order, time_label)
+            (chapter_id, roomchat_id, bubble_text, contact_name, color, position, sort_order, time_label)
         VALUES
-            (:chapter_id, :bubble_text, :contact_name, :color, :position, :sort_order, :time_label)
+            (:chapter_id,  :roomchat_id, :bubble_text, :contact_name, :color, :position, :sort_order, :time_label)
     ");
     $stmt->execute([
         ':chapter_id'   => $chapter_id,
+        ':roomchat_id'  => $roomchat_id,
         ':bubble_text'  => $message,
         ':contact_name' => $sender_name,
         ':color'        => $color,
