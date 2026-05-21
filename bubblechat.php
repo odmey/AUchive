@@ -1,3 +1,26 @@
+<?php
+session_start();
+require_once 'PHP/database.php';
+$pdo = getDB();
+
+$chapter_id = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
+$roomchat_id = isset($_GET['roomchat_id']) ? (int)$_GET['roomchat_id'] : 0;
+
+$roomchat = null;
+$bubbles = [];
+
+if ($roomchat_id > 0) {
+    // Fetch roomchat info
+    $stmt = $pdo->prepare("SELECT * FROM roomchats WHERE roomchat_id = ?");
+    $stmt->execute([$roomchat_id]);
+    $roomchat = $stmt->fetch();
+    
+    // Fetch bubbles
+    $stmt2 = $pdo->prepare("SELECT * FROM bubbles WHERE roomchat_id = ? ORDER BY sort_order ASC");
+    $stmt2->execute([$roomchat_id]);
+    $bubbles = $stmt2->fetchAll();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -142,6 +165,10 @@
   </div>
 </div>
 
+<script>
+    const INITIAL_ROOMCHAT = <?= json_encode($roomchat) ?>;
+    const INITIAL_BUBBLES = <?= json_encode($bubbles) ?>;
+</script>
 <script src="JS/bubblechat.js"></script>
 </body>
 </html>

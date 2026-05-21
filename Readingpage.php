@@ -25,7 +25,7 @@ $stmt = $pdo->prepare("
     LEFT JOIN story_tags st ON s.story_id = st.story_id
     LEFT JOIN tags t ON st.tag_id = t.tag_id
     WHERE s.story_id = ?
-    GROUP BY s.story_id
+    GROUP BY s.story_id, s.title, s.description, u.username, g.genre_name
 ");
 $stmt->execute([$story_id]);
 $story = $stmt->fetch();
@@ -50,6 +50,17 @@ $chapter_id = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
 if ($chapter_id <= 0 && !empty($chapters)) {
     $chapter_id = $chapters[0]['chapter_id'];
 }
+
+// Hitung progress membaca (%) berdasarkan posisi chapter saat ini
+$current_index = 0;
+foreach ($chapters as $index => $ch) {
+    if ($ch['chapter_id'] == $chapter_id) {
+        $current_index = $index + 1;
+        break;
+    }
+}
+$total_chapters = count($chapters);
+$progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) * 100, 2) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -182,7 +193,7 @@ if ($chapter_id <= 0 && !empty($chapters)) {
         <!-- AKSI -->
         <div class="chapter-actions">
             <button class="like-btn" onclick="addToLibrary(<?= $story_id ?>)">
-                ❤️ Like Chapter
+                ❤️ Add to Library
             </button>
         </div>
 
@@ -204,6 +215,11 @@ if ($chapter_id <= 0 && !empty($chapters)) {
     </main>
 </div>
 
+<script>
+    const CURRENT_STORY_ID = <?= (int)$story_id ?>;
+    const CURRENT_CHAPTER_ID = <?= (int)$chapter_id ?>;
+    const CURRENT_PROGRESS_PCT = <?= (float)$progress_pct ?>;
+</script>
 <script src="JS/readingpage.js"></script>
 </body>
 </html>

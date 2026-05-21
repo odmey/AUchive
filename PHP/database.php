@@ -22,6 +22,25 @@ function getDB() {
 
         try {
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+            
+            // Auto-migration for roomchats table columns
+            try {
+                $stmt = $pdo->query("SHOW COLUMNS FROM roomchats");
+                $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                
+                if (!in_array('my_avatar', $columns)) {
+                    $pdo->exec("ALTER TABLE roomchats ADD COLUMN my_avatar LONGTEXT DEFAULT NULL");
+                }
+                if (!in_array('contact_avatar', $columns)) {
+                    $pdo->exec("ALTER TABLE roomchats ADD COLUMN contact_avatar LONGTEXT DEFAULT NULL");
+                }
+                if (!in_array('bg_image', $columns)) {
+                    $pdo->exec("ALTER TABLE roomchats ADD COLUMN bg_image LONGTEXT DEFAULT NULL");
+                }
+            } catch (PDOException $ex) {
+                // Ignore migration errors if roomchats table doesn't exist yet
+            }
+            
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode([

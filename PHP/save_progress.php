@@ -34,9 +34,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // ── Input ────────────────────────────────────────────────────
-$story_id        = (int)($_POST['story_id']        ?? 0);
-$chapter_id      = (int)($_POST['chapter_id']      ?? 0);
-$progress_pct    = (float)($_POST['progress_pct']  ?? 0);   // 0.00 – 100.00
+$story_id     = 0;
+$chapter_id   = 0;
+$progress_pct = 0.00;
+
+$contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+if (stripos($contentType, 'application/json') !== false) {
+    $jsonData = json_decode(file_get_contents('php://input'), true);
+    if (is_array($jsonData)) {
+        $story_id     = (int)($jsonData['story_id'] ?? 0);
+        $chapter_id   = (int)($jsonData['chapter_id'] ?? 0);
+        $progress_pct = (float)($jsonData['progress_pct'] ?? 0);
+    }
+} else {
+    $story_id     = (int)($_POST['story_id'] ?? 0);
+    $chapter_id   = (int)($_POST['chapter_id'] ?? 0);
+    $progress_pct = (float)($_POST['progress_pct'] ?? 0);
+}
 
 if ($story_id <= 0 || $chapter_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'story_id dan chapter_id wajib diisi.']);

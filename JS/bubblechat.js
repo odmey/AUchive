@@ -1,5 +1,6 @@
 const avatars = { me: null, contact: null };
 let bubbleSortOrder = 0;
+let chatBgImage = null;
 
 const THEMES = {
     wa: {
@@ -27,6 +28,15 @@ function setTheme(t, card) {
     document.getElementById('bubbleColor').value = cfg.defColor;
 }
 
+function updateRenderedAvatars() {
+    document.querySelectorAll('.bubble-row.left .row-avatar').forEach(av => {
+        av.innerHTML = avatars.contact ? `<img src="${avatars.contact}" alt="">` : '👤';
+    });
+    document.querySelectorAll('.bubble-row.right .row-avatar').forEach(av => {
+        av.innerHTML = avatars.me ? `<img src="${avatars.me}" alt="">` : '🙂';
+    });
+}
+
 function loadAvatar(input, who) {
     const f = input.files[0]; if (!f) return;
     const r = new FileReader();
@@ -35,6 +45,7 @@ function loadAvatar(input, who) {
         if (who === 'contact') {
             document.getElementById('previewAvatar').innerHTML = `<img src="${e.target.result}" alt="">`;
         }
+        updateRenderedAvatars();
     };
     r.readAsDataURL(f);
 }
@@ -43,6 +54,7 @@ function loadBg(input) {
     const f = input.files[0]; if (!f) return;
     const r = new FileReader();
     r.onload = e => {
+        chatBgImage = e.target.result;
         const a = document.getElementById('chatArea');
         a.style.backgroundImage = `url(${e.target.result})`;
         a.style.backgroundSize = 'cover';
@@ -63,6 +75,26 @@ function getChapterId() {
     return parseInt(params.get('chapter_id')) || 0;
 }
 
+function renderBubbleHtml(msg, side, color, ts, senderName) {
+    const row = document.createElement('div');
+    row.className = `bubble-row ${side}`;
+    
+    const av = document.createElement('div');
+    av.className = 'row-avatar';
+    const avSrc = side === 'left' ? avatars.contact : avatars.me;
+    av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
+    
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    b.style.background = color;
+    b.innerHTML = `${escHtml(msg)}<div class="bubble-meta"><span class="bubble-time">${ts}</span></div>`;
+    
+    row.appendChild(av);
+    row.appendChild(b);
+    document.getElementById('chatArea').appendChild(row);
+    scrollBottom();
+}
+
 function addBubble() {
     const msg     = document.getElementById('message').value.trim();
     const tv      = document.getElementById('time').value;
@@ -80,14 +112,14 @@ function addBubble() {
         return;
     }
 
-    const row = document.createElement('div');
-    row.className = `bubble-row ${side}`;
-    const av = document.createElement('div');
-    av.className = 'row-avatar';
-    const avSrc = side === 'left' ? avatars.contact : avatars.me;
-    av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
-
     if (imgFile) {
+        const row = document.createElement('div');
+        row.className = `bubble-row ${side}`;
+        const av = document.createElement('div');
+        av.className = 'row-avatar';
+        const avSrc = side === 'left' ? avatars.contact : avatars.me;
+        av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
+
         const r = new FileReader();
         r.onload = e => {
             const w = document.createElement('div');
@@ -101,15 +133,7 @@ function addBubble() {
         r.readAsDataURL(imgFile);
         document.getElementById('imageUpload').value = '';
     } else {
-        const b = document.createElement('div');
-        b.className = 'bubble';
-        b.style.background = color;
-        b.innerHTML = `${escHtml(msg)}<div class="bubble-meta"><span class="bubble-time">${ts}</span></div>`;
-        row.appendChild(av);
-        row.appendChild(b);
-        document.getElementById('chatArea').appendChild(row);
-        scrollBottom();
-
+        renderBubbleHtml(msg, side, color, ts, sender);
         bubbleSortOrder++;
         postBubbleToAPI({
             chapter_id:  getChapterId(),
@@ -142,17 +166,59 @@ async function postBubbleToAPI(data) {
     }
 }
 
-function saveStory() {
+async function saveStory() {
     const chapterId = getChapterId();
-    if (chapterId <= 0) {
-        alert('Chapter ID tidak ditemukan.');
+    const roomchatId = getRoomchatId();
+    if (chapterId <= 0 || roomchatId <= 0) {
+        alert('Chapter ID atau Roomchat ID tidak ditemukan.');
         return;
     }
+
+    const themeCard = document.querySelector('.theme-card.active');
+    let theme = 'wa';
+    if (themeCard) {
+        if (themeCard.classList.contains('tc-im')) {
+            theme = 'im';
+        }
+    }
+    const contactName = document.getElementById('contactName').value.trim() || 'Contact';
+
     const btn = document.querySelector('.btn-save');
-    btn.textContent = '✓ SAVED!';
-    setTimeout(() => {
-        window.location.href = `Editor.php?chapter_id=${chapterId}`;
-    }, 800);
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('PHP/save_roomchat.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                block_id: 1, // dummy value, it will update by roomchat_id anyway
+                chapter_id: chapterId,
+                roomchat_id: roomchatId,
+                theme: theme,
+                contact_name: contactName,
+                my_avatar: avatars.me,
+                contact_avatar: avatars.contact,
+                bg_image: chatBgImage
+            })
+        });
+        const result = await res.json();
+        if (result.success) {
+            btn.textContent = '✓ SAVED!';
+            setTimeout(() => {
+                window.location.href = `Editor.php?chapter_id=${chapterId}`;
+            }, 800);
+        } else {
+            alert('Gagal menyimpan roomchat: ' + result.message);
+            btn.textContent = 'SAVE STORY';
+            btn.disabled = false;
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Koneksi gagal saat menyimpan.');
+        btn.textContent = 'SAVE STORY';
+        btn.disabled = false;
+    }
 }
 
 function clearChat() {
@@ -172,3 +238,49 @@ function getRoomchatId() {
     const params = new URLSearchParams(window.location.search);
     return parseInt(params.get('roomchat_id')) || 0;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof INITIAL_ROOMCHAT !== 'undefined' && INITIAL_ROOMCHAT) {
+        // Load theme
+        const theme = INITIAL_ROOMCHAT.theme || 'wa';
+        const card = document.querySelector(`.tc-${theme}`);
+        if (card) {
+            setTheme(theme, card);
+        }
+        
+        // Load contact name
+        if (INITIAL_ROOMCHAT.contact_name) {
+            document.getElementById('contactName').value = INITIAL_ROOMCHAT.contact_name;
+            document.getElementById('previewName').textContent = INITIAL_ROOMCHAT.contact_name;
+        }
+        
+        // Load avatars
+        if (INITIAL_ROOMCHAT.my_avatar) {
+            avatars.me = INITIAL_ROOMCHAT.my_avatar;
+        }
+        if (INITIAL_ROOMCHAT.contact_avatar) {
+            avatars.contact = INITIAL_ROOMCHAT.contact_avatar;
+            document.getElementById('previewAvatar').innerHTML = `<img src="${INITIAL_ROOMCHAT.contact_avatar}" alt="">`;
+        }
+        
+        // Load background
+        if (INITIAL_ROOMCHAT.bg_image) {
+            chatBgImage = INITIAL_ROOMCHAT.bg_image;
+            const a = document.getElementById('chatArea');
+            a.style.backgroundImage = `url(${INITIAL_ROOMCHAT.bg_image})`;
+            a.style.backgroundSize = 'cover';
+            a.style.backgroundPosition = 'center';
+        }
+        
+        updateRenderedAvatars();
+    }
+    
+    if (typeof INITIAL_BUBBLES !== 'undefined' && Array.isArray(INITIAL_BUBBLES)) {
+        INITIAL_BUBBLES.forEach(b => {
+            renderBubbleHtml(b.bubble_text, b.position, b.color, b.time_label, b.contact_name);
+            if (parseInt(b.sort_order) > bubbleSortOrder) {
+                bubbleSortOrder = parseInt(b.sort_order);
+            }
+        });
+    }
+});

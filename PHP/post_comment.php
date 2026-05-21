@@ -35,8 +35,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // ── Input ────────────────────────────────────────────────────
-$chapter_id   = (int)($_POST['chapter_id']   ?? 0);
-$comment_text = trim($_POST['comment_text']  ?? '');
+$chapter_id   = 0;
+$comment_text = '';
+
+$contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+if (stripos($contentType, 'application/json') !== false) {
+    $jsonData = json_decode(file_get_contents('php://input'), true);
+    if (is_array($jsonData)) {
+        $comment_text = trim($jsonData['comment_text'] ?? $jsonData['comment'] ?? '');
+        $chapter_id   = (int)($jsonData['chapter_id'] ?? 0);
+    }
+} else {
+    $chapter_id   = (int)($_POST['chapter_id']   ?? 0);
+    $comment_text = trim($_POST['comment_text']  ?? $_POST['comment'] ?? '');
+}
 
 if ($chapter_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid.']);

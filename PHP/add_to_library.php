@@ -34,8 +34,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // ── Input ────────────────────────────────────────────────────
 // action: 'add' | 'remove'
-$story_id = (int)($_POST['story_id'] ?? 0);
-$action   = trim($_POST['action'] ?? 'add');
+$story_id = 0;
+$action   = 'add';
+
+$contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+if (stripos($contentType, 'application/json') !== false) {
+    $jsonData = json_decode(file_get_contents('php://input'), true);
+    if (is_array($jsonData)) {
+        $story_id = (int)($jsonData['story_id'] ?? 0);
+        $action   = trim($jsonData['action'] ?? 'add');
+    }
+} else {
+    $story_id = (int)($_POST['story_id'] ?? 0);
+    $action   = trim($_POST['action'] ?? 'add');
+}
 
 if ($story_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'story_id tidak valid.']);
