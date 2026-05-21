@@ -13,6 +13,7 @@
     --radius-md: 16px;
     --radius-lg: 24px;
 }
+
 * {
     margin: 0;
     padding: 0;
@@ -27,8 +28,8 @@ body {
 
 /* HEADER */
 .profile-header {
-    background:var(--accent);
-    color:#000;
+    background: var(--accent);
+    color: #000;
     height: 64px;
     display: flex;
     align-items: center;
@@ -37,7 +38,7 @@ body {
     box-shadow: var(--shadow);
 }
 
-.profile-header .left{
+.profile-header .left {
     z-index: 2;
 }
 
@@ -93,17 +94,17 @@ body {
     object-fit: cover;
     display: block;
 }
-.cover::after{
+
+.cover::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.08),
-        rgba(0,0,0,0.45)
-    );
- 
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.08),
+            rgba(0, 0, 0, 0.45));
+
 }
+
 .profile-info {
     padding: 20px;
     position: relative;
@@ -147,7 +148,7 @@ body {
 
 .bio {
     margin: 14px 0;
-    line-height:1.7;
+    line-height: 1.7;
 }
 
 /* .join {
@@ -187,13 +188,13 @@ body {
     width: 100%;
     margin-top: 10px;
     padding: 10px 5% 30px;
-    background:var(--bg-main);
+    background: var(--bg-main);
 }
 
 .story-card {
     display: flex;
     gap: 18px;
-    background:var(--bg-card);
+    background: var(--bg-card);
     padding: 20px;
     border-radius: var(--radius-md);
     margin-bottom: 18px;
@@ -239,7 +240,7 @@ body {
 
 .story-desc {
     font-size: 13px;
-    color:var(--text-soft);
+    color: var(--text-soft);
     margin: 5px 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -317,9 +318,30 @@ body {
     transition: 0.3s;
 }
 
-.add-story button:hover{
+.add-story button:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
+}
+
+.status-badge {
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.status-badge.published {
+    background: rgba(99, 153, 34, 0.15);
+    color: #639922;
+    border: 0.5px solid rgba(99, 153, 34, 0.3);
+}
+
+.status-badge.draft {
+    background: rgba(136, 136, 136, 0.1);
+    color: #888;
+    border: 0.5px solid rgba(136, 136, 136, 0.2);
 }
 
 /* DELETE POPUP */
@@ -351,7 +373,7 @@ body {
     border-radius: 15px;
     text-align: center;
     width: 300px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     animation: popupFade 0.25s ease;
 }
 
@@ -393,6 +415,7 @@ body {
         opacity: 0;
         transform: scale(0.8);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -414,7 +437,7 @@ body {
     background: rgba(28, 28, 28, 0.96);
     backdrop-filter: blur(10px);
     color: white;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     opacity: 0;
     pointer-events: none;
     transition: 0.25s ease;
@@ -582,7 +605,7 @@ body {
 #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     opacity: 0;
     pointer-events: none;
     transition: 0.25s ease;
@@ -599,7 +622,7 @@ body {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     justify-content: center;
     align-items: center;
     z-index: 2000;
@@ -618,7 +641,7 @@ body {
     padding: 32px;
     position: relative;
     color: white;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     /* width: 100%;
     max-width: 900px;
     max-height: 95vh;
@@ -729,7 +752,7 @@ body {
 .story-prep select {
     width: 100%;
     background: #2A2A2A;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
     padding: 14px 16px;
     color: white;
@@ -753,6 +776,7 @@ body {
     cursor: pointer;
     border: none;
 }
+
 
 /* IMAGE EDITOR / CROPPER MODAL */
 .image-editor {
@@ -866,9 +890,10 @@ body {
 }
 
 .cropper-view-box {
-    outline: 2px solid rgba(255,255,255,0.85);
+    outline: 2px solid rgba(255, 255, 255, 0.85);
     outline-offset: -1px;
 }
+
 #previewCover {
     display: none;
     width: 100%;

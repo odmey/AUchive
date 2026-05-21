@@ -145,10 +145,12 @@ $joinDate = date('F Y', strtotime($user['created_at']));
         <?php if (empty($stories)): ?>
             <p style="text-align:center; color:#888; padding:30px;">Belum ada cerita. Yuk buat yang pertama!</p>
         <?php else: ?>
-            <?php foreach ($stories as $s): ?>
-                <div class="story-card" id="story-<?= $s['story_id'] ?>">
+           <?php foreach ($stories as $s): ?>
+                <div class="story-card" id="story-<?= $s['story_id'] ?>"
+                    style="cursor:pointer;">
                     <div class="story-cover">
-                        <img src="<?= htmlspecialchars($s['cover'] ?? 'Pic/karya1.jpg') ?>" onerror="this.style.display='none'">
+                        <img src="<?= htmlspecialchars($s['cover'] ?? 'Pic/karya1.jpg') ?>"
+                            onerror="this.style.display='none'">
                     </div>
                     <div class="story-content">
                         <div class="story-title"><?= htmlspecialchars($s['title']) ?></div>
@@ -157,17 +159,21 @@ $joinDate = date('F Y', strtotime($user['created_at']));
                             <?php if ($s['genre_name']): ?>
                                 <span class="story-tag"><?= htmlspecialchars($s['genre_name']) ?></span>
                             <?php endif; ?>
+                            <span class="status-badge <?= $s['status'] ?>">
+                                <?= $s['status'] === 'published' ? 'Published' : 'Draft' ?>
+                            </span>
                         </div>
                     </div>
-                    <div class="story-status">
+                    <div class="story-status" onclick="event.stopPropagation()">
                         <select onchange="handleAction(this.value, 'story-<?= $s['story_id'] ?>', this)">
-                            <option>Publikasikan</option>
-                            <option>Draft</option>
+                            <option value="">Aksi</option>
+                            <option value="publish">Publikasikan</option>
+                            <option value="draft">Jadikan Draft</option>
                             <option value="hapus">Hapus</option>
                         </select>
                     </div>
                 </div>
-            <?php endforeach; ?>
+    <?php endforeach; ?>
         <?php endif; ?>
     </div>
 
