@@ -99,6 +99,7 @@ if ($chapter_id <= 0 && !empty($chapters)) {
             <p class="author">by <?= htmlspecialchars($story['username']) ?></p>
             <?php if ($story['description']): ?>
                 <p class="story-desc"><?= htmlspecialchars($story['description']) ?></p>
+                <!-- tampilkan isi chapternya yang kita tulis itu -->
             <?php endif; ?>
         </div>
 
