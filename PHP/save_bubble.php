@@ -9,12 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-Auth check — uncomment kalau login sudah stabil
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login']);
-    exit;
-}
+// Auth check — uncomment kalau login sudah stabil
+// if (!isset($_SESSION['user_id'])) {
+//     http_response_code(401);
+//     echo json_encode(['success' => false, 'message' => 'Belum login']);
+//     exit;
+// }
 
 $body = json_decode(file_get_contents('php://input'), true);
 if (!$body) {
@@ -22,7 +22,6 @@ if (!$body) {
     echo json_encode(['success' => false, 'message' => 'Body tidak valid']);
     exit;
 }
-$body        = json_decode(file_get_contents('php://input'), true);
 $chapter_id  = isset($body['chapter_id'])  ? (int)$body['chapter_id']    : 0;
 $roomchat_id = isset($body['roomchat_id']) ? (int)$body['roomchat_id']   : 0;
 $message     = isset($body['message'])     ? trim($body['message'])       : '';

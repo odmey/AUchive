@@ -5,6 +5,7 @@ $pdo = getDB();
 
 $chapter_id = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
 $roomchat_id = isset($_GET['roomchat_id']) ? (int)$_GET['roomchat_id'] : 0;
+$story_id = isset($_GET['story_id']) ? (int)$_GET['story_id'] : (isset($_SESSION['story_id']) ? (int)$_SESSION['story_id'] : 0);
 
 $roomchat = null;
 $bubbles = [];
@@ -36,7 +37,7 @@ if ($roomchat_id > 0) {
     <body class="theme-wa">
       <div class="topnav">
         <div class="nav-left">
-          <a href="Editor.php" class="back-link">
+          <a href="Editor.php?story_id=<?= $story_id ?>&chapter_id=<?= $chapter_id ?>" class="back-link">
             <span class="material-symbols-outlined">arrow_back</span>
           </a>
         </div>
@@ -166,6 +167,7 @@ if ($roomchat_id > 0) {
 </div>
 
 <script>
+    const STORY_ID = <?= $story_id ?>;
     const INITIAL_ROOMCHAT = <?= json_encode($roomchat) ?>;
     const INITIAL_BUBBLES = <?= json_encode($bubbles) ?>;
 </script>

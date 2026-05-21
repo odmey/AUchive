@@ -1,16 +1,17 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['story_id'])) {
+if (isset($_GET['story_id'])) {
+    $story_id = (int)$_GET['story_id'];
+    $_SESSION['story_id'] = $story_id;
+} elseif (isset($_SESSION['story_id'])) {
+    $story_id = (int)$_SESSION['story_id'];
+} else {
     header('Location: Profile.php');
     exit;
 }
-
-$story_id   = (int)$_SESSION['story_id'];
-$chapter_id = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
-// chapter_id dari URL kalau edit chapter lama, 0 kalau baru
-
-// Kalau edit chapter lama, ambil datanya dari DB untuk isi textarea
+$chapter_id  = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
+$new_chapter = isset($_GET['new']) && $_GET['new'] === '1';
 require_once 'PHP/database.php';
 $pdo  = getDB();
 
@@ -22,7 +23,8 @@ $stmt = $pdo->prepare("
 $stmt->execute([$story_id]);
 $all_chapters = $stmt->fetchAll();
 
-if ($chapter_id <= 0 && !empty($all_chapters)) {
+// Auto-select chapter pertama HANYA jika bukan request chapter baru
+if (!$new_chapter && $chapter_id <= 0 && !empty($all_chapters)) {
     $chapter_id = $all_chapters[0]['chapter_id'];
 }
 
@@ -53,6 +55,7 @@ if ($chapter_id > 0) {
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/style_story.css">
+    <link rel="stylesheet" href="CSS/readingpage.css">
 </head>
 <body>
 
@@ -65,7 +68,7 @@ if ($chapter_id > 0) {
             <span class="material-symbols-outlined">arrow_back</span>
             Back Edit
         </a>
-        <div class="right"><img src="Pic/TextLogo.png" alt=""></div>
+        <div class="header-logo"><img src="Pic/TextLogo.png" alt="AUchive Logo" style="width: 100px; height: auto; display: block;"></div>
     </header>
 
     <div class="editor-layout">
@@ -76,20 +79,28 @@ if ($chapter_id > 0) {
                 <button class="add-chapter-btn" onclick="addNewChapter()">+ New</button>
             </div>
             <div class="chapter-list">
-                <?php if (empty($all_chapters)): ?>
+                <?php if (empty($all_chapters) && !$new_chapter): ?>
                     <p class="no-chapter">Belum ada chapter.</p>
                 <?php else: ?>
                     <?php foreach ($all_chapters as $ch): ?>
-                        <div class="chapter-item <?= $ch['chapter_id'] == $chapter_id ? 'active' : '' ?>">
-                            <a href="Editor.php?chapter_id=<?= $ch['chapter_id'] ?>" class="chapter-link">
-                                <?= htmlspecialchars($ch['chapter_title']) ?>
-                                <span class="chapter-status <?= $ch['status'] ?>"><?= $ch['status'] ?></span>
+                        <div class="chapter-item <?= ($ch['chapter_id'] == $chapter_id && !$new_chapter) ? 'active' : '' ?>" id="sidebar-ch-<?= $ch['chapter_id'] ?>">
+                            <a href="Editor.php?story_id=<?= $story_id ?>&chapter_id=<?= $ch['chapter_id'] ?>" class="chapter-link">
+                                <span class="ch-title-text"><?= htmlspecialchars($ch['chapter_title']) ?></span>
+                                <span class="chapter-status <?= $ch['status'] ?>" id="ch-status-<?= $ch['chapter_id'] ?>"><?= $ch['status'] ?></span>
                             </a>
                             <button class="delete-chapter-btn"
                                 onclick="deleteChapter(<?= $ch['chapter_id'] ?>)"
                                 title="Hapus chapter">✕</button>
                         </div>
                     <?php endforeach; ?>
+                    <?php if ($new_chapter || $chapter_id == 0): ?>
+                        <div class="chapter-item active" id="sidebar-ch-0">
+                            <a href="#" class="chapter-link" onclick="event.preventDefault();">
+                                <span class="ch-title-text">Untitled</span>
+                                <span class="chapter-status draft" id="ch-status-0">draft</span>
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </aside>
@@ -113,6 +124,24 @@ if ($chapter_id > 0) {
         </div>
     </div>
 </div>
+
+<!-- PREVIEW MODAL -->
+<div id="previewModal" class="preview-modal">
+    <div class="preview-modal-content">
+        <div class="preview-modal-header">
+            <h2>Preview Chapter</h2>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a id="actualPreviewLink" href="#" target="_blank" class="actual-preview-link">View Actual Reading Page ↗</a>
+                <button class="close-preview-btn" onclick="closePreviewModal()">✕ Close Preview</button>
+            </div>
+        </div>
+        <div class="preview-modal-body">
+            <h1 class="preview-chapter-title"></h1>
+            <div class="preview-blocks-container"></div>
+        </div>
+    </div>
+</div>
+
 <script src="JS/Editor.js"></script>
 </body>
 </html>

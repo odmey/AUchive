@@ -15,7 +15,7 @@ try {
 
     $stmt = $pdo->prepare("
         SELECT cb.block_id, cb.type, cb.content, cb.sort_order,
-               r.roomchat_id, r.theme, r.contact_name
+               r.roomchat_id, r.theme, r.contact_name, r.my_avatar, r.contact_avatar, r.bg_image
         FROM chapter_blocks cb
         LEFT JOIN roomchats r ON cb.block_id = r.block_id
         WHERE cb.chapter_id = ?

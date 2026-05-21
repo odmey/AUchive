@@ -7,12 +7,15 @@ const THEMES = {
         status: 'online',
         placeholder: 'Type a message',
         sendSvg: '<svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 014 4v6a4 4 0 01-8 0V5a4 4 0 014-4zm-1 17.93V21h2v-2.07A8 8 0 0020 11h-2a6 6 0 01-12 0H4a8 8 0 007 7.93z"/></svg>',
-        defColor: '#005c4b'
+        senderBg: '#005c4b',
+        receiverBg: '#202c33'
     },
     im: {
         status: '',
+        placeholder: 'iMessage',
         sendSvg: '<svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
-        defColor: '#007aff'
+        senderBg: '#007aff',
+        receiverBg: '#e5e5ea'
     },
 };
 
@@ -23,9 +26,11 @@ function setTheme(t, card) {
     card.classList.add('active');
     const cfg = THEMES[t];
     document.getElementById('previewStatus').textContent = cfg.status;
-    document.getElementById('ibarField').placeholder = cfg.placeholder;
+    document.getElementById('ibarField').placeholder = cfg.placeholder || 'Type a message';
     document.getElementById('ibarSend').innerHTML = cfg.sendSvg;
-    document.getElementById('bubbleColor').value = cfg.defColor;
+    
+    const side = document.querySelector('input[name="side"]:checked') ? document.querySelector('input[name="side"]:checked').value : 'left';
+    document.getElementById('bubbleColor').value = side === 'left' ? cfg.receiverBg : cfg.senderBg;
 }
 
 function updateRenderedAvatars() {
@@ -206,7 +211,7 @@ async function saveStory() {
         if (result.success) {
             btn.textContent = '✓ SAVED!';
             setTimeout(() => {
-                window.location.href = `Editor.php?chapter_id=${chapterId}`;
+                window.location.href = `Editor.php?story_id=${STORY_ID}&chapter_id=${chapterId}`;
             }, 800);
         } else {
             alert('Gagal menyimpan roomchat: ' + result.message);
@@ -240,6 +245,20 @@ function getRoomchatId() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Listen for side radio changes to automatically swap default colors
+    document.querySelectorAll('input[name="side"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const side = e.target.value;
+            const themeCard = document.querySelector('.theme-card.active');
+            let theme = 'wa';
+            if (themeCard && themeCard.classList.contains('tc-im')) {
+                theme = 'im';
+            }
+            const cfg = THEMES[theme];
+            document.getElementById('bubbleColor').value = side === 'left' ? cfg.receiverBg : cfg.senderBg;
+        });
+    });
+
     if (typeof INITIAL_ROOMCHAT !== 'undefined' && INITIAL_ROOMCHAT) {
         // Load theme
         const theme = INITIAL_ROOMCHAT.theme || 'wa';

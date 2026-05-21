@@ -207,13 +207,87 @@ function closeModal(modal) {
 // DROPDOWN ACTION (3 MENU)
 // ==========================
 function handleAction(value, storyId, selectEl) {
-    if (value === "hapus") {
-        selectedStory = storyId;
+    const id = storyId.replace('story-', '');
+
+    if (value === 'hapus') {
+        selectedStory = { elemId: storyId, id: id };
         openPopup();
+    } else if (value === 'publish') {
+        updateStoryStatus(id, 'published', storyId);
+    } else if (value === 'draft') {
+        updateStoryStatus(id, 'draft', storyId);
     }
+
     if (selectEl) selectEl.selectedIndex = 0;
 }
-
+async function updateStoryStatus(storyId, status, elemId) {
+    try {
+        const res = await fetch('PHP/update_story_status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ story_id: storyId, status: status })
+        });
+        const data = await res.json();
+        if (data.success) {
+            // Update badge status di card
+            const badge = document.querySelector(`#${elemId} .status-badge`);
+            if (badge) {
+                badge.textContent = status === 'published' ? 'Published' : 'Draft';
+                badge.className = `status-badge ${status}`;
+            }
+            showToastProfile(status === 'published' ? 'Cerita dipublikasikan!' : 'Cerita dijadikan draft.');
+        } else {
+            alert('Gagal update status: ' + data.message);
+        }
+    } catch (err) {
+        alert('Koneksi gagal.');
+    }
+}
+async function yesAction() {
+    if (selectedStory) {
+        try {
+            const res = await fetch('PHP/delete_story.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ story_id: selectedStory.id })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const el = document.getElementById(selectedStory.elemId);
+                if (el) {
+                    el.style.transition = '0.3s';
+                    el.style.opacity = '0';
+                    el.style.transform = 'scale(0.9)';
+                    setTimeout(() => el.remove(), 300);
+                }
+                showToastProfile('Cerita berhasil dihapus.');
+            } else {
+                alert('Gagal hapus: ' + data.message);
+            }
+        } catch (err) {
+            alert('Koneksi gagal.');
+        }
+    }
+    closePopup();
+}
+function showToastProfile(msg) {
+    let toast = document.getElementById('profileToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'profileToast';
+        toast.style.cssText = `
+            position:fixed; bottom:24px; right:24px;
+            background:#1a1a1a; color:#fff;
+            padding:10px 20px; border-radius:8px;
+            font-size:13px; z-index:9999;
+            opacity:0; transition:opacity .3s;
+        `;
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+}
 // ==========================
 // POPUP (CONFIRM DELETE)
 // ==========================
@@ -231,17 +305,51 @@ function closePopup() {
     if (overlay) overlay.classList.remove("active");
 }
 
-function yesAction() {
+async function yesAction() {
     if (selectedStory) {
-        const el = document.getElementById(selectedStory);
-        if (el) {
-            el.style.transition = "0.3s";
-            el.style.opacity = "0";
-            el.style.transform = "scale(0.9)";
-            setTimeout(() => el.remove(), 300);
+        try {
+            const res = await fetch('PHP/delete_story.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ story_id: selectedStory.id })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const el = document.getElementById(selectedStory.elemId);
+                if (el) {
+                    el.style.transition = '0.3s';
+                    el.style.opacity = '0';
+                    el.style.transform = 'scale(0.9)';
+                    setTimeout(() => el.remove(), 300);
+                }
+                showToastProfile('Cerita berhasil dihapus.');
+            } else {
+                alert('Gagal hapus: ' + data.message);
+            }
+        } catch (err) {
+            alert('Koneksi gagal.');
         }
     }
     closePopup();
+}
+
+function showToastProfile(msg) {
+    let toast = document.getElementById('profileToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'profileToast';
+        toast.style.cssText = `
+            position:fixed; bottom:24px; right:24px;
+            background:#1a1a1a; color:#fff;
+            padding:10px 20px; border-radius:8px;
+            font-size:13px; z-index:9999;
+            opacity:0; transition:opacity .3s;
+        `;
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => { toast.style.opacity = '0'; }, 2500);
 }
 
 const popup = document.getElementById("confirmBox");
@@ -392,3 +500,16 @@ if (coverInput) {
         reader.readAsDataURL(file);
     });
 }
+
+// ==========================
+// KLIK STORY CARD → EDITOR
+// ==========================
+document.querySelectorAll('.story-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+        // Jangan trigger kalau yang diklik adalah dropdown
+        if (e.target.closest('.story-status')) return;
+
+        const storyId = this.id.replace('story-', '');
+        window.location.href = `Editor.php?story_id=${storyId}`;
+    });
+});

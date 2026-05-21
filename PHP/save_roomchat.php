@@ -16,6 +16,9 @@ $roomchat_id  = isset($body['roomchat_id'])  ? (int)$body['roomchat_id']     : 0
 $theme        = isset($body['theme'])        ? trim($body['theme'])           : 'wa';
 $contact_name = isset($body['contact_name']) ? trim($body['contact_name'])   : 'Contact';
 $sort_order   = isset($body['sort_order'])   ? (int)$body['sort_order']      : 0;
+$my_avatar      = isset($body['my_avatar'])      ? $body['my_avatar']            : null;
+$contact_avatar = isset($body['contact_avatar']) ? $body['contact_avatar']       : null;
+$bg_image       = isset($body['bg_image'])       ? $body['bg_image']             : null;
 
 if ($block_id <= 0 || $chapter_id <= 0) {
     http_response_code(400);
@@ -31,27 +34,38 @@ try {
     if ($roomchat_id > 0) {
         $stmt = $pdo->prepare("
             UPDATE roomchats
-            SET theme = :theme, contact_name = :contact_name, sort_order = :sort_order
+            SET theme = :theme, 
+                contact_name = :contact_name, 
+                sort_order = :sort_order,
+                my_avatar = :my_avatar,
+                contact_avatar = :contact_avatar,
+                bg_image = :bg_image
             WHERE roomchat_id = :roomchat_id
         ");
         $stmt->execute([
-            ':theme'        => $theme,
-            ':contact_name' => $contact_name,
-            ':sort_order'   => $sort_order,
-            ':roomchat_id'  => $roomchat_id,
+            ':theme'          => $theme,
+            ':contact_name'   => $contact_name,
+            ':sort_order'     => $sort_order,
+            ':my_avatar'      => $my_avatar,
+            ':contact_avatar' => $contact_avatar,
+            ':bg_image'       => $bg_image,
+            ':roomchat_id'    => $roomchat_id,
         ]);
         echo json_encode(['success' => true, 'roomchat_id' => $roomchat_id]);
     } else {
         $stmt = $pdo->prepare("
-            INSERT INTO roomchats (block_id, chapter_id, theme, contact_name, sort_order)
-            VALUES (:block_id, :chapter_id, :theme, :contact_name, :sort_order)
+            INSERT INTO roomchats (block_id, chapter_id, theme, contact_name, sort_order, my_avatar, contact_avatar, bg_image)
+            VALUES (:block_id, :chapter_id, :theme, :contact_name, :sort_order, :my_avatar, :contact_avatar, :bg_image)
         ");
         $stmt->execute([
-            ':block_id'     => $block_id,
-            ':chapter_id'   => $chapter_id,
-            ':theme'        => $theme,
-            ':contact_name' => $contact_name,
-            ':sort_order'   => $sort_order,
+            ':block_id'       => $block_id,
+            ':chapter_id'     => $chapter_id,
+            ':theme'          => $theme,
+            ':contact_name'   => $contact_name,
+            ':sort_order'     => $sort_order,
+            ':my_avatar'      => $my_avatar,
+            ':contact_avatar' => $contact_avatar,
+            ':bg_image'       => $bg_image,
         ]);
         echo json_encode(['success' => true, 'roomchat_id' => (int)$pdo->lastInsertId()]);
     }

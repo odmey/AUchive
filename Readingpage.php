@@ -10,6 +10,7 @@ if ($story_id <= 0) {
 }
 
 $pdo = getDB();
+$from_editor = (isset($_GET['from']) && $_GET['from'] === 'editor') || (isset($_GET['preview']) && $_GET['preview'] == '1') || (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'Editor.php') !== false);
 
 // Ambil data story + penulis + genre + tags
 $stmt = $pdo->prepare("
@@ -35,13 +36,22 @@ if (!$story) {
     exit;
 }
 
-// Ambil daftar chapter yang sudah published
-$stmt2 = $pdo->prepare("
+// Ambil daftar chapter yang sudah published (atau semua chapter jika diakses dari editor)
+$sql_chapters = "
     SELECT chapter_id, chapter_title
     FROM chapters
     WHERE story_id = ? AND status = 'published'
     ORDER BY created_at ASC
-");
+";
+if ($from_editor) {
+    $sql_chapters = "
+        SELECT chapter_id, chapter_title
+        FROM chapters
+        WHERE story_id = ?
+        ORDER BY created_at ASC
+    ";
+}
+$stmt2 = $pdo->prepare($sql_chapters);
 $stmt2->execute([$story_id]);
 $chapters = $stmt2->fetchAll();
 
@@ -89,7 +99,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                 <?php foreach ($chapters as $ch): ?>
                     <button
                         class="chapter-btn <?= $ch['chapter_id'] == $chapter_id ? 'active' : '' ?>"
-                        onclick="window.location.href='Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $ch['chapter_id'] ?>'">
+                        onclick="window.location.href='Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $ch['chapter_id'] ?><?= $from_editor ? '&from=editor' : '' ?>'">
                         <?= htmlspecialchars($ch['chapter_title']) ?>
                     </button>
                 <?php endforeach; ?>
@@ -100,9 +110,15 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
     <!-- KONTEN UTAMA -->
     <main class="reading-content">
         <div class="back-reading">
-            <a href="Detstory.php?story_id=<?= $story_id ?>">
-                ← Back to Story
-            </a>
+            <?php if ($from_editor): ?>
+                <a href="Editor.php?story_id=<?= $story_id ?>&chapter_id=<?= $chapter_id ?>">
+                    ← Back to Editor
+                </a>
+            <?php else: ?>
+                <a href="Detstory.php?story_id=<?= $story_id ?>">
+                    ← Back to Story
+                </a>
+            <?php endif; ?>
         </div>
         <!-- HEADER STORY -->
         <div class="story-header">
@@ -123,7 +139,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
             <?php if ($chapter_id > 0):
                 $stmt_blocks = $pdo->prepare("
                     SELECT cb.block_id, cb.type, cb.content,
-                        r.roomchat_id, r.theme, r.contact_name
+                        r.roomchat_id, r.theme, r.contact_name, r.my_avatar, r.contact_avatar, r.bg_image
                     FROM chapter_blocks cb
                     LEFT JOIN roomchats r ON cb.block_id = r.block_id
                     WHERE cb.chapter_id = ?
@@ -150,17 +166,29 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                     ?>
                         <div class="reader-roomchat theme-<?= $block['theme'] ?>">
                             <div class="reader-chat-header">
-                                <div class="reader-avatar">👤</div>
+                                <div class="reader-avatar">
+                                    <?php if (!empty($block['contact_avatar'])): ?>
+                                        <img src="<?= $block['contact_avatar'] ?>" alt="avatar">
+                                    <?php else: ?>
+                                        👤
+                                    <?php endif; ?>
+                                </div>
                                 <div>
                                     <div class="reader-contact-name"><?= htmlspecialchars($block['contact_name']) ?></div>
                                     <div class="reader-contact-status"><?= $isWa ? 'online' : 'iMessage' ?></div>
                                 </div>
                             </div>
-                            <div class="reader-chat-area">
+                            <div class="reader-chat-area" <?= !empty($block['bg_image']) ? 'style="background-image: url(' . $block['bg_image'] . '); background-size: cover; background-position: center;"' : '' ?>>
                                 <?php foreach ($bubbles as $b): ?>
                                 <div class="reader-bubble-row <?= $b['position'] ?>">
                                     <?php if ($b['position'] === 'left'): ?>
-                                        <div class="reader-bubble-av">👤</div>
+                                        <div class="reader-bubble-av">
+                                            <?php if (!empty($block['contact_avatar'])): ?>
+                                                <img src="<?= $block['contact_avatar'] ?>" alt="avatar">
+                                            <?php else: ?>
+                                                👤
+                                            <?php endif; ?>
+                                        </div>
                                     <?php endif; ?>
                                     <div class="reader-bubble <?= $b['position'] ?>"
                                         style="background:<?= htmlspecialchars($b['color']) ?>">
@@ -168,7 +196,13 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                         <span class="reader-bubble-time"><?= htmlspecialchars($b['time_label']) ?></span>
                                     </div>
                                     <?php if ($b['position'] === 'right'): ?>
-                                        <div class="reader-bubble-av">🙂</div>
+                                        <div class="reader-bubble-av">
+                                            <?php if (!empty($block['my_avatar'])): ?>
+                                                <img src="<?= $block['my_avatar'] ?>" alt="avatar">
+                                            <?php else: ?>
+                                                🙂
+                                            <?php endif; ?>
+                                        </div>
                                     <?php endif; ?>
                                 </div>
                                 <?php endforeach; ?>
@@ -191,26 +225,30 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
         </section>
 
         <!-- AKSI -->
-        <div class="chapter-actions">
-            <button class="like-btn" onclick="addToLibrary(<?= $story_id ?>)">
-                ❤️ Add to Library
-            </button>
-        </div>
-
-        <!-- KOMENTAR -->
-        <section class="comments-section">
-            <h2>Comments</h2>
-            <div class="comment-box">
-                <textarea
-                    id="commentInput"
-                    placeholder="Write your thoughts about this chapter...">
-                </textarea>
-                <button class="post-btn" onclick="postComment()">
-                    Post Comment
+        <?php if (!$from_editor): ?>
+            <div class="chapter-actions">
+                <button class="like-btn" onclick="addToLibrary(<?= $story_id ?>)">
+                    ❤️ Add to Library
                 </button>
             </div>
-            <div id="commentList"></div>
-        </section>
+        <?php endif; ?>
+
+        <!-- KOMENTAR -->
+        <?php if (!$from_editor): ?>
+            <section class="comments-section">
+                <h2>Comments</h2>
+                <div class="comment-box">
+                    <textarea
+                        id="commentInput"
+                        placeholder="Write your thoughts about this chapter...">
+                    </textarea>
+                    <button class="post-btn" onclick="postComment()">
+                        Post Comment
+                    </button>
+                </div>
+                <div id="commentList"></div>
+            </section>
+        <?php endif; ?>
 
     </main>
 </div>
