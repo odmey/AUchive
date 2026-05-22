@@ -61,7 +61,7 @@ This project uses the **Scrum** method.
 - **Backend**: PHP
 - **Database**: MySQL
 - **Local server**: XAMPP / Laragon
-- **Design support**: Figma / Canva / Photoshop
+- **Design support**: Figma / Canva 
 - **Version control**: Git / GitHub
 
 ---
