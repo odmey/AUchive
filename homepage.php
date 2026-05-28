@@ -2,6 +2,47 @@
 session_start();
 $isLoggedIn = isset($_SESSION["user_id"]);
 $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
+
+// Include database & fetch dynamic stories
+require_once 'PHP/database.php';
+$pdo = getDB();
+
+// 1. Fetch Popular Stories (ordered by views & likes)
+$stmtPopular = $pdo->prepare("
+    SELECT story_id, title, cover 
+    FROM stories 
+    WHERE status = 'published' 
+    ORDER BY total_views DESC, total_likes DESC 
+    LIMIT 10
+");
+$stmtPopular->execute();
+$popularStories = $stmtPopular->fetchAll();
+
+// 2. Fetch Newest Stories (ordered by published_at DESC)
+$stmtNewest = $pdo->prepare("
+    SELECT story_id, title, cover 
+    FROM stories 
+    WHERE status = 'published' 
+    ORDER BY published_at DESC 
+    LIMIT 10
+");
+$stmtNewest->execute();
+$newestStories = $stmtNewest->fetchAll();
+
+// Static fallback stories in case DB has few elements (to maintain rich visual aesthetics)
+$staticFallbackPopular = [
+    ['story_id' => null, 'title' => 'Unseen', 'cover' => 'Pic/Unseen.png'],
+    ['story_id' => null, 'title' => 'Karya 2', 'cover' => 'Pic/karya2.jpg'],
+    ['story_id' => null, 'title' => 'Karya 3', 'cover' => 'Pic/karya3.jpg'],
+    ['story_id' => null, 'title' => 'Karya 4', 'cover' => 'Pic/karya4.jpg']
+];
+
+$staticFallbackNewest = [
+    ['story_id' => null, 'title' => 'Karya 5', 'cover' => 'Pic/karya5.jpg'],
+    ['story_id' => null, 'title' => 'Karya 6', 'cover' => 'Pic/karya6.jpg'],
+    ['story_id' => null, 'title' => 'Karya 7', 'cover' => 'Pic/karya7.jpg'],
+    ['story_id' => null, 'title' => 'Karya 8', 'cover' => 'Pic/karya8.jpg']
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +59,7 @@ $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/style_homep.css">
 
-    <script src="JS/lgsgpopmenu.js" defer></script>
+    <script src="JS/lgsgpopmenu.js?v=2" defer></script>
 </head>
 
 <body>
@@ -88,12 +129,18 @@ $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
             <button class="arrow-btn" type="button" onclick="scrollSlider(this)">❯</button>
 
             <div class="slider">
-                <div class="card-slider">
-                    <a href="Detstory.html"><img src="Pic/Unseen.png" alt="Story1"></a>
-                </div>
-                <div class="card-slider"><img src="Pic/karya2.jpg" alt="Story 2"></div>
-                <div class="card-slider"><img src="Pic/karya3.jpg" alt="Story 3"></div>
-                <div class="card-slider"><img src="Pic/karya4.jpg" alt="Story 4"></div>
+                <?php 
+                $displayPopular = count($popularStories) >= 1 ? $popularStories : $staticFallbackPopular;
+                foreach ($displayPopular as $s): 
+                    $coverSrc = !empty($s['cover']) ? htmlspecialchars($s['cover']) : 'Pic/cover-placeholder.png';
+                    $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
+                ?>
+                    <div class="card-slider">
+                        <a href="<?= $link ?>">
+                            <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
+                        </a>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -106,10 +153,18 @@ $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
             <button class="arrow-btn" type="button" onclick="scrollSlider(this)">❯</button>
 
             <div class="slider">
-                <div class="card-slider"><img src="Pic/karya5.jpg" alt="Story 5"></div>
-                <div class="card-slider"><img src="Pic/karya6.jpg" alt="Story 6"></div>
-                <div class="card-slider"><img src="Pic/karya7.jpg" alt="Story 7"></div>
-                <div class="card-slider"><img src="Pic/karya8.jpg" alt="Story 8"></div>
+                <?php 
+                $displayNewest = count($newestStories) >= 1 ? $newestStories : $staticFallbackNewest;
+                foreach ($displayNewest as $s): 
+                    $coverSrc = !empty($s['cover']) ? htmlspecialchars($s['cover']) : 'Pic/cover-placeholder.png';
+                    $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
+                ?>
+                    <div class="card-slider">
+                        <a href="<?= $link ?>">
+                            <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
+                        </a>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>

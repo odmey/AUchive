@@ -32,7 +32,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 // ── Cek ke database ─────────────────────────────────────────────
 $pdo = getDB();
-$stmt = $pdo->prepare('SELECT user_id, username, name, email, password FROM users WHERE email = ?');
+$stmt = $pdo->prepare('SELECT user_id, username, name, email, password, profile_pic, role FROM users WHERE email = ?');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
@@ -45,15 +45,19 @@ if (!$user || !password_verify($password, $user['password'])) {
 // ── Set session ──────────────────────────────────────────────────
 session_regenerate_id(true);
 
-$_SESSION['user_id'] = $user['user_id'];
+$_SESSION['user_id']  = $user['user_id'];
 $_SESSION['username'] = $user['username'];
-$_SESSION['name'] = $user['name'];
-$_SESSION['email'] = $user['email'];
+$_SESSION['name']     = $user['name'];
+$_SESSION['email']    = $user['email'];
+$_SESSION['role']     = $user['role'];
 $_SESSION['login_at'] = date('Y-m-d H:i:s');
 
+$profilePic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'Pic/profileicon.jpg';
+
 echo json_encode([
-    'success' => true,
-    'message' => 'Login berhasil!',
-    'username' => $user['username'],
-    'name' => $user['name'],
+    'success'    => true,
+    'message'    => 'Login berhasil!',
+    'username'   => $user['username'],
+    'name'       => $user['name'],
+    'profilePic' => $profilePic,
 ]);

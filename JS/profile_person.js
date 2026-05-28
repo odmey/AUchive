@@ -1,28 +1,44 @@
 const followBtn = document.getElementById("followBtn");
+const followersCountVal = document.getElementById("followersCountVal");
 
 if (followBtn) {
+    followBtn.addEventListener("click", async () => {
+        followBtn.disabled = true;
+        try {
+            const response = await fetch("PHP/follow_action.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    following_id: AUTHOR_ID
+                })
+            });
+            const data = await response.json();
 
-    let followed = false;
+            if (data.success) {
+                if (data.action === "followed") {
+                    followBtn.textContent = "Following";
+                    followBtn.style.background = "transparent";
+                    followBtn.style.color = "#FFF44F";
+                    followBtn.style.border = "1px solid #FFF44F";
+                } else {
+                    followBtn.textContent = "Follow";
+                    followBtn.style.background = "#FFF44F";
+                    followBtn.style.color = "black";
+                    followBtn.style.border = "none";
+                }
 
-    followBtn.addEventListener("click", () => {
-
-        followed = !followed;
-
-        if (followed) {
-
-            followBtn.textContent = "Following";
-
-            followBtn.style.background = "transparent";
-            followBtn.style.color = "#FFF44F";
-            followBtn.style.border = "1px solid #FFF44F";
-
-        } else {
-
-            followBtn.textContent = "Follow";
-
-            followBtn.style.background = "#FFF44F";
-            followBtn.style.color = "black";
-            followBtn.style.border = "none";
+                if (followersCountVal) {
+                    followersCountVal.textContent = data.follower_count;
+                }
+            } else {
+                alert(data.message || "Gagal mengikuti penulis.");
+            }
+        } catch (error) {
+            console.error("Error following:", error);
+        } finally {
+            followBtn.disabled = false;
         }
     });
 }
@@ -38,94 +54,59 @@ const closeModal = document.getElementById("closeModal");
 const modalTitle = document.getElementById("modalTitle");
 const userList = document.getElementById("userList");
 
-/* DUMMY DATA */
-
-const followers = [
-
-    {
-        name: "Bryant",
-        username: "@Bryant24",
-        image: "Pic/profileicon.jpg"
-    },
-
-    {
-        name: "Luna",
-        username: "@lunaria",
-        image: "Pic/profileicon.jpg"
-    },
-
-    {
-        name: "Rei",
-        username: "@reikaze",
-        image: "Pic/profileicon.jpg"
-    }
-];
-
-const following = [
-
-    {
-        name: "Mika",
-        username: "@mikasaa",
-        image: "Pic/profileicon.jpg"
-    },
-
-    {
-        name: "Aether",
-        username: "@aetherlight",
-        image: "Pic/profileicon.jpg"
-    }
-];
-
 /* OPEN MODAL */
 
 function openModal(title, users) {
-
     modalTitle.textContent = title;
-
     userList.innerHTML = "";
 
-    users.forEach(user => {
-
-        userList.innerHTML += `
-
-            <div class="user-item">
-
-                <img src="${user.image}">
-
-                <div class="user-info">
-                    <h4>${user.name}</h4>
-                    <p>${user.username}</p>
+    if (users.length === 0) {
+        userList.innerHTML = `<div style="text-align:center; color:#888; padding:30px;">Belum ada data.</div>`;
+    } else {
+        users.forEach(user => {
+            userList.innerHTML += `
+                <div class="user-item">
+                    <img src="${user.image}" onerror="this.src='Pic/profileicon.jpg'">
+                    <div class="user-info">
+                        <h4>${user.name}</h4>
+                        <p>${user.username}</p>
+                    </div>
                 </div>
-
-            </div>
-
-        `;
-    });
+            `;
+        });
+    }
 
     followModal.classList.add("show");
 }
 
 /* BUTTON EVENTS */
 
-followersBtn.addEventListener("click", () => {
-    openModal("Followers", followers);
-});
+if (followersBtn) {
+    followersBtn.addEventListener("click", () => {
+        openModal("Followers", followersData);
+    });
+}
 
-followingBtn.addEventListener("click", () => {
-    openModal("Following", following);
-});
+if (followingBtn) {
+    followingBtn.addEventListener("click", () => {
+        openModal("Following", followingData);
+    });
+}
 
 /* CLOSE MODAL */
 
-closeModal.addEventListener("click", () => {
-    followModal.classList.remove("show");
-});
+if (closeModal) {
+    closeModal.addEventListener("click", () => {
+        followModal.classList.remove("show");
+    });
+}
 
 /* CLOSE OUTSIDE */
 
-followModal.addEventListener("click", (e) => {
-
-    if (e.target === followModal) {
-        followModal.classList.remove("show");
-    }
-});
+if (followModal) {
+    followModal.addEventListener("click", (e) => {
+        if (e.target === followModal) {
+            followModal.classList.remove("show");
+        }
+    });
+}

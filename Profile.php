@@ -33,8 +33,32 @@ $stories = $stmtStories->fetchAll();
 
 $profilePic = $user['profile_pic'] ?: 'Pic/profileicon.jpg';
 $profileBan = $user['profile_ban'] ?: 'Pic/profilebanner.jpg';
-$bio = $user['bio'] ?: 'Your bio goes here...';
-$joinDate = date('F Y', strtotime($user['created_at']));
+$bio        = $user['bio'] ?: 'Your bio goes here...';
+$joinDate   = date('F Y', strtotime($user['created_at']));
+
+$stmtFollowersCount = $pdo->prepare("SELECT COUNT(*) FROM followers WHERE following_id = ?");
+$stmtFollowersCount->execute([$_SESSION['user_id']]);
+$followersCount = (int)$stmtFollowersCount->fetchColumn();
+
+$stmtFollowingCount = $pdo->prepare("SELECT COUNT(*) FROM followers WHERE follower_id = ?");
+$stmtFollowingCount->execute([$_SESSION['user_id']]);
+$followingCount = (int)$stmtFollowingCount->fetchColumn();
+
+$stmtFollowersList = $pdo->prepare("
+    SELECT u.user_id, u.name, u.username, u.profile_pic
+    FROM followers f JOIN users u ON u.user_id = f.follower_id
+    WHERE f.following_id = ?
+");
+$stmtFollowersList->execute([$_SESSION['user_id']]);
+$followersList = $stmtFollowersList->fetchAll();
+
+$stmtFollowingList = $pdo->prepare("
+    SELECT u.user_id, u.name, u.username, u.profile_pic
+    FROM followers f JOIN users u ON u.user_id = f.following_id
+    WHERE f.follower_id = ?
+");
+$stmtFollowingList->execute([$_SESSION['user_id']]);
+$followingList = $stmtFollowingList->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +75,6 @@ $joinDate = date('F Y', strtotime($user['created_at']));
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <!-- Harus SETELAH cropper.min.js -->
-    <script src="JS/profileuser.js" defer></script>
     <title>Profile – <?= htmlspecialchars($user['username']) ?></title>
 </head>
 
@@ -134,12 +157,39 @@ $joinDate = date('F Y', strtotime($user['created_at']));
             <p class="join">Joined <?= $joinDate ?></p>
 
             <div class="stats">
-                <span><b>0</b> Following</span>
-                <span><b>0</b> Followers</span>
+                <span class="stat-btn" id="followingBtn" style="cursor:pointer;">
+                    <b id="followingCountVal"><?= $followingCount ?></b> Following
+                </span>
+                <span class="stat-btn" id="followersBtn" style="cursor:pointer;">
+                    <b id="followersCountVal"><?= $followersCount ?></b> Followers
+                </span>
             </div>
         </div>
     </div>
+    <!-- Modal Followers / Following -->
+    <div id="followModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#1e1e1e; border-radius:12px; width:90%; max-width:400px; max-height:80vh; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #333;">
+                <h3 id="modalTitle" style="margin:0; font-size:16px; color:#fff;">Followers</h3>
+                <span id="closeFollowModal" style="cursor:pointer; font-size:22px; color:#aaa;">&times;</span>
+            </div>
+            <div id="userList" style="overflow-y:auto; padding:10px 0;"></div>
+        </div>
+    </div>
 
+    <!-- Inject data dari PHP ke JS, HARUS sebelum script src -->
+    <script>
+        const followersData = <?= json_encode(array_map(fn($x) => [
+            'user_id'  => $x['user_id'],
+            'name'     => htmlspecialchars($x['name']),
+            'username' => '@' . htmlspecialchars($x['username']),
+            'image'    => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
+        ], $followersList)) ?>;
+
+    </script>
+
+    <!-- Logic JS-nya di file terpisah -->
+    <script src="JS/profileuser.js" defer></script>   
     <!-- STORIES dari DB -->
     <div class="story-section">
         <?php if (empty($stories)): ?>

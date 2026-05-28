@@ -26,13 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Session state ─────────────────────────────────────────────
     let currentUser = null;
 
-    // ── Cek session aktif ke server ──────────────────────────────
+    // ── Cek session aktif ke server ────────────────────────────
     async function checkSession() {
         try {
             const res = await fetch("PHP/session_check.php");
             const data = await res.json();
             if (data.loggedIn) {
-                currentUser = { username: data.username, name: data.name };
+                currentUser = {
+                    username: data.username,
+                    name: data.name,
+                    profilePic: data.profilePic ?? "Pic/profileicon.jpg",
+                };
             } else {
                 currentUser = null;
             }
@@ -42,11 +46,19 @@ document.addEventListener("DOMContentLoaded", function () {
         updateNavbar();
     }
 
-    // ── Navbar ───────────────────────────────────────────────────
+    // ── Navbar ──────────────────────────────────────────────
     function updateNavbar() {
         if (currentUser) {
             guestNav.style.display = "none";
             userNav.style.display = "flex";
+
+            // Set foto profil dari database (bukan hardcoded)
+            if (profileBtn) {
+                profileBtn.src = currentUser.profilePic;
+                profileBtn.onerror = function () {
+                    this.src = "Pic/profileicon.jpg";
+                };
+            }
         } else {
             guestNav.style.display = "flex";
             userNav.style.display = "none";
@@ -195,10 +207,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await res.json();
 
             if (data.success) {
-                currentUser = { username: data.username, name: data.name };
-                updateNavbar();
                 window.closeLogin();
                 loginForm.reset();
+                await checkSession();
             } else {
                 setMessage(loginMessage, data.message, "error");
             }
@@ -250,40 +261,89 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
-    // ── Search ────────────────────────────────────────────────────
-    const stories = [
-        "Romance Campus", "Fake Dating AU", "Mafia Love Story",
-        "Best Friend to Lover", "Roommate AU", "CEO x Intern",
-        "Enemies to Lovers", "Fantasy Kingdom", "Royal Secret Love",
-        "Coffee Shop AU"
-    ];
+    // ── Search (live, debounced, dari database) ──────────────────
+    let searchTimer = null;
 
-    searchInput.addEventListener("input", function () {
-        const keyword = this.value.toLowerCase().trim();
+    /**
+     * Kirim request ke PHP/search_stories.php lalu render hasilnya.
+     * @param {string} keyword
+     */
+    async function fetchSearch(keyword) {
+        try {
+            const res = await fetch(`PHP/search_stories.php?q=${encodeURIComponent(keyword)}`);
+            const data = await res.json();
+            renderSearchResults(data);
+        } catch {
+            renderSearchResults([]);
+        }
+    }
+
+    /**
+     * Render array hasil ke dalam #searchResult.
+     * @param {Array} items  – array of { story_id, title, cover, status }
+     */
+    function renderSearchResults(items) {
         searchResult.innerHTML = "";
 
-        if (!keyword) { searchResult.style.display = "none"; return; }
-
-        const filtered = stories.filter(s => s.toLowerCase().includes(keyword));
-        if (!filtered.length) {
-            searchResult.innerHTML = `<div class="search-item">No result found</div>`;
+        if (!Array.isArray(items) || items.length === 0) {
+            searchResult.innerHTML =
+                `<div class="search-item search-empty">Cerita tidak ditemukan</div>`;
         } else {
-            filtered.forEach(story => {
+            items.forEach(story => {
                 const item = document.createElement("div");
                 item.classList.add("search-item");
-                item.textContent = story;
+
+                // Tentukan label & warna badge status
+                const statusLabel = story.status === "published" ? "Terbit"
+                    : story.status === "ongoing" ? "Ongoing"
+                        : "Draft";
+                const statusClass = story.status === "published" ? "badge-published"
+                    : story.status === "ongoing" ? "badge-ongoing"
+                        : "badge-draft";
+
+                // Cover: pakai gambar kalau ada, fallback placeholder
+                const coverSrc = story.cover
+                    ? story.cover
+                    : `Pic/cover-placeholder.png`;
+
+                item.innerHTML = `
+                    <img class="search-cover" src="${coverSrc}"
+                         alt="cover" onerror="this.src='Pic/cover-placeholder.png'">
+                    <div class="search-info">
+                        <span class="search-title">${story.title}</span>
+                        <span class="search-badge ${statusClass}">${statusLabel}</span>
+                    </div>
+                `;
+
                 item.addEventListener("click", () => {
-                    searchInput.value = story;
                     searchResult.style.display = "none";
+                    searchInput.value = "";
+                    window.location.href = `Detstory.php?id=${story.story_id}`;
                 });
+
                 searchResult.appendChild(item);
             });
         }
+
         searchResult.style.display = "flex";
+    }
+
+    // Debounce: tunggu 300 ms setelah huruf terakhir baru kirim request
+    searchInput.addEventListener("input", function () {
+        const keyword = this.value.trim();
+        searchResult.style.display = "none";
+        clearTimeout(searchTimer);
+
+        if (keyword.length < 2) return;
+
+        searchTimer = setTimeout(() => fetchSearch(keyword), 300);
     });
 
+    // Tutup dropdown kalau klik di luar search bar
     document.addEventListener("click", function (e) {
-        if (!e.target.closest(".search-bar")) searchResult.style.display = "none";
+        if (!e.target.closest(".search-bar")) {
+            searchResult.style.display = "none";
+        }
     });
 
     // ── Init: simpan label tombol untuk loading state ─────────────
@@ -293,3 +353,66 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Cek session saat halaman load ─────────────────────────────
     checkSession();
 });
+
+function renderSearchResults(items) {
+    searchResult.innerHTML = "";
+
+    if (!Array.isArray(items) || items.length === 0) {
+        searchResult.innerHTML =
+            `<div class="search-item search-empty">Tidak ditemukan</div>`;
+    } else {
+        items.forEach(result => {
+            const item = document.createElement("div");
+            item.classList.add("search-item");
+
+            if (result.type === "user") {
+                // ── Tampilan hasil USER ──
+                const avatar = result.profile_pic
+                    ? result.profile_pic
+                    : "Pic/profileicon.jpg";
+
+                item.innerHTML = `
+                    <img class="search-cover" src="${avatar}"
+                         onerror="this.src='Pic/profileicon.jpg'"
+                         style="border-radius:50%;">
+                    <div class="search-info">
+                        <span class="search-title">${result.name}</span>
+                        <span class="search-badge badge-user">@${result.username}</span>
+                    </div>
+                `;
+                item.addEventListener("click", () => {
+                    searchResult.style.display = "none";
+                    searchInput.value = "";
+                    window.location.href = `profile_person.php?id=${result.user_id}`;
+                });
+
+            } else {
+                // ── Tampilan hasil STORY ──
+                const statusLabel = result.status === "published" ? "Terbit"
+                    : result.status === "ongoing" ? "Ongoing" : "Draft";
+                const statusClass = result.status === "published" ? "badge-published"
+                    : result.status === "ongoing" ? "badge-ongoing" : "badge-draft";
+                const coverSrc = result.cover
+                    ? result.cover : "Pic/cover-placeholder.png";
+
+                item.innerHTML = `
+                    <img class="search-cover" src="${coverSrc}"
+                         onerror="this.src='Pic/cover-placeholder.png'">
+                    <div class="search-info">
+                        <span class="search-title">${result.title}</span>
+                        <span class="search-badge ${statusClass}">${statusLabel}</span>
+                    </div>
+                `;
+                item.addEventListener("click", () => {
+                    searchResult.style.display = "none";
+                    searchInput.value = "";
+                    window.location.href = `Detstory.php?id=${result.story_id}`;
+                });
+            }
+
+            searchResult.appendChild(item);
+        });
+    }
+
+    searchResult.style.display = "flex";
+}

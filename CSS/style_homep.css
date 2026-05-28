@@ -73,24 +73,99 @@ body {
     top: 65px;
     left: 0;
     width: 100%;
-    background: white;
+    background: #fff;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.14);
     display: none;
     flex-direction: column;
     overflow: hidden;
     z-index: 999;
+    animation: searchDrop 0.18s ease;
 }
 
+@keyframes searchDrop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Setiap baris hasil ─────────────────────────────────── */
 .search-item {
-    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
-    transition: 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.18s;
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-item:last-child {
+    border-bottom: none;
 }
 
 .search-item:hover {
-    background: #fff9c4;
+    background: #fffde7;
+}
+
+/* ── Cover thumbnail ────────────────────────────────────── */
+.search-cover {
+    width: 42px;
+    height: 58px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background: #eee;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* ── Info (judul + badge) ───────────────────────────────── */
+.search-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.search-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: Poppins, sans-serif;
+}
+
+/* ── Status badge ───────────────────────────────────────── */
+.search-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: Poppins, sans-serif;
+    letter-spacing: 0.3px;
+    width: fit-content;
+}
+
+.badge-published { background: #d4edda; color: #1a6632; }
+.badge-ongoing   { background: #fff3cd; color: #856404; }
+.badge-draft     { background: #e2e3e5; color: #495057; }
+
+/* ── Empty state ────────────────────────────────────────── */
+.search-empty {
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #999;
+    font-style: italic;
+    cursor: default;
+    justify-content: center;
+}
+
+.search-empty:hover {
+    background: transparent;
 }
 
 

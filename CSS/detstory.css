@@ -139,6 +139,14 @@ body {
     border: 1px solid rgba(255,255,255,0.08);
 }
 
+.like-btn.active,
+.save-btn.active,
+.follow-btn.active {
+    background: #ffe66d;
+    color: #111;
+    border: 1px solid #ffe66d;
+}
+
 /* Main Button */
 .read-btn {
     background: #ffe66d;
