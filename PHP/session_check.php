@@ -24,6 +24,7 @@ if (isset($_SESSION['user_id'])) {
         'name'       => $_SESSION['name']     ?? '',
         'email'      => $_SESSION['email']    ?? '',
         'profilePic' => $profilePic,
+        'role'       => $_SESSION['role']     ?? 'user',
     ]);
 } else {
     echo json_encode(['loggedIn' => false]);

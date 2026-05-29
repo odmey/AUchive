@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     username: data.username,
                     name: data.name,
                     profilePic: data.profilePic ?? "Pic/profileicon.jpg",
+                    role: data.role ?? "user"
                 };
             } else {
                 currentUser = null;
@@ -59,9 +60,62 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.src = "Pic/profileicon.jpg";
                 };
             }
+
+            // Dynamic Admin Shield button in nav for admin users
+            let adminBtn = document.getElementById("adminPanelBtn");
+            if (currentUser.role === "admin") {
+                if (!adminBtn) {
+                    adminBtn = document.createElement("div");
+                    adminBtn.id = "adminPanelBtn";
+                    adminBtn.title = "Admin Panel";
+                    adminBtn.style.cssText = `
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        background: rgba(255, 244, 79, 0.12);
+                        border: 1.5px solid rgba(255, 244, 79, 0.3);
+                        color: #fff44f;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        margin-left: 20px;
+                        margin-top: 8px;
+                        flex-shrink: 0;
+                    `;
+
+                    // Hover effects using JS event listeners
+                    adminBtn.addEventListener("mouseenter", () => {
+                        adminBtn.style.background = "rgba(255, 244, 79, 0.25)";
+                        adminBtn.style.transform = "scale(1.08)";
+                        adminBtn.style.boxShadow = "0 0 12px rgba(255, 244, 79, 0.4)";
+                        adminBtn.style.borderColor = "#fff44f";
+                    });
+                    adminBtn.addEventListener("mouseleave", () => {
+                        adminBtn.style.background = "rgba(255, 244, 79, 0.12)";
+                        adminBtn.style.transform = "scale(1)";
+                        adminBtn.style.boxShadow = "none";
+                        adminBtn.style.borderColor = "rgba(255, 244, 79, 0.3)";
+                    });
+
+                    adminBtn.innerHTML = `<span class="material-symbols-outlined" style="color: #fff44f; font-size: 20px;">shield</span>`;
+                    adminBtn.addEventListener("click", () => {
+                        window.location.href = "Etmin.php";
+                    });
+                    userNav.appendChild(adminBtn);
+                } else {
+                    adminBtn.style.display = "flex";
+                }
+            } else if (adminBtn) {
+                adminBtn.style.display = "none";
+            }
+
         } else {
             guestNav.style.display = "flex";
             userNav.style.display = "none";
+            const adminBtn = document.getElementById("adminPanelBtn");
+            if (adminBtn) adminBtn.style.display = "none";
         }
     }
 

@@ -60,4 +60,5 @@ echo json_encode([
     'username'   => $user['username'],
     'name'       => $user['name'],
     'profilePic' => $profilePic,
+    'role'       => $user['role'],
 ]);
