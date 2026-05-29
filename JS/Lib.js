@@ -155,8 +155,13 @@ function goBack() {
 }
 
 // FILTER
-document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", e => {
+// ====================================================================
+// LOGIKA FILTER TAB NAVIGASI (Dinamis Memasang/Menghapus HTML Lanjutkan Membaca)
+// ====================================================================
+const filterBtns = document.querySelectorAll(".filter-btn");
+
+filterBtns.forEach(btn => {
+    btn.addEventListener("click", function (e) {
         e.preventDefault();
 
         const active = document.querySelector(".filter-btn.active");
@@ -168,19 +173,70 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
         let filteredStories = [...stories];
         let filteredContinue = [...continueReadingStories];
 
-        if (type === "favorite") {
-            // Simulated favorite based on liked stories or just display none since favorite isn't in main DB
-            filteredStories = [];
-            filteredContinue = [];
-        }
+        // Ambil elemen pembungkus utama di halaman library kamu
+        const sectionTitle = document.querySelector(".main h2:nth-of-type(1)"); // Judul utama yang terlihat
+        const continueContainer = document.getElementById("continue-reading");  // Tempat kartu lanjutkan membaca
 
         if (type === "latest") {
+            // 1. Ubah judul menjadi informasi terakhir dibaca
+            if (sectionTitle) sectionTitle.innerText = "Semua Cerita (Terakhir Dibaca)";
+
+            // 2. ISI DAN MUNCULKAN konten Lanjutkan Membaca hanya di tab Latest
+            if (continueContainer) {
+                continueContainer.style.display = "grid";
+                continueContainer.innerHTML = filteredContinue.length > 0
+                    ? filteredContinue.map(s => createCard(s, true)).join("")
+                    : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada bacaan aktif saat ini.</div>`;
+            }
+
+            // 3. Urutkan daftar konten berdasarkan waktu baca terbaru
             filteredStories = filteredStories.sort((a, b) => b.lastRead - a.lastRead);
-            filteredContinue = filteredContinue.sort((a, b) => b.lastRead - a.lastRead);
+        }
+        else if (type === "favorite") {
+            // 1. Ubah judul utama
+            if (sectionTitle) sectionTitle.innerText = "Cerita Favorit";
+
+            // 2. HAPUS KONTEN Lanjutkan Membaca dari layar (Kosongkan)
+            if (continueContainer) {
+                continueContainer.innerHTML = "";
+                continueContainer.style.display = "none";
+            }
+
+            // 3. Filter cerita favorit
+            filteredStories = stories.filter(s => s.favorite === true);
+        }
+        else {
+            // DEFAULT: TAB "SEMUA"
+            // 1. Kembalikan judul utama menjadi Semua Cerita
+            if (sectionTitle) sectionTitle.innerText = "Semua Cerita";
+
+            // 2. HAPUS KONTEN Lanjutkan Membaca dari layar (Kosongkan)
+            if (continueContainer) {
+                continueContainer.innerHTML = "";
+                continueContainer.style.display = "none";
+            }
+
+            // 3. Tampilkan semua cerita tanpa filter sorting
+            filteredStories = [...stories];
         }
 
-        render(filteredStories, filteredContinue);
+        // Jalankan render bawaan kelompokmu khusus untuk bagian daftar cerita bawah saja
+        const allStory = document.getElementById("all-story");
+        if (allStory) {
+            allStory.innerHTML = filteredStories.length > 0
+                ? filteredStories.map(s => createCard(s, false)).join("")
+                : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada cerita dalam daftar ini.</div>`;
+        }
     });
+});
+
+// Pastikan saat pertama kali halaman dimuat (Default tab 'Semua'), wadah atas langsung kosong total
+document.addEventListener("DOMContentLoaded", function () {
+    const continueContainer = document.getElementById("continue-reading");
+    if (continueContainer) {
+        continueContainer.innerHTML = "";
+        continueContainer.style.display = "none";
+    }
 });
 
 // SIDEBAR

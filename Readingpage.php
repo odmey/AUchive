@@ -61,15 +61,30 @@ if ($chapter_id <= 0 && !empty($chapters)) {
     $chapter_id = $chapters[0]['chapter_id'];
 }
 
-// Hitung progress membaca (%) berdasarkan posisi chapter saat ini
+// ====================================================================
+// LOGIKA NAVIGASI URUTAN CHAPTER (Mencegah Undefined Variable)
+// ====================================================================
+$prev_chapter_id = null;
+$next_chapter_id = null;
 $current_index = 0;
+$total_chapters = count($chapters);
+
 foreach ($chapters as $index => $ch) {
     if ($ch['chapter_id'] == $chapter_id) {
         $current_index = $index + 1;
+        
+        // Periksa keberadaan chapter sebelum ini
+        if (isset($chapters[$index - 1])) {
+            $prev_chapter_id = $chapters[$index - 1]['chapter_id'];
+        }
+        // Periksa keberadaan chapter setelah ini
+        if (isset($chapters[$index + 1])) {
+            $next_chapter_id = $chapters[$index + 1]['chapter_id'];
+        }
         break;
     }
 }
-$total_chapters = count($chapters);
+
 $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) * 100, 2) : 0;
 ?>
 <!DOCTYPE html>
@@ -83,11 +98,11 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
     <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/readingpage.css">
+    
 </head>
 <body>
 <div class="reading-page">
 
-    <!-- SIDEBAR CHAPTER -->
     <aside class="chapter-sidebar">
         <h2>Chapters</h2>
         <div class="chapter-list">
@@ -107,7 +122,6 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
         </div>
     </aside>
 
-    <!-- KONTEN UTAMA -->
     <main class="reading-content">
         <div class="back-reading">
             <?php if ($from_editor): ?>
@@ -120,7 +134,6 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                 </a>
             <?php endif; ?>
         </div>
-        <!-- HEADER STORY -->
         <div class="story-header">
             <p>
                 <?= htmlspecialchars($story['genre_name']) ?>
@@ -128,13 +141,9 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
             </p>
             <h1><?= htmlspecialchars($story['title']) ?></h1>
             <p class="author">by <?= htmlspecialchars($story['username']) ?></p>
-            <?php if ($story['description']): ?>
-                <p class="story-desc"><?= htmlspecialchars($story['description']) ?></p>
-                <!-- tampilkan isi chapternya yang kita tulis itu -->
-            <?php endif; ?>
+            
         </div>
 
-        <!-- KONTEN CHAPTER — BLOK NARASI DAN ROOMCHAT -->
         <section class="chapter-blocks" id="chapterBlocks">
             <?php if ($chapter_id > 0):
                 $stmt_blocks = $pdo->prepare("
@@ -224,16 +233,34 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
             <?php endif; ?>
         </section>
 
-        <!-- AKSI -->
+        <div class="bottom-navigation">
+            <?php if ($prev_chapter_id): ?>
+                <a href="Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $prev_chapter_id ?><?= $from_editor ? '&from=editor' : '' ?>" class="nav-link-btn prev">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span> Prev
+                </a>
+            <?php else: ?>
+                <span></span> <?php endif; ?>
+
+            <div class="nav-progress-text">
+                Chapter <?= $current_index ?> of <?= $total_chapters ?> (<?= round($progress_pct) ?>%)
+            </div>
+
+            <?php if ($next_chapter_id): ?>
+                <a href="Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $next_chapter_id ?><?= $from_editor ? '&from=editor' : '' ?>" class="nav-link-btn next">
+                    Next <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+                </a>
+            <?php else: ?>
+                <span></span> <?php endif; ?>
+        </div>
+                    
         <?php if (!$from_editor): ?>
             <div class="chapter-actions">
                 <button class="like-btn" onclick="addToLibrary(<?= $story_id ?>)">
-                    ❤️ Add to Library
+                    Add to Library
                 </button>
             </div>
         <?php endif; ?>
 
-        <!-- KOMENTAR -->
         <?php if (!$from_editor): ?>
             <section class="comments-section">
                 <h2>Comments</h2>
