@@ -14,7 +14,7 @@ if ($chapter_id <= 0) {
 try {
     $pdo  = getDB();
     $stmt = $pdo->prepare("
-        SELECT bubble_id, bubble_text, contact_name, color, position, sort_order, time_label
+        SELECT bubble_id, bubble_text, contact_name, color, position, sort_order, time_label, sender_avatar
         FROM bubbles
         WHERE chapter_id = ?
         ORDER BY sort_order ASC

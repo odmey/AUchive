@@ -30,7 +30,7 @@ if (CHAPTER_ID > 0) loadBlocks(CHAPTER_ID);
 
 async function loadBlocks(chapterId) {
     try {
-        const res = await fetch(`PHP/get_blocks.php?chapter_id=${chapterId}`);
+        const res = await fetch(`PHP/get_blocks.php?chapter_id=${chapterId}&t=${Date.now()}`);
         const blocks = await res.json();
         blocks.forEach(b => {
             if (b.type === 'narration') {
@@ -146,7 +146,7 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
                 </div>
             </div>
             <div class="rc-bubbles" id="rc-bubbles-${localId}" ${bgStyle}>
-                ${renderBubblesPreview(bubbles, myAvatar, contactAvatar)}
+                ${renderBubblesPreview(bubbles, myAvatar, contactAvatar, contactName)}
             </div>
         </div>
         <div class="rc-edit-btn-row">
@@ -158,18 +158,44 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
     container.appendChild(div);
 }
 
-function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '') {
+function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contactName = '') {
     if (!bubbles || bubbles.length === 0) return '<p class="rc-empty">Belum ada bubble. Klik "Edit Bubble Chat".</p>';
+
+    // Check if there is any custom sender name or custom avatar to declare GC mode
+    let isGroup = false;
+    for (let b of bubbles) {
+        if (b.sender_avatar || (b.position === 'left' && b.contact_name && b.contact_name !== contactName)) {
+            isGroup = true;
+            break;
+        }
+    }
+
     return bubbles.map(b => {
         const isLeft = b.position === 'left';
-        const avHtml = isLeft
-            ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '')
-            : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '');
+
+        let avHtml = '';
+        if (b.sender_avatar) {
+            avHtml = `<img src="${b.sender_avatar}" alt="avatar">`;
+        } else {
+            avHtml = isLeft
+                ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '')
+                : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '');
+        }
+
+        let nameHtml = '';
+        if (isLeft && isGroup && b.contact_name) {
+            nameHtml = `<div class="bubble-sender-name">${b.contact_name}</div>`;
+        }
 
         return `
-            <div class="rc-bubble-row ${b.position}" style="align-items: flex-end; gap: 6px; margin-bottom: 4px;">
+            <div class="rc-bubble-row ${b.position}" 
+                 data-sender="${b.contact_name || ''}" 
+                 data-sender-avatar="${b.sender_avatar || ''}"
+                 style="align-items: flex-end; gap: 6px; margin-bottom: 4px;">
                 ${isLeft ? `<div class="rc-bubble-av">${avHtml}</div>` : ''}
-                <div class="rc-bubble" style="background:${b.color}">${b.bubble_text}
+                <div class="rc-bubble" style="background:${b.color}">
+                    ${nameHtml}
+                    ${b.bubble_text}
                     <span class="rc-time">${b.time_label}</span>
                 </div>
                 ${!isLeft ? `<div class="rc-bubble-av">${avHtml}</div>` : ''}
@@ -446,21 +472,55 @@ function generatePreviewHtml() {
             if (rows.length === 0) {
                 bubblesHtml = '<p style="color:#888;text-align:center;padding:20px;font-size:13px;">Belum ada bubble.</p>';
             } else {
+                // Check if there is any custom sender name or custom avatar to declare GC mode
+                let isGroup = false;
+                for (let row of rows) {
+                    const sender = row.getAttribute('data-sender');
+                    const senderAvatar = row.getAttribute('data-sender-avatar');
+                    if (senderAvatar || (row.classList.contains('left') && sender && sender !== contactName)) {
+                        isGroup = true;
+                        break;
+                    }
+                }
+
                 rows.forEach(row => {
                     const position = row.classList.contains('left') ? 'left' : 'right';
                     const bubble = row.querySelector('.rc-bubble');
-                    const textContent = bubble ? bubble.childNodes[0].textContent.trim() : '';
+
+                    let textContent = '';
+                    if (bubble) {
+                        const temp = bubble.cloneNode(true);
+                        const nameEl = temp.querySelector('.bubble-sender-name');
+                        if (nameEl) nameEl.remove();
+                        const timeEl = temp.querySelector('.rc-time');
+                        if (timeEl) timeEl.remove();
+                        textContent = temp.textContent.trim();
+                    }
+
                     const bg = bubble ? bubble.style.backgroundColor : '';
                     const time = row.querySelector('.rc-time') ? row.querySelector('.rc-time').textContent.trim() : '';
+                    const sender = row.getAttribute('data-sender');
+                    const senderAvatar = row.getAttribute('data-sender-avatar');
 
-                    const avHtml = position === 'left'
-                        ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤')
-                        : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '🙂');
+                    let avHtml = '';
+                    if (senderAvatar) {
+                        avHtml = `<img src="${senderAvatar}" alt="avatar">`;
+                    } else {
+                        avHtml = position === 'left'
+                            ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤')
+                            : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '🙂');
+                    }
+
+                    let nameHtml = '';
+                    if (position === 'left' && isGroup && sender) {
+                        nameHtml = `<div class="bubble-sender-name">${sender}</div>`;
+                    }
 
                     bubblesHtml += `
                         <div class="reader-bubble-row ${position}">
                             ${position === 'left' ? `<div class="reader-bubble-av">${avHtml}</div>` : ''}
                             <div class="reader-bubble ${position}" style="background:${bg}">
+                                ${nameHtml}
                                 ${textContent}
                                 <span class="reader-bubble-time">${time}</span>
                             </div>

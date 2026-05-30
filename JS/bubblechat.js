@@ -34,11 +34,50 @@ function setTheme(t, card) {
 }
 
 function updateRenderedAvatars() {
-    document.querySelectorAll('.bubble-row.left .row-avatar').forEach(av => {
+    document.querySelectorAll('.bubble-row.left .row-avatar:not([data-custom])').forEach(av => {
         av.innerHTML = avatars.contact ? `<img src="${avatars.contact}" alt="">` : '👤';
     });
-    document.querySelectorAll('.bubble-row.right .row-avatar').forEach(av => {
+    document.querySelectorAll('.bubble-row.right .row-avatar:not([data-custom])').forEach(av => {
         av.innerHTML = avatars.me ? `<img src="${avatars.me}" alt="">` : '🙂';
+    });
+}
+
+function updateSenderNamesVisibility() {
+    const contactNameInput = document.getElementById('contactName');
+    const defaultContactName = contactNameInput ? contactNameInput.value.trim() : '';
+    
+    // Check if there is any custom sender name or custom avatar to declare GC mode
+    let isGroup = false;
+    const bubbleRows = document.querySelectorAll('.bubble-row.left');
+    for (let row of bubbleRows) {
+        const sender = row.getAttribute('data-sender');
+        const hasCustomAv = row.querySelector('[data-custom="true"]') !== null;
+        if (hasCustomAv || (sender && sender !== defaultContactName)) {
+            isGroup = true;
+            break;
+        }
+    }
+    
+    // Toggle the visibility of the sender name elements
+    document.querySelectorAll('.bubble-row.left').forEach(row => {
+        const sender = row.getAttribute('data-sender');
+        let nameEl = row.querySelector('.bubble-sender-name');
+        if (isGroup && sender) {
+            if (!nameEl) {
+                nameEl = document.createElement('div');
+                nameEl.className = 'bubble-sender-name';
+                nameEl.textContent = sender;
+                const bubble = row.querySelector('.bubble');
+                if (bubble) {
+                    bubble.insertBefore(nameEl, bubble.firstChild);
+                }
+            } else {
+                nameEl.textContent = sender;
+                nameEl.style.display = '';
+            }
+        } else if (nameEl) {
+            nameEl.style.display = 'none';
+        }
     });
 }
 
@@ -80,14 +119,22 @@ function getChapterId() {
     return parseInt(params.get('chapter_id')) || 0;
 }
 
-function renderBubbleHtml(msg, side, color, ts, senderName) {
+function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar) {
     const row = document.createElement('div');
     row.className = `bubble-row ${side}`;
+    row.setAttribute('data-sender', senderName || '');
     
     const av = document.createElement('div');
     av.className = 'row-avatar';
-    const avSrc = side === 'left' ? avatars.contact : avatars.me;
-    av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
+    
+    // Use per-bubble sender avatar if provided, otherwise fall back to defaults
+    if (senderAvatar) {
+        av.innerHTML = `<img src="${senderAvatar}" alt="">`;
+        av.setAttribute('data-custom', 'true');
+    } else {
+        const avSrc = side === 'left' ? avatars.contact : avatars.me;
+        av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
+    }
     
     const b = document.createElement('div');
     b.className = 'bubble';
@@ -98,6 +145,7 @@ function renderBubbleHtml(msg, side, color, ts, senderName) {
     row.appendChild(b);
     document.getElementById('chatArea').appendChild(row);
     scrollBottom();
+    updateSenderNamesVisibility();
 }
 
 function addBubble() {
@@ -109,6 +157,11 @@ function addBubble() {
     const sender  = document.getElementById('contactName').value.trim() || 'Unknown';
     const ts      = formatTime(tv);
 
+    // Custom sender fields (for group chat)
+    const customName   = document.getElementById('customSenderName').value.trim();
+    const customAvFile = document.getElementById('customSenderAvatar').files[0];
+    const finalSender  = customName || sender;
+
     if (!msg && !imgFile) {
         const el = document.getElementById('message');
         el.classList.add('field-input-error');
@@ -117,42 +170,62 @@ function addBubble() {
         return;
     }
 
-    if (imgFile) {
-        const row = document.createElement('div');
-        row.className = `bubble-row ${side}`;
-        const av = document.createElement('div');
-        av.className = 'row-avatar';
-        const avSrc = side === 'left' ? avatars.contact : avatars.me;
-        av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
+    // Helper to process and send the bubble
+    function processBubble(customAvatarBase64) {
+        if (imgFile) {
+            const row = document.createElement('div');
+            row.className = `bubble-row ${side}`;
+            const av = document.createElement('div');
+            av.className = 'row-avatar';
+            if (customAvatarBase64) {
+                av.innerHTML = `<img src="${customAvatarBase64}" alt="">`;
+                av.setAttribute('data-custom', 'true');
+            } else {
+                const avSrc = side === 'left' ? avatars.contact : avatars.me;
+                av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
+            }
 
-        const r = new FileReader();
-        r.onload = e => {
-            const w = document.createElement('div');
-            w.className = 'bubble-img-wrap';
-            w.innerHTML = `<img src="${e.target.result}"><span class="bubble-time">${ts}</span>`;
-            row.appendChild(av);
-            row.appendChild(w);
-            document.getElementById('chatArea').appendChild(row);
-            scrollBottom();
-        };
-        r.readAsDataURL(imgFile);
-        document.getElementById('imageUpload').value = '';
-    } else {
-        renderBubbleHtml(msg, side, color, ts, sender);
-        bubbleSortOrder++;
-        postBubbleToAPI({
-            chapter_id:  getChapterId(),
-            roomchat_id: getRoomchatId(), 
-            message:     msg,
-            sender_name: sender,
-            position:    side,
-            color:       color,
-            sort_order:  bubbleSortOrder,
-            time_label:  ts
-        });
+            const r = new FileReader();
+            r.onload = e => {
+                const w = document.createElement('div');
+                w.className = 'bubble-img-wrap';
+                w.innerHTML = `<img src="${e.target.result}"><span class="bubble-time">${ts}</span>`;
+                row.appendChild(av);
+                row.appendChild(w);
+                document.getElementById('chatArea').appendChild(row);
+                scrollBottom();
+            };
+            r.readAsDataURL(imgFile);
+            document.getElementById('imageUpload').value = '';
+        } else {
+            renderBubbleHtml(msg, side, color, ts, finalSender, customAvatarBase64);
+            bubbleSortOrder++;
+            postBubbleToAPI({
+                chapter_id:    getChapterId(),
+                roomchat_id:   getRoomchatId(), 
+                message:       msg,
+                sender_name:   finalSender,
+                position:      side,
+                color:         color,
+                sort_order:    bubbleSortOrder,
+                time_label:    ts,
+                sender_avatar: customAvatarBase64 || null
+            });
+        }
+
+        document.getElementById('message').value = '';
+        document.getElementById('customSenderName').value = '';
+        document.getElementById('customSenderAvatar').value = '';
     }
 
-    document.getElementById('message').value = '';
+    // If custom avatar file is selected, convert to base64 first
+    if (customAvFile) {
+        const reader = new FileReader();
+        reader.onload = e => processBubble(e.target.result);
+        reader.readAsDataURL(customAvFile);
+    } else {
+        processBubble(null);
+    }
 }
 
 async function postBubbleToAPI(data) {
@@ -316,13 +389,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         updateRenderedAvatars();
     }
+
+    const contactNameInput = document.getElementById('contactName');
+    if (contactNameInput) {
+        contactNameInput.addEventListener('input', updateSenderNamesVisibility);
+    }
     
     if (typeof INITIAL_BUBBLES !== 'undefined' && Array.isArray(INITIAL_BUBBLES)) {
         INITIAL_BUBBLES.forEach(b => {
-            renderBubbleHtml(b.bubble_text, b.position, b.color, b.time_label, b.contact_name);
+            renderBubbleHtml(b.bubble_text, b.position, b.color, b.time_label, b.contact_name, b.sender_avatar || null);
             if (parseInt(b.sort_order) > bubbleSortOrder) {
                 bubbleSortOrder = parseInt(b.sort_order);
             }
         });
     }
+
+    updateSenderNamesVisibility();
 });

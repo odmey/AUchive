@@ -32,7 +32,7 @@ if ($roomchat_id > 0) {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap" rel="stylesheet">
      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-     <link rel="stylesheet" href="CSS/style_bblchat.css">
+     <link rel="stylesheet" href="CSS/style_bblchat.css?v=<?= time() ?>">
     </head>
     <body class="theme-wa">
       <div class="topnav">
@@ -137,6 +137,20 @@ if ($roomchat_id > 0) {
         <textarea id="message" placeholder="Type the message here…"></textarea>
       </div>
       
+      <div class="field-group">
+        <label class="field-label">Custom Sender <span style="color:#888;font-weight:400;font-size:12px;">(optional, for group chat)</span></label>
+        <div class="two-col">
+          <div class="field-group">
+            <label class="field-label">Sender Name</label>
+            <input type="text" id="customSenderName" placeholder="Leave empty to use default">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Sender Photo</label>
+            <input type="file" id="customSenderAvatar" accept="image/*">
+          </div>
+        </div>
+      </div>
+      
       <div class="two-col">
         <div class="field-group">
           <label class="field-label">Message Time</label>
@@ -171,6 +185,6 @@ if ($roomchat_id > 0) {
     const INITIAL_ROOMCHAT = <?= json_encode($roomchat) ?>;
     const INITIAL_BUBBLES = <?= json_encode($bubbles) ?>;
 </script>
-<script src="JS/bubblechat.js"></script>
+<script src="JS/bubblechat.js?v=<?= time() ?>"></script>
 </body>
 </html>

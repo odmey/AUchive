@@ -478,9 +478,33 @@ const closeBtn = document.getElementById("closeStoryPrep");
 
 if (openBtn && storyPrepModal && closeBtn) {
     openBtn.addEventListener("click", () => { storyPrepModal.style.display = "flex"; });
-    closeBtn.addEventListener("click", () => { storyPrepModal.style.display = "none"; });
+    closeBtn.addEventListener("click", () => { 
+        storyPrepModal.style.display = "none"; 
+        const form = storyPrepModal.querySelector("form");
+        if (form) {
+            form.reset();
+            const prev = document.getElementById("previewCover");
+            if (prev) { prev.src = ""; prev.style.display = "none"; }
+            const box = storyPrepModal.querySelector(".cover-box");
+            if (box) box.classList.remove("has-image");
+            const label = storyPrepModal.querySelector(".upload-btn-label");
+            if (label) label.textContent = "Upload Cover";
+        }
+    });
     storyPrepModal.addEventListener("click", function (e) {
-        if (e.target === storyPrepModal) storyPrepModal.style.display = "none";
+        if (e.target === storyPrepModal) {
+            storyPrepModal.style.display = "none";
+            const form = storyPrepModal.querySelector("form");
+            if (form) {
+                form.reset();
+                const prev = document.getElementById("previewCover");
+                if (prev) { prev.src = ""; prev.style.display = "none"; }
+                const box = storyPrepModal.querySelector(".cover-box");
+                if (box) box.classList.remove("has-image");
+                const label = storyPrepModal.querySelector(".upload-btn-label");
+                if (label) label.textContent = "Upload Cover";
+            }
+        }
     });
 }
 
@@ -491,11 +515,28 @@ const coverInput = document.getElementById("cover");
 if (coverInput) {
     coverInput.addEventListener("change", function () {
         const file = this.files[0];
-        if (!file) return;
+        const prev = document.getElementById("previewCover");
+        const box = prev ? prev.closest(".cover-box") : null;
+        const label = box ? box.querySelector(".upload-btn-label") : null;
+
+        if (!file) {
+            if (prev) {
+                prev.src = "";
+                prev.style.display = "none";
+            }
+            if (box) box.classList.remove("has-image");
+            if (label) label.textContent = "Upload Cover";
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function (e) {
-            const prev = document.getElementById("previewCover");
-            if (prev) { prev.src = e.target.result; prev.style.display = "block"; }
+            if (prev) {
+                prev.src = e.target.result;
+                prev.style.display = "block";
+            }
+            if (box) box.classList.add("has-image");
+            if (label) label.textContent = "Change Cover";
         };
         reader.readAsDataURL(file);
     });
@@ -508,9 +549,17 @@ const editStoryPrepModal = document.getElementById("editstoryprep");
 const closeEditBtn = document.getElementById("closeEditStoryPrep");
 
 if (editStoryPrepModal && closeEditBtn) {
-    closeEditBtn.addEventListener("click", () => { editStoryPrepModal.style.display = "none"; });
+    closeEditBtn.addEventListener("click", () => {
+        editStoryPrepModal.style.display = "none";
+        const form = editStoryPrepModal.querySelector("form");
+        if (form) form.reset();
+    });
     editStoryPrepModal.addEventListener("click", function (e) {
-        if (e.target === editStoryPrepModal) editStoryPrepModal.style.display = "none";
+        if (e.target === editStoryPrepModal) {
+            editStoryPrepModal.style.display = "none";
+            const form = editStoryPrepModal.querySelector("form");
+            if (form) form.reset();
+        }
     });
 }
 
@@ -532,13 +581,20 @@ function openEditStoryPrep(storyId) {
     document.getElementById('editStoryTags').value = tags;
 
     const prev = document.getElementById('editPreviewCover');
+    const box = prev ? prev.closest(".cover-box") : null;
+    const label = box ? box.querySelector(".upload-btn-label") : null;
+
     if (prev) {
         if (cover) {
             prev.src = cover;
             prev.style.display = 'block';
+            if (box) box.classList.add("has-image");
+            if (label) label.textContent = "Change Cover";
         } else {
             prev.src = '';
             prev.style.display = 'none';
+            if (box) box.classList.remove("has-image");
+            if (label) label.textContent = "Upload Cover";
         }
     }
 
@@ -554,11 +610,37 @@ const editCoverInput = document.getElementById("editCover");
 if (editCoverInput) {
     editCoverInput.addEventListener("change", function () {
         const file = this.files[0];
-        if (!file) return;
+        const prev = document.getElementById("editPreviewCover");
+        const box = prev ? prev.closest(".cover-box") : null;
+        const label = box ? box.querySelector(".upload-btn-label") : null;
+
+        if (!file) {
+            const card = document.getElementById(`story-${document.getElementById('editStoryId').value}`);
+            const originalCover = card ? card.getAttribute('data-cover') : '';
+            if (prev) {
+                if (originalCover) {
+                    prev.src = originalCover;
+                    prev.style.display = "block";
+                    if (box) box.classList.add("has-image");
+                    if (label) label.textContent = "Change Cover";
+                } else {
+                    prev.src = "";
+                    prev.style.display = "none";
+                    if (box) box.classList.remove("has-image");
+                    if (label) label.textContent = "Upload Cover";
+                }
+            }
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function (e) {
-            const prev = document.getElementById("editPreviewCover");
-            if (prev) { prev.src = e.target.result; prev.style.display = "block"; }
+            if (prev) {
+                prev.src = e.target.result;
+                prev.style.display = "block";
+            }
+            if (box) box.classList.add("has-image");
+            if (label) label.textContent = "Change Cover";
         };
         reader.readAsDataURL(file);
     });

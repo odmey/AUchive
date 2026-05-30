@@ -38,6 +38,7 @@ CREATE TABLE `bubbles` (
   `position` enum('left','right','center') DEFAULT 'left',
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `time_label` varchar(20) NOT NULL DEFAULT '',
+  `sender_avatar` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

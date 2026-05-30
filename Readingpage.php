@@ -165,7 +165,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
 
                     <?php elseif ($block['type'] === 'roomchat' && $block['roomchat_id']):
                         $stmt_b = $pdo->prepare("
-                            SELECT bubble_text, contact_name, color, position, time_label
+                            SELECT bubble_text, contact_name, color, position, time_label, sender_avatar
                             FROM bubbles WHERE roomchat_id = ?
                             ORDER BY sort_order ASC
                         ");
@@ -188,11 +188,22 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                 </div>
                             </div>
                             <div class="reader-chat-area" <?= !empty($block['bg_image']) ? 'style="background-image: url(' . $block['bg_image'] . '); background-size: cover; background-position: center;"' : '' ?>>
+                                <?php
+                                $isGroupChat = false;
+                                foreach ($bubbles as $b) {
+                                    if (!empty($b['sender_avatar']) || ($b['position'] === 'left' && !empty($b['contact_name']) && $b['contact_name'] !== $block['contact_name'])) {
+                                        $isGroupChat = true;
+                                        break;
+                                    }
+                                }
+                                ?>
                                 <?php foreach ($bubbles as $b): ?>
                                 <div class="reader-bubble-row <?= $b['position'] ?>">
                                     <?php if ($b['position'] === 'left'): ?>
                                         <div class="reader-bubble-av">
-                                            <?php if (!empty($block['contact_avatar'])): ?>
+                                            <?php if (!empty($b['sender_avatar'])): ?>
+                                                <img src="<?= $b['sender_avatar'] ?>" alt="avatar">
+                                            <?php elseif (!empty($block['contact_avatar'])): ?>
                                                 <img src="<?= $block['contact_avatar'] ?>" alt="avatar">
                                             <?php else: ?>
                                                 👤
@@ -201,12 +212,17 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                     <?php endif; ?>
                                     <div class="reader-bubble <?= $b['position'] ?>"
                                         style="background:<?= htmlspecialchars($b['color']) ?>">
+                                        <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
+                                            <div class="bubble-sender-name"><?= htmlspecialchars($b['contact_name']) ?></div>
+                                        <?php endif; ?>
                                         <?= htmlspecialchars($b['bubble_text']) ?>
                                         <span class="reader-bubble-time"><?= htmlspecialchars($b['time_label']) ?></span>
                                     </div>
                                     <?php if ($b['position'] === 'right'): ?>
                                         <div class="reader-bubble-av">
-                                            <?php if (!empty($block['my_avatar'])): ?>
+                                            <?php if (!empty($b['sender_avatar'])): ?>
+                                                <img src="<?= $b['sender_avatar'] ?>" alt="avatar">
+                                            <?php elseif (!empty($block['my_avatar'])): ?>
                                                 <img src="<?= $block['my_avatar'] ?>" alt="avatar">
                                             <?php else: ?>
                                                 🙂

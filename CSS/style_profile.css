@@ -722,8 +722,8 @@ body {
 .story-prep .cover-box {
     background: #1B1B1B;
     width: 200px;
-    min-height: 300px;
-    border: 2px solid rgba(255, 244, 79, 0.20);
+    height: 300px;
+    border: 2px dashed rgba(255, 244, 79, 0.35);
     border-radius: 20px;
     display: flex;
     flex-direction: column;
@@ -731,6 +731,21 @@ body {
     align-items: center;
     padding: 25px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.story-prep .cover-box:hover {
+    border-color: rgba(255, 244, 79, 0.7);
+    background: #222;
+}
+
+.story-prep .cover-box.has-image {
+    padding: 0;
+    border-style: solid;
+    border-color: rgba(255, 244, 79, 0.5);
 }
 
 .story-prep .cover-icon {
@@ -750,15 +765,52 @@ body {
     border-radius: 30px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.story-prep .preview-cover {
+.story-prep .cover-box.has-image .upload-btn-label {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    max-height: 250px;
+    height: 100%;
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #FFF44F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    box-shadow: none;
+    box-sizing: border-box;
+}
+
+.story-prep .cover-box.has-image:hover .upload-btn-label {
+    opacity: 1;
+}
+
+.story-prep .preview-cover,
+.story-prep #previewCover,
+.story-prep #editPreviewCover {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 16px;
-    margin-top: 20px;
+    border-radius: 18px;
     display: none;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.story-prep .cover-box.has-image .preview-cover,
+.story-prep .cover-box.has-image #previewCover,
+.story-prep .cover-box.has-image #editPreviewCover {
+    display: block;
 }
 
 .story-prep .form-box {
@@ -924,12 +976,4 @@ body {
 .cropper-view-box {
     outline: 2px solid rgba(255, 255, 255, 0.85);
     outline-offset: -1px;
-}
-
-#previewCover {
-    display: none;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
 }

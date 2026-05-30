@@ -54,8 +54,8 @@ if ($chapter_id > 0) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/style_story.css">
-    <link rel="stylesheet" href="CSS/readingpage.css">
+    <link rel="stylesheet" href="CSS/style_story.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="CSS/readingpage.css?v=<?= time() ?>">
 </head>
 <body>
 
@@ -139,6 +139,6 @@ if ($chapter_id > 0) {
     </div>
 </div>
 
-<script src="JS/Editor.js"></script>
+<script src="JS/Editor.js?v=<?= time() ?>"></script>
 </body>
 </html>
