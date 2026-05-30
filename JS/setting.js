@@ -22,98 +22,142 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function openMenuPopup(type) {
+    async function openMenuPopup(type) {
         popup.classList.add("active");
         overlay.classList.add("active");
         popup.setAttribute("aria-hidden", "false");
 
-        popupBody.innerHTML = "";
+        popupBody.innerHTML = "Loading...";
         popupActions.innerHTML = "";
+
+        let profile = {};
+        if (["account", "email"].includes(type)) {
+            try {
+                const res = await fetch("PHP/settings_get_profile.php");
+                const data = await res.json();
+                if (data.success) {
+                    profile = data.data;
+                }
+            } catch (err) {
+                console.error("Failed to load profile");
+            }
+        }
+
+        popupBody.innerHTML = "";
 
         if (type === "account") {
             popupTitle.textContent = "Account Settings";
             popupBody.innerHTML = `
                 <h4>Profile Information</h4>
-                <input type="text" placeholder="Full Name">
-                <textarea placeholder="Bio"></textarea>
+                <input type="text" id="accountName" placeholder="Full Name" value="${profile.name || ''}">
+                <textarea id="accountBio" placeholder="Bio">${profile.bio || ''}</textarea>
                 <h4>Personal Details</h4>
-                <input type="date">
-                <select>
-                    <option>Gender</option>
-                    <option>Female</option>
-                    <option>Male</option>
-                    <option>Other</option>
-                </select>
+                <input type="date" id="accountBirthDate" value="${profile.birth_date || ''}">
                 <h4 style="color:#ff6b6b;">Danger Zone</h4>
-                <p class="menu-popup-note">Deactivate or delete your account permanently.</p>
-                <button class="menu-popup-btn secondary" data-close="true" type="button">Deactivate Account</button>
+                <p class="menu-popup-note">Delete your account permanently.</p>
+                <input type="password" id="accountDeletePwd" placeholder="Password to confirm deletion" style="margin-bottom: 10px;">
+                <button class="menu-popup-btn secondary" id="btnDeleteAccount" type="button">Delete Account</button>
             `;
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
-                <button class="menu-popup-btn primary" data-close="true" type="button">Save Changes</button>
+                <button class="menu-popup-btn primary" id="btnSaveAccount" type="button">Save Changes</button>
             `);
+
+            document.getElementById('btnSaveAccount').addEventListener('click', async () => {
+                const fd = new FormData();
+                fd.append('name', document.getElementById('accountName').value);
+                fd.append('bio', document.getElementById('accountBio').value);
+                fd.append('birth_date', document.getElementById('accountBirthDate').value);
+                try {
+                    const res = await fetch("PHP/settings_update_account.php", { method: 'POST', body: fd });
+                    const result = await res.json();
+                    alert(result.message);
+                    if (result.success) closeMenuPopup();
+                } catch (e) {
+                    alert("Error updating account");
+                }
+            });
+
+            document.getElementById('btnDeleteAccount').addEventListener('click', async () => {
+                const pwd = document.getElementById('accountDeletePwd').value;
+                if (!pwd) { alert("Please enter your password to confirm deletion."); return; }
+                if (confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+                    const fd = new FormData();
+                    fd.append('password', pwd);
+                    try {
+                        const res = await fetch("PHP/settings_delete_account.php", { method: 'POST', body: fd });
+                        const result = await res.json();
+                        alert(result.message);
+                        if (result.success) window.location.href = "homepage.php";
+                    } catch (e) {
+                        alert("Error deleting account");
+                    }
+                }
+            });
         }
 
         else if (type === "email") {
             popupTitle.textContent = "Email Settings";
             popupBody.innerHTML = `
                 <h4>Change Email</h4>
-                <input type="email" placeholder="Current Email">
-                <input type="email" placeholder="New Email">
-                <h4>Secondary Email</h4>
-                <input type="email" placeholder="Backup Email">
-                <h4>Email Preferences</h4>
-                <div class="menu-popup-toggle"><span>Login Only</span><input type="checkbox"></div>
-                <div class="menu-popup-toggle"><span>Receive Updates</span><input type="checkbox" checked></div>
+                <input type="email" id="emailCurrent" placeholder="Current Email" value="${profile.email || ''}" readonly style="background-color:rgba(0,0,0,0.05); color:#666; cursor:not-allowed;">
+                <input type="email" id="emailNew" placeholder="New Email">
+                <input type="password" id="emailPwd" placeholder="Current Password">
             `;
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
-                <button class="menu-popup-btn primary" data-close="true" type="button">Save</button>
+                <button class="menu-popup-btn primary" id="btnSaveEmail" type="button">Save</button>
             `);
+
+            document.getElementById('btnSaveEmail').addEventListener('click', async () => {
+                const fd = new FormData();
+                fd.append('new_email', document.getElementById('emailNew').value);
+                fd.append('password', document.getElementById('emailPwd').value);
+                try {
+                    const res = await fetch("PHP/settings_update_email.php", { method: 'POST', body: fd });
+                    const result = await res.json();
+                    alert(result.message);
+                    if (result.success) closeMenuPopup();
+                } catch (e) {
+                    alert("Error updating email");
+                }
+            });
         }
 
         else if (type === "password") {
             popupTitle.textContent = "Security Settings";
             popupBody.innerHTML = `
                 <h4>Change Password</h4>
-                <input type="password" placeholder="Current Password">
-                <input type="password" placeholder="New Password">
-                <input type="password" placeholder="Confirm Password">
-                <h4>Security</h4>
-                <div class="menu-popup-toggle"><span>Enable 2FA</span><input type="checkbox"></div>
-                <div class="menu-popup-toggle"><span>Biometric Login</span><input type="checkbox"></div>
-                <h4>Login Activity</h4>
-                <p class="menu-popup-note">Last login: Bali • Chrome</p>
+                <input type="password" id="pwdCurrent" placeholder="Current Password">
+                <input type="password" id="pwdNew" placeholder="New Password">
+                <input type="password" id="pwdConfirm" placeholder="Confirm Password">
             `;
             addActionButtons(`
                 <button class="menu-popup-btn secondary" data-close="true" type="button">Cancel</button>
-                <button class="menu-popup-btn primary" data-close="true" type="button">Update</button>
+                <button class="menu-popup-btn primary" id="btnSavePassword" type="button">Update</button>
             `);
-        }
 
-        else if (type === "notifications") {
-            popupTitle.textContent = "Notifications";
-            popupBody.innerHTML = `
-                <div class="menu-popup-toggle"><span>Push Notifications</span><input type="checkbox" checked></div>
-                <div class="menu-popup-toggle"><span>In-App Notifications</span><input type="checkbox" checked></div>
-                <div class="menu-popup-toggle"><span>Marketing</span><input type="checkbox"></div>
-            `;
-            addActionButtons(`
-                <button class="menu-popup-btn secondary" data-close="true" type="button">Close</button>
-                <button class="menu-popup-btn primary" data-close="true" type="button">Save</button>
-            `);
+            document.getElementById('btnSavePassword').addEventListener('click', async () => {
+                const fd = new FormData();
+                fd.append('current_password', document.getElementById('pwdCurrent').value);
+                fd.append('new_password', document.getElementById('pwdNew').value);
+                fd.append('confirm_password', document.getElementById('pwdConfirm').value);
+                try {
+                    const res = await fetch("PHP/settings_update_password.php", { method: 'POST', body: fd });
+                    const result = await res.json();
+                    alert(result.message);
+                    if (result.success) closeMenuPopup();
+                } catch (e) {
+                    alert("Error updating password");
+                }
+            });
         }
 
         else if (type === "faq") {
             popupTitle.textContent = "Help Center";
             popupBody.innerHTML = `
-                <input type="text" placeholder="Search..." style="margin-bottom:15px;">
-                <ul class="menu-popup-list">
-                    <li>Create story</li>
-                    <li>Change password</li>
-                    <li>Delete account</li>
-                </ul>
-                <p class="menu-popup-note">Find guides and tutorials here.</p>
+                <p class="menu-popup-note">Check out our guides and tutorials to learn how to use AUchive.</p>
+                <button class="menu-popup-btn secondary" onclick="window.location.href='Guide.php'" type="button" style="margin-top:15px; width:100%;">Go to Guides & Tutorials</button>
             `;
             addActionButtons(`
                 <button class="menu-popup-btn primary" data-close="true" type="button">Close</button>

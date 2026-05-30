@@ -341,39 +341,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!Array.isArray(items) || items.length === 0) {
             searchResult.innerHTML =
-                `<div class="search-item search-empty">Cerita tidak ditemukan</div>`;
+                `<div class="search-item search-empty">Tidak ditemukan</div>`;
         } else {
-            items.forEach(story => {
+            items.forEach(result => {
                 const item = document.createElement("div");
                 item.classList.add("search-item");
 
-                // Tentukan label & warna badge status
-                const statusLabel = story.status === "published" ? "Terbit"
-                    : story.status === "ongoing" ? "Ongoing"
-                        : "Draft";
-                const statusClass = story.status === "published" ? "badge-published"
-                    : story.status === "ongoing" ? "badge-ongoing"
-                        : "badge-draft";
+                if (result.type === "user") {
+                    // ── Tampilan hasil USER ──
+                    const avatar = result.profile_pic
+                        ? result.profile_pic
+                        : "Pic/profileicon.jpg";
 
-                // Cover: pakai gambar kalau ada, fallback placeholder
-                const coverSrc = story.cover
-                    ? story.cover
-                    : `Pic/cover-placeholder.png`;
+                    item.innerHTML = `
+                        <img class="search-cover" src="${avatar}"
+                             onerror="this.src='Pic/profileicon.jpg'"
+                             style="border-radius:50%;">
+                        <div class="search-info">
+                            <span class="search-title">${result.name}</span>
+                            <span class="search-badge badge-user">@${result.username}</span>
+                        </div>
+                    `;
+                    item.addEventListener("click", () => {
+                        searchResult.style.display = "none";
+                        searchInput.value = "";
+                        window.location.href = `profile_person.php?id=${result.user_id}`;
+                    });
 
-                item.innerHTML = `
-                    <img class="search-cover" src="${coverSrc}"
-                         alt="cover" onerror="this.src='Pic/cover-placeholder.png'">
-                    <div class="search-info">
-                        <span class="search-title">${story.title}</span>
-                        <span class="search-badge ${statusClass}">${statusLabel}</span>
-                    </div>
-                `;
+                } else {
+                    // ── Tampilan hasil STORY ──
+                    const statusLabel = result.status === "published" ? "Terbit"
+                        : result.status === "ongoing" ? "Ongoing" : "Draft";
+                    const statusClass = result.status === "published" ? "badge-published"
+                        : result.status === "ongoing" ? "badge-ongoing" : "badge-draft";
+                    const coverSrc = result.cover
+                        ? result.cover : "Pic/cover-placeholder.png";
 
-                item.addEventListener("click", () => {
-                    searchResult.style.display = "none";
-                    searchInput.value = "";
-                    window.location.href = `Detstory.php?id=${story.story_id}`;
-                });
+                    item.innerHTML = `
+                        <img class="search-cover" src="${coverSrc}"
+                             onerror="this.src='Pic/cover-placeholder.png'">
+                        <div class="search-info">
+                            <span class="search-title">${result.title}</span>
+                            <span class="search-badge ${statusClass}">${statusLabel}</span>
+                        </div>
+                    `;
+                    item.addEventListener("click", () => {
+                        searchResult.style.display = "none";
+                        searchInput.value = "";
+                        window.location.href = `Detstory.php?id=${result.story_id}`;
+                    });
+                }
 
                 searchResult.appendChild(item);
             });
@@ -381,6 +398,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         searchResult.style.display = "flex";
     }
+
+    // Handle Enter key
+    searchInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            const keyword = this.value.trim();
+            if (keyword.length >= 2) {
+                window.location.href = `search_result.php?q=${encodeURIComponent(keyword)}`;
+            }
+        }
+    });
 
     // Debounce: tunggu 300 ms setelah huruf terakhir baru kirim request
     searchInput.addEventListener("input", function () {
@@ -407,66 +434,4 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Cek session saat halaman load ─────────────────────────────
     checkSession();
 });
-
-function renderSearchResults(items) {
-    searchResult.innerHTML = "";
-
-    if (!Array.isArray(items) || items.length === 0) {
-        searchResult.innerHTML =
-            `<div class="search-item search-empty">Tidak ditemukan</div>`;
-    } else {
-        items.forEach(result => {
-            const item = document.createElement("div");
-            item.classList.add("search-item");
-
-            if (result.type === "user") {
-                // ── Tampilan hasil USER ──
-                const avatar = result.profile_pic
-                    ? result.profile_pic
-                    : "Pic/profileicon.jpg";
-
-                item.innerHTML = `
-                    <img class="search-cover" src="${avatar}"
-                         onerror="this.src='Pic/profileicon.jpg'"
-                         style="border-radius:50%;">
-                    <div class="search-info">
-                        <span class="search-title">${result.name}</span>
-                        <span class="search-badge badge-user">@${result.username}</span>
-                    </div>
-                `;
-                item.addEventListener("click", () => {
-                    searchResult.style.display = "none";
-                    searchInput.value = "";
-                    window.location.href = `profile_person.php?id=${result.user_id}`;
-                });
-
-            } else {
-                // ── Tampilan hasil STORY ──
-                const statusLabel = result.status === "published" ? "Terbit"
-                    : result.status === "ongoing" ? "Ongoing" : "Draft";
-                const statusClass = result.status === "published" ? "badge-published"
-                    : result.status === "ongoing" ? "badge-ongoing" : "badge-draft";
-                const coverSrc = result.cover
-                    ? result.cover : "Pic/cover-placeholder.png";
-
-                item.innerHTML = `
-                    <img class="search-cover" src="${coverSrc}"
-                         onerror="this.src='Pic/cover-placeholder.png'">
-                    <div class="search-info">
-                        <span class="search-title">${result.title}</span>
-                        <span class="search-badge ${statusClass}">${statusLabel}</span>
-                    </div>
-                `;
-                item.addEventListener("click", () => {
-                    searchResult.style.display = "none";
-                    searchInput.value = "";
-                    window.location.href = `Detstory.php?id=${result.story_id}`;
-                });
-            }
-
-            searchResult.appendChild(item);
-        });
-    }
-
-    searchResult.style.display = "flex";
-}
+

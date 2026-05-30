@@ -121,10 +121,6 @@ if (isset($_SESSION['user_id'])) {
                 <div class="item-set" data-popup="password">
                     <span>Password & Security</span>
                 </div>
-
-                <div class="item-set" data-popup="notifications">
-                    <span>Notifications</span>
-                </div>
             </div>
 
             <div class="section-settings">

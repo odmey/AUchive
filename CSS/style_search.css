@@ -1,0 +1,291 @@
+/* ============================================================
+   style_search.css  —  Search Results Page
+   ============================================================ */
+
+/* ── Page Container ─────────────────────────────────────────── */
+.search-page-container {
+    padding: 30px 6% 70px 6%;
+    min-height: 70vh;
+    background-color: #f7f7f7;
+}
+
+.search-header {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 28px;
+}
+
+.search-header span {
+    color: #888;
+    font-weight: 400;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────── */
+.search-tabs {
+    position: relative;
+    display: flex;
+    gap: 0;
+    margin-bottom: 36px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* Animated sliding underline indicator */
+.tab-indicator {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    height: 3px;
+    background: #1a1a1a;
+    border-radius: 3px 3px 0 0;
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #aaa;
+    cursor: pointer;
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.25s ease;
+    letter-spacing: 0.3px;
+}
+
+.tab-btn:hover {
+    color: #444;
+}
+
+.tab-btn.active {
+    color: #1a1a1a;
+    font-weight: 700;
+}
+
+/* Count badge pill */
+.tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    background-color: #ececec;
+    color: #555;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.tab-btn.active .tab-count {
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+/* ── Tab Content Transitions ─────────────────────────────────── */
+.search-section {
+    margin-bottom: 50px;
+}
+
+.search-section.hidden {
+    display: none;
+}
+
+.tab-fade-in {
+    animation: fadeInUp 0.3s ease both;
+}
+
+.tab-fade-out {
+    animation: fadeOutDown 0.2s ease both;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOutDown {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(10px); }
+}
+
+/* ── User Grid ───────────────────────────────────────────────── */
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 20px;
+}
+
+.user-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #f0f0f0;
+}
+
+.user-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.11);
+}
+
+.user-card img {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 14px;
+    border: 3px solid #f0f0f0;
+    transition: border-color 0.3s ease;
+}
+
+.user-card:hover img {
+    border-color: #1a1a1a;
+}
+
+.user-card .user-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.user-card .user-username {
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    color: #888;
+}
+
+/* ── Story Grid ──────────────────────────────────────────────── */
+.story-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.story-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #f0f0f0;
+    padding: 16px;
+    gap: 20px;
+}
+
+.story-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.story-card .story-cover {
+    width: 30%;
+    min-width: 30%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease;
+}
+
+.story-card:hover .story-cover {
+    transform: scale(1.03);
+}
+
+.story-info {
+    padding: 4px 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+}
+
+.story-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.25;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.story-author {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.story-desc {
+    font-family: 'Lora', serif;
+    font-size: 14.5px;
+    color: #555;
+    line-height: 1.6;
+    margin: 8px 0 16px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.story-meta {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.story-meta-item {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12.5px;
+    color: #666;
+    display: inline-flex;
+    align-items: center;
+}
+
+.story-status {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-left: auto;
+}
+
+.status-published { background-color: #d4edda; color: #155724; }
+.status-ongoing   { background-color: #cce5ff; color: #004085; }
+.status-draft     { background-color: #f8d7da; color: #721c24; }
+
+/* ── No Results ──────────────────────────────────────────────── */
+.no-results {
+    color: #aaa;
+    font-style: italic;
+    font-family: 'Poppins', sans-serif;
+    padding: 30px 0;
+    font-size: 15px;
+}
