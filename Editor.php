@@ -112,12 +112,12 @@ if ($chapter_id > 0) {
                     <button id="draftBtn">Draft</button>
                     <button id="previewBtn">Preview</button>
                 </div>
-                <textarea class="editor-title" placeholder="Judul Bab"><?= $chapter_title ?></textarea>
+                <textarea class="editor-title" placeholder="Title"><?= $chapter_title ?></textarea>
                 <div class="title-line"></div>
                 <div id="blocksContainer"></div>
 
                 <div class="add-block-row">
-                    <button class="add-block-btn narration" onclick="addNarrationBlock()">+ Narasi</button>
+                    <button class="add-block-btn narration" onclick="addNarrationBlock()">+ Naration</button>
                     <button class="add-block-btn roomchat"  onclick="addRoomchatBlock()">+ Roomchat</button>
                 </div>
             </div>
@@ -130,10 +130,7 @@ if ($chapter_id > 0) {
     <div class="preview-modal-content">
         <div class="preview-modal-header">
             <h2>Preview Chapter</h2>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <a id="actualPreviewLink" href="#" target="_blank" class="actual-preview-link">View Actual Reading Page ↗</a>
-                <button class="close-preview-btn" onclick="closePreviewModal()">✕ Close Preview</button>
-            </div>
+            <button class="close-preview-btn" onclick="closePreviewModal()">✕ Close Preview</button>
         </div>
         <div class="preview-modal-body">
             <h1 class="preview-chapter-title"></h1>

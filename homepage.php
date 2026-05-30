@@ -115,8 +115,10 @@ $staticFallbackNewest = [
             </p>
 
             <div class="hero-buttons">
+            <?php if (!$isLoggedIn): ?>
                 <button class="btn-primary" type="button" onclick="goToLibrary()">Start Reading</button>
                 <button class="btn-secondary" type="button" onclick="openSignup()">Join Now</button>
+            <?php endif; ?>
             </div>
         </div>
     </section>

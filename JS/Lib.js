@@ -14,7 +14,9 @@ async function loadLibrary() {
                 id: parseInt(s.story_id),
                 title: s.title,
                 img: s.cover ? s.cover : 'Pic/cover-placeholder.png',
-                link: `Detstory.php?id=${s.story_id}`,
+                link: (s.last_read_chapter_id && parseInt(s.last_read_chapter_id) > 0)
+                    ? `Readingpage.php?story_id=${s.story_id}&chapter_id=${s.last_read_chapter_id}`
+                    : `Readingpage.php?story_id=${s.story_id}`,
                 progress: parseFloat(s.progress_percent || 0),
                 favorite: false, // Default since favorite isn't a direct DB table but we can toggle visually if liked
                 lastRead: s.last_read_at ? new Date(s.last_read_at.replace(/-/g, '/')).getTime() : 0,
@@ -25,7 +27,9 @@ async function loadLibrary() {
                 id: parseInt(s.story_id),
                 title: s.title,
                 img: s.cover ? s.cover : 'Pic/cover-placeholder.png',
-                link: `Detstory.php?id=${s.story_id}`,
+                link: (s.last_read_chapter_id && parseInt(s.last_read_chapter_id) > 0)
+                    ? `Readingpage.php?story_id=${s.story_id}&chapter_id=${s.last_read_chapter_id}`
+                    : `Readingpage.php?story_id=${s.story_id}`,
                 progress: parseFloat(s.progress_percent || 0),
                 favorite: false,
                 lastRead: s.last_read_at ? new Date(s.last_read_at.replace(/-/g, '/')).getTime() : 0,

@@ -22,7 +22,11 @@ if (!$user) {
 // Ambil stories milik user ini
 $stmtStories = $pdo->prepare('
     SELECT s.story_id, s.title, s.description, s.cover, s.status,
-           g.genre_name
+           g.genre_name,
+           (SELECT GROUP_CONCAT(t.tag_name SEPARATOR \' \') 
+            FROM story_tags st 
+            JOIN tags t ON t.tag_id = st.tag_id 
+            WHERE st.story_id = s.story_id) AS tags_str
     FROM stories s
     LEFT JOIN genres g ON s.genre_id = g.genre_id
     WHERE s.user_id = ?
@@ -197,6 +201,11 @@ $followingList = $stmtFollowingList->fetchAll();
         <?php else: ?>
            <?php foreach ($stories as $s): ?>
                 <div class="story-card" id="story-<?= $s['story_id'] ?>"
+                    data-title="<?= htmlspecialchars($s['title']) ?>"
+                    data-description="<?= htmlspecialchars($s['description'] ?? '') ?>"
+                    data-genre="<?= htmlspecialchars($s['genre_name'] ?? '') ?>"
+                    data-tags="<?= htmlspecialchars($s['tags_str'] ?? '') ?>"
+                    data-cover="<?= htmlspecialchars($s['cover'] ?? '') ?>"
                     style="cursor:pointer;">
                     <div class="story-cover">
                         <img src="<?= htmlspecialchars($s['cover'] ?? 'Pic/karya1.jpg') ?>"
@@ -214,13 +223,18 @@ $followingList = $stmtFollowingList->fetchAll();
                             </span>
                         </div>
                     </div>
-                    <div class="story-status" onclick="event.stopPropagation()">
-                        <select onchange="handleAction(this.value, 'story-<?= $s['story_id'] ?>', this)">
-                            <option value="">Aksi</option>
-                            <option value="publish">Publikasikan</option>
-                            <option value="draft">Jadikan Draft</option>
-                            <option value="hapus">Hapus</option>
-                        </select>
+                    <div class="story-actions" onclick="event.stopPropagation()">
+                        <button type="button" class="edit-details-btn" onclick="openEditStoryPrep(<?= $s['story_id'] ?>)" title="Edit Story Details">
+                            <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <div class="story-status">
+                            <select onchange="handleAction(this.value, 'story-<?= $s['story_id'] ?>', this)">
+                                <option value="">Story Status</option>
+                                <option value="publish">Publish</option>
+                                <option value="draft">Draft</option>
+                                <option value="hapus">Delete</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
     <?php endforeach; ?>
@@ -275,6 +289,50 @@ $followingList = $stmtFollowingList->fetchAll();
                         <label for="tagar">Tags</label>
                         <input type="text" id="tagar" name="tags" placeholder="space to divide the tags...">
                         <button type="submit" class="next-btn" id="nextBtn">Next</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT STORY PREP MODAL -->
+    <div class="story-prep" id="editstoryprep">
+        <div class="storyprepcnt">
+            <span class="close-story-prep" id="closeEditStoryPrep">&times;</span>
+            <section class="page-title">
+                <h1>Edit Your Story</h1>
+                <p>Modify your story's details and settings.</p>
+            </section>
+            <form action="PHP/edit_story_prep.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="story_id" id="editStoryId">
+                <div class="container-upload">
+                    <div class="cover-box">
+                        <span class="material-symbols-outlined cover-icon">image</span>
+                        <label for="editCover" class="upload-btn-label">Upload Cover</label>
+                        <input type="file" id="editCover" class="real-file" name="cover" accept="image/*">
+                        <img id="editPreviewCover" class="preview-cover" alt="Preview cover">
+                    </div>
+                    <div class="form-box">
+                        <h2>Story Information</h2>
+                        <label for="editStoryTitle">Story Title</label>
+                        <input type="text" id="editStoryTitle" name="title" placeholder="Enter your story title" required>
+                        <label for="editStoryDesc">Description</label>
+                        <textarea id="editStoryDesc" name="description"
+                            placeholder="Tell readers about your story..."></textarea>
+                        <label for="editStoryGenre">Genre</label>
+                        <select id="editStoryGenre" name="genre" required>
+                            <option value="">Choose Genre</option>
+                            <option>Romance</option>
+                            <option>Action</option>
+                            <option>Fantasy</option>
+                            <option>Drama</option>
+                            <option>Comedy</option>
+                            <option>Mystery</option>
+                            <option>Fanfiction</option>
+                        </select>
+                        <label for="editStoryTags">Tags</label>
+                        <input type="text" id="editStoryTags" name="tags" placeholder="space to divide the tags...">
+                        <button type="submit" class="next-btn">Save Changes</button>
                     </div>
                 </div>
             </form>

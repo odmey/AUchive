@@ -1,6 +1,6 @@
-const STORY_ID   = parseInt(document.getElementById('meta-story-id').value)   || 0;
-let   CHAPTER_ID = parseInt(document.getElementById('meta-chapter-id').value) || 0;
-let   blockCount = 0;
+const STORY_ID = parseInt(document.getElementById('meta-story-id').value) || 0;
+let CHAPTER_ID = parseInt(document.getElementById('meta-chapter-id').value) || 0;
+let blockCount = 0;
 
 document.getElementById('draftBtn').addEventListener('click', () => saveChapter('draft', true));
 document.getElementById('publishBtn').addEventListener('click', () => saveChapter('published', true));
@@ -8,18 +8,20 @@ document.getElementById('previewBtn').addEventListener('click', () => {
     const title = document.querySelector('.editor-title').value.trim() || 'Untitled Chapter';
     const previewBody = document.querySelector('.preview-blocks-container');
     const previewTitle = document.querySelector('.preview-chapter-title');
-    
+
     previewTitle.textContent = title;
     previewBody.innerHTML = generatePreviewHtml();
-    
+
     const actualLink = document.getElementById('actualPreviewLink');
-    if (CHAPTER_ID > 0) {
-        actualLink.style.display = 'inline-block';
-        actualLink.href = `Readingpage.php?story_id=${STORY_ID}&chapter_id=${CHAPTER_ID}&from=editor`;
-    } else {
-        actualLink.style.display = 'none';
+    if (actualLink) {
+        if (CHAPTER_ID > 0) {
+            actualLink.style.display = 'inline-block';
+            actualLink.href = `Readingpage.php?story_id=${STORY_ID}&chapter_id=${CHAPTER_ID}&from=editor`;
+        } else {
+            actualLink.style.display = 'none';
+        }
     }
-    
+
     document.getElementById('previewModal').style.display = 'flex';
 });
 
@@ -28,7 +30,7 @@ if (CHAPTER_ID > 0) loadBlocks(CHAPTER_ID);
 
 async function loadBlocks(chapterId) {
     try {
-        const res    = await fetch(`PHP/get_blocks.php?chapter_id=${chapterId}`);
+        const res = await fetch(`PHP/get_blocks.php?chapter_id=${chapterId}`);
         const blocks = await res.json();
         blocks.forEach(b => {
             if (b.type === 'narration') {
@@ -55,23 +57,23 @@ function renderNarrationBlock(blockId, content, sortOrder) {
     const div = document.createElement('div');
     div.className = 'content-block narration-block';
     div.id = localId;
-    div.dataset.blockId   = blockId || '';
+    div.dataset.blockId = blockId || '';
     div.dataset.sortOrder = sortOrder;
     div.innerHTML = `
         <div class="block-label">
-            <span>Narasi</span>
+            <span>Naration</span>
             <div class="block-label-actions">
-                <button class="block-action" onclick="saveNarration('${localId}')">simpan</button>
-                <button class="block-action danger" onclick="deleteBlock('${localId}')">hapus</button>
+                <button class="block-action" onclick="saveNarration('${localId}')">save</button>
+                <button class="block-action danger" onclick="deleteBlock('${localId}')">delete</button>
             </div>
         </div>
-        <textarea class="narration-textarea" placeholder="Tulis narasi di sini...">${content || ''}</textarea>
+        <textarea class="narration-textarea" placeholder="Write the narration here...">${content || ''}</textarea>
     `;
     container.appendChild(div);
 }
 
 async function saveNarration(localId, showFeedback = true) {
-    const div     = document.getElementById(localId);
+    const div = document.getElementById(localId);
     const content = div.querySelector('.narration-textarea').value.trim();
     const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
 
@@ -81,23 +83,23 @@ async function saveNarration(localId, showFeedback = true) {
         if (!saved) return;
     }
 
-    const res    = await fetch('PHP/save_block.php', {
-        method:  'POST',
+    const res = await fetch('PHP/save_block.php', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
+        body: JSON.stringify({
             chapter_id: CHAPTER_ID,
-            block_id:   blockId,
-            type:       'narration',
-            content:    content,
+            block_id: blockId,
+            type: 'narration',
+            content: content,
             sort_order: parseInt(div.dataset.sortOrder)
         })
     });
     const result = await res.json();
     if (result.success) {
         div.dataset.blockId = result.block_id;
-        if (showFeedback) showToast('Narasi tersimpan!');
+        if (showFeedback) showToast('Naration saved!');
     } else {
-        if (showFeedback) alert('Gagal simpan: ' + result.message);
+        if (showFeedback) alert('Failed to save: ' + result.message);
     }
 }
 
@@ -114,9 +116,9 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
     const div = document.createElement('div');
     div.className = 'content-block roomchat-block';
     div.id = localId;
-    div.dataset.blockId    = blockId    || '';
+    div.dataset.blockId = blockId || '';
     div.dataset.roomchatId = roomchatId || '';
-    div.dataset.sortOrder  = blockCount;
+    div.dataset.sortOrder = blockCount;
 
     const isWa = theme === 'wa';
     const avatarHtml = contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤';
@@ -126,8 +128,8 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
         <div class="block-label roomchat-label">
             <span>Roomchat</span>
             <div class="block-label-actions">
-                <button class="block-action" onclick="saveRoomchat('${localId}')">simpan</button>
-                <button class="block-action danger" onclick="deleteBlock('${localId}')">hapus</button>
+                <button class="block-action" onclick="saveRoomchat('${localId}')">save</button>
+                <button class="block-action danger" onclick="deleteBlock('${localId}')">delete</button>
             </div>
         </div>
         <input type="hidden" class="rc-theme" value="${theme || 'wa'}">
@@ -161,8 +163,8 @@ function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '') {
     return bubbles.map(b => {
         const isLeft = b.position === 'left';
         const avHtml = isLeft
-            ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤')
-            : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '🙂');
+            ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '')
+            : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '');
 
         return `
             <div class="rc-bubble-row ${b.position}" style="align-items: flex-end; gap: 6px; margin-bottom: 4px;">
@@ -179,14 +181,14 @@ function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '') {
 
 
 async function saveRoomchat(localId, showFeedback = true) {
-    const div           = document.getElementById(localId);
-    const blockId       = div.dataset.blockId     ? parseInt(div.dataset.blockId)    : 0;
-    const roomchatId    = div.dataset.roomchatId  ? parseInt(div.dataset.roomchatId) : 0;
-    const theme         = div.querySelector('.rc-theme').value;
-    const contactName   = div.querySelector('.rc-contact').value.trim();
-    const myAvatar      = div.querySelector('.rc-my-avatar') ? div.querySelector('.rc-my-avatar').value : '';
+    const div = document.getElementById(localId);
+    const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
+    const roomchatId = div.dataset.roomchatId ? parseInt(div.dataset.roomchatId) : 0;
+    const theme = div.querySelector('.rc-theme').value;
+    const contactName = div.querySelector('.rc-contact').value.trim();
+    const myAvatar = div.querySelector('.rc-my-avatar') ? div.querySelector('.rc-my-avatar').value : '';
     const contactAvatar = div.querySelector('.rc-contact-avatar') ? div.querySelector('.rc-contact-avatar').value : '';
-    const bgImage       = div.querySelector('.rc-bg-image') ? div.querySelector('.rc-bg-image').value : '';
+    const bgImage = div.querySelector('.rc-bg-image') ? div.querySelector('.rc-bg-image').value : '';
 
     // Auto-save chapter sebagai draft terlebih dahulu jika belum disimpan
     if (CHAPTER_ID <= 0) {
@@ -198,13 +200,13 @@ async function saveRoomchat(localId, showFeedback = true) {
     let finalBlockId = blockId;
     if (finalBlockId <= 0) {
         const resBlock = await fetch('PHP/save_block.php', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({
+            body: JSON.stringify({
                 chapter_id: CHAPTER_ID,
-                block_id:   0,
-                type:       'roomchat',
-                content:    '',
+                block_id: 0,
+                type: 'roomchat',
+                content: '',
                 sort_order: parseInt(div.dataset.sortOrder)
             })
         });
@@ -217,19 +219,19 @@ async function saveRoomchat(localId, showFeedback = true) {
         div.dataset.blockId = finalBlockId;
     }
 
-    const res    = await fetch('PHP/save_roomchat.php', {
-        method:  'POST',
+    const res = await fetch('PHP/save_roomchat.php', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-            block_id:       finalBlockId,
-            chapter_id:     CHAPTER_ID,
-            roomchat_id:    roomchatId,
-            theme:          theme,
-            contact_name:   contactName,
-            sort_order:     parseInt(div.dataset.sortOrder),
-            my_avatar:      myAvatar || null,
+        body: JSON.stringify({
+            block_id: finalBlockId,
+            chapter_id: CHAPTER_ID,
+            roomchat_id: roomchatId,
+            theme: theme,
+            contact_name: contactName,
+            sort_order: parseInt(div.dataset.sortOrder),
+            my_avatar: myAvatar || null,
             contact_avatar: contactAvatar || null,
-            bg_image:       bgImage || null
+            bg_image: bgImage || null
         })
     });
     const result = await res.json();
@@ -242,7 +244,7 @@ async function saveRoomchat(localId, showFeedback = true) {
 }
 
 async function goToBubbleChat(localId) {
-    const div        = document.getElementById(localId);
+    const div = document.getElementById(localId);
     let roomchatId = div.dataset.roomchatId ? parseInt(div.dataset.roomchatId) : 0;
 
     // Jika roomchat belum pernah disimpan, otomatis simpan dulu
@@ -250,7 +252,7 @@ async function goToBubbleChat(localId) {
         await saveRoomchat(localId, false);
         roomchatId = div.dataset.roomchatId ? parseInt(div.dataset.roomchatId) : 0;
     }
-    
+
     if (roomchatId <= 0) {
         return; // Jika gagal (misal judul kosong)
     }
@@ -261,14 +263,14 @@ async function goToBubbleChat(localId) {
 // ── HAPUS BLOK ───────────────────────────────
 async function deleteBlock(localId) {
     if (!confirm('Hapus blok ini?')) return;
-    const div     = document.getElementById(localId);
+    const div = document.getElementById(localId);
     const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
 
     if (blockId > 0) {
         await fetch('PHP/delete_block.php', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ block_id: blockId })
+            body: JSON.stringify({ block_id: blockId })
         });
     }
     div.remove();
@@ -284,18 +286,18 @@ async function saveChapter(status = 'draft', showFeedback = true) {
     }
 
     const payload = {
-        story_id:      STORY_ID,
-        chapter_id:    CHAPTER_ID,
+        story_id: STORY_ID,
+        chapter_id: CHAPTER_ID,
         chapter_title: title,
-        chapter_text:  '',
-        status:        status
+        chapter_text: '',
+        status: status
     };
 
     try {
-        const res    = await fetch('PHP/save_chapter.php', {
-            method:  'POST',
+        const res = await fetch('PHP/save_chapter.php', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(payload)
+            body: JSON.stringify(payload)
         });
         const result = await res.json();
 
@@ -303,7 +305,7 @@ async function saveChapter(status = 'draft', showFeedback = true) {
             const isNew = (CHAPTER_ID === 0);
             CHAPTER_ID = result.chapter_id;
             document.getElementById('meta-chapter-id').value = CHAPTER_ID;
-            
+
             // Simpan keseluruhan blok yang ada di editor
             await saveAllBlocks(false);
 
@@ -365,10 +367,10 @@ async function addNewChapter() {
 async function deleteChapter(chapterId) {
     if (!confirm('Hapus chapter ini? Semua konten di dalamnya akan terhapus.')) return;
     try {
-        const res    = await fetch('PHP/delete_chapter.php', {
-            method:  'POST',
+        const res = await fetch('PHP/delete_chapter.php', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ chapter_id: chapterId, story_id: STORY_ID })
+            body: JSON.stringify({ chapter_id: chapterId, story_id: STORY_ID })
         });
         const result = await res.json();
         if (result.success) {

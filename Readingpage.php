@@ -255,9 +255,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                     
         <?php if (!$from_editor): ?>
             <div class="chapter-actions">
-                <button class="like-btn" onclick="addToLibrary(<?= $story_id ?>)">
-                    Add to Library
-                </button>
+               <button class="like-btn" id="likeChapterBtn">❤️ Like</button>
             </div>
         <?php endif; ?>
 

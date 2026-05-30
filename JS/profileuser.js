@@ -502,10 +502,73 @@ if (coverInput) {
 }
 
 // ==========================
+// EDIT STORY PREP MODAL
+// ==========================
+const editStoryPrepModal = document.getElementById("editstoryprep");
+const closeEditBtn = document.getElementById("closeEditStoryPrep");
+
+if (editStoryPrepModal && closeEditBtn) {
+    closeEditBtn.addEventListener("click", () => { editStoryPrepModal.style.display = "none"; });
+    editStoryPrepModal.addEventListener("click", function (e) {
+        if (e.target === editStoryPrepModal) editStoryPrepModal.style.display = "none";
+    });
+}
+
+function openEditStoryPrep(storyId) {
+    const card = document.getElementById(`story-${storyId}`);
+    if (!card) return;
+
+    const title = card.getAttribute('data-title') || '';
+    const description = card.getAttribute('data-description') || '';
+    const genre = card.getAttribute('data-genre') || '';
+    const tags = card.getAttribute('data-tags') || '';
+    const cover = card.getAttribute('data-cover') || '';
+
+    // Populate fields
+    document.getElementById('editStoryId').value = storyId;
+    document.getElementById('editStoryTitle').value = title;
+    document.getElementById('editStoryDesc').value = description;
+    document.getElementById('editStoryGenre').value = genre;
+    document.getElementById('editStoryTags').value = tags;
+
+    const prev = document.getElementById('editPreviewCover');
+    if (prev) {
+        if (cover) {
+            prev.src = cover;
+            prev.style.display = 'block';
+        } else {
+            prev.src = '';
+            prev.style.display = 'none';
+        }
+    }
+
+    if (editStoryPrepModal) {
+        editStoryPrepModal.style.display = 'flex';
+    }
+}
+
+// ==========================
+// EDIT COVER PREVIEW
+// ==========================
+const editCoverInput = document.getElementById("editCover");
+if (editCoverInput) {
+    editCoverInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const prev = document.getElementById("editPreviewCover");
+            if (prev) { prev.src = e.target.result; prev.style.display = "block"; }
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ==========================
 // KLIK STORY CARD → EDITOR
 // ==========================
 document.querySelectorAll('.story-card').forEach(card => {
-    card.addEventListener('click', function(e) {
+    card.addEventListener('click', function (e) {
         // Jangan trigger kalau yang diklik adalah dropdown
         if (e.target.closest('.story-status')) return;
 
@@ -513,3 +576,17 @@ document.querySelectorAll('.story-card').forEach(card => {
         window.location.href = `Editor.php?story_id=${storyId}`;
     });
 });
+
+// ==========================
+// URL PARAMETERS HANDLER
+// ==========================
+(function () {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "story_updated") {
+        const cleanUrl = window.location.pathname;
+        history.replaceState(null, "", cleanUrl);
+        setTimeout(() => {
+            showToastProfile("✓ Detail cerita berhasil diperbarui!");
+        }, 200);
+    }
+})();
