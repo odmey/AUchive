@@ -226,9 +226,32 @@ async function saveStory() {
     }
 }
 
-function clearChat() {
-    document.getElementById('chatArea').innerHTML = '<div class="date-chip"><span>Today</span></div>';
-    bubbleSortOrder = 0;
+async function clearChat() {
+    if (!confirm('Hapus semua bubble di roomchat ini? Data di database juga akan terhapus.')) return;
+    
+    const roomchatId = getRoomchatId();
+    if (roomchatId <= 0) {
+        document.getElementById('chatArea').innerHTML = '<div class="date-chip"><span>Today</span></div>';
+        bubbleSortOrder = 0;
+        return;
+    }
+
+    try {
+        const res = await fetch('PHP/clear_bubbles.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roomchat_id: roomchatId })
+        });
+        const result = await res.json();
+        if (result.success) {
+            document.getElementById('chatArea').innerHTML = '<div class="date-chip"><span>Today</span></div>';
+            bubbleSortOrder = 0;
+        } else {
+            alert('Gagal hapus bubble: ' + result.message);
+        }
+    } catch (err) {
+        alert('Koneksi gagal.');
+    }
 }
 
 function scrollBottom() {
