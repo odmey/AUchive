@@ -26,19 +26,17 @@ if (empty($genre_name)) {
 
 $pdo = getDB();
 
-// Upload cover
+// Upload cover ke cloud (ImgBB)
 $cover_path = null;
 if (isset($_FILES['cover']) && $_FILES['cover']['error'] === 0) {
-    $ext        = pathinfo($_FILES['cover']['name'], PATHINFO_EXTENSION);
-    $file_name  = 'cover_' . uniqid() . '.' . $ext;
-    $upload_dir = '../Uploads/covers/';
-
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
+    $fileContent = file_get_contents($_FILES['cover']['tmp_name']);
+    if ($fileContent !== false) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime  = finfo_file($finfo, $_FILES['cover']['tmp_name']);
+        finfo_close($finfo);
+        $base64 = 'data:' . $mime . ';base64,' . base64_encode($fileContent);
+        $cover_path = uploadToCloud($base64);
     }
-
-    move_uploaded_file($_FILES['cover']['tmp_name'], $upload_dir . $file_name);
-    $cover_path = 'Uploads/covers/' . $file_name;
 }
 
 // Cari atau insert genre

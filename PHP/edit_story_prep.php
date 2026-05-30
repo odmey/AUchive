@@ -41,19 +41,19 @@ if (!$story || (int)$story['user_id'] !== (int)$user_id) {
     exit;
 }
 
-// Upload cover baru jika ada
+// Upload cover baru ke cloud jika ada
 $cover_path = $story['cover']; // default pakai cover lama
 if (isset($_FILES['cover']) && $_FILES['cover']['error'] === 0) {
-    $ext        = pathinfo($_FILES['cover']['name'], PATHINFO_EXTENSION);
-    $file_name  = 'cover_' . uniqid() . '.' . $ext;
-    $upload_dir = '../Uploads/covers/';
-
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-
-    if (move_uploaded_file($_FILES['cover']['tmp_name'], $upload_dir . $file_name)) {
-        $cover_path = 'Uploads/covers/' . $file_name;
+    $fileContent = file_get_contents($_FILES['cover']['tmp_name']);
+    if ($fileContent !== false) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime  = finfo_file($finfo, $_FILES['cover']['tmp_name']);
+        finfo_close($finfo);
+        $base64 = 'data:' . $mime . ';base64,' . base64_encode($fileContent);
+        $cloudUrl = uploadToCloud($base64);
+        if ($cloudUrl) {
+            $cover_path = $cloudUrl;
+        }
     }
 }
 

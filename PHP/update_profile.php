@@ -28,49 +28,34 @@ if ($stmt->fetch()) {
     exit;
 }
 
-// ── Helper: simpan file upload ─────────────────────────────────
-function saveUpload(string $fieldName, string $subDir, string $prefix, int $userId): ?string
+// ── Helper: read uploaded file and push to cloud ───────────────
+function saveUpload(string $fieldName): ?string
 {
     if (!isset($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] !== UPLOAD_ERR_OK) {
         return null;
     }
 
-    $allowed = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp'];
+    $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime = finfo_file($finfo, $_FILES[$fieldName]['tmp_name']);
     finfo_close($finfo);
 
-    $ext = array_search($mime, $allowed, true);
-    if ($ext === false) {
-        return null; // tipe file tidak didukung, lewati saja
-    }
+    if (!in_array($mime, $allowed, true)) return null;
 
     // Ukuran maksimal 5 MB
-    if ($_FILES[$fieldName]['size'] > 5 * 1024 * 1024) {
-        return null;
-    }
+    if ($_FILES[$fieldName]['size'] > 5 * 1024 * 1024) return null;
 
-    $uploadDir = __DIR__ . '/../Uploads/' . $subDir . '/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
-    }
+    // Read file and convert to base64 for cloud upload
+    $fileContent = file_get_contents($_FILES[$fieldName]['tmp_name']);
+    if ($fileContent === false) return null;
 
-    // Hapus avatar/banner lama milik user ini supaya tidak numpuk
-    foreach (glob($uploadDir . $prefix . '_' . $userId . '_*') as $old) {
-        @unlink($old);
-    }
-
-    $filename = $prefix . '_' . $userId . '_' . time() . '.' . $ext;
-    if (!move_uploaded_file($_FILES[$fieldName]['tmp_name'], $uploadDir . $filename)) {
-        return null;
-    }
-
-    return 'Uploads/' . $subDir . '/' . $filename;
+    $base64 = 'data:' . $mime . ';base64,' . base64_encode($fileContent);
+    return uploadToCloud($base64);
 }
 
 // ── Upload foto profil & banner ────────────────────────────────
-$profilePicPath = saveUpload('profile_pic', 'avatars', 'avatar', $_SESSION['user_id']);
-$profileBanPath = saveUpload('profile_ban', 'banners', 'banner', $_SESSION['user_id']);
+$profilePicPath = saveUpload('profile_pic');
+$profileBanPath = saveUpload('profile_ban');
 
 // ── Build query dinamis (hanya update kolom yang berubah) ──────
 $fields = ['name = ?', 'username = ?', 'bio = ?'];
