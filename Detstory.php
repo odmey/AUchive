@@ -127,7 +127,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
 <body>
 
     <div class="back-button">
-        <a href="homepage.php">✕</a>
+        <a href="javascript:void(0);" onclick="if(document.referrer && document.referrer.includes(window.location.hostname)) { history.back(); } else { window.location.href='homepage.php'; }">✕</a>
     </div>
 
     <section class="story-detail-page">
