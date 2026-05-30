@@ -9,39 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Helper function to decode and save base64 image
-function saveBase64Image($base64Str, $subDir, $prefix) {
-    if (empty($base64Str)) {
-        return null;
-    }
-    // Check if it's actually base64
-    if (preg_match('/^data:image\/(\w+);base64,(.*)$/is', $base64Str, $matches)) {
-        $ext = strtolower($matches[1]);
-        $data = base64_decode($matches[2]);
-        if ($data === false) {
-            return $base64Str; // Return original if decode failed
-        }
-        
-        $uploadDir = __DIR__ . '/../Uploads/' . $subDir . '/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-        
-        // Map common extensions
-        if ($ext === 'jpeg') {
-            $ext = 'jpg';
-        }
-        
-        $filename = uniqid($prefix . '_') . '.' . $ext;
-        $filepath = $uploadDir . $filename;
-        
-        if (file_put_contents($filepath, $data) !== false) {
-            return 'Uploads/' . $subDir . '/' . $filename;
-        }
-    }
-    return $base64Str; // Return as-is if it's already a URL/path
-}
-
 $body         = json_decode(file_get_contents('php://input'), true);
 $block_id     = isset($body['block_id'])     ? (int)$body['block_id']        : 0;
 $chapter_id   = isset($body['chapter_id'])   ? (int)$body['chapter_id']      : 0;
@@ -53,10 +20,10 @@ $my_avatar      = isset($body['my_avatar'])      ? $body['my_avatar']           
 $contact_avatar = isset($body['contact_avatar']) ? $body['contact_avatar']       : null;
 $bg_image       = isset($body['bg_image'])       ? $body['bg_image']             : null;
 
-// Convert base64 data to files
-$my_avatar      = saveBase64Image($my_avatar, 'roomchats', 'avatar_me');
-$contact_avatar = saveBase64Image($contact_avatar, 'roomchats', 'avatar_contact');
-$bg_image       = saveBase64Image($bg_image, 'roomchats', 'bg_image');
+// Convert base64 images to cloud URLs
+$my_avatar      = uploadToCloud($my_avatar);
+$contact_avatar = uploadToCloud($contact_avatar);
+$bg_image       = uploadToCloud($bg_image);
 
 if ($block_id <= 0 || $chapter_id <= 0) {
     http_response_code(400);
@@ -95,18 +62,7 @@ try {
             ':roomchat_id'    => $roomchat_id,
         ]);
 
-        // Clean up old files if they are replaced
-        if ($oldRoomchat) {
-            if ($oldRoomchat['my_avatar'] && $oldRoomchat['my_avatar'] !== $my_avatar && file_exists(__DIR__ . '/../' . $oldRoomchat['my_avatar'])) {
-                @unlink(__DIR__ . '/../' . $oldRoomchat['my_avatar']);
-            }
-            if ($oldRoomchat['contact_avatar'] && $oldRoomchat['contact_avatar'] !== $contact_avatar && file_exists(__DIR__ . '/../' . $oldRoomchat['contact_avatar'])) {
-                @unlink(__DIR__ . '/../' . $oldRoomchat['contact_avatar']);
-            }
-            if ($oldRoomchat['bg_image'] && $oldRoomchat['bg_image'] !== $bg_image && file_exists(__DIR__ . '/../' . $oldRoomchat['bg_image'])) {
-                @unlink(__DIR__ . '/../' . $oldRoomchat['bg_image']);
-            }
-        }
+        // Note: Old images are on cloud (ImgBB) - no local files to clean up
 
         echo json_encode(['success' => true, 'roomchat_id' => $roomchat_id]);
     } else {

@@ -32,25 +32,7 @@ $sort_order  = isset($body['sort_order'])  ? (int)$body['sort_order']     : 0;
 $time_label  = isset($body['time_label'])  ? trim($body['time_label'])    : '';
 $sender_avatar = isset($body['sender_avatar']) ? $body['sender_avatar']    : null;
 
-// Helper: decode base64 image and save to disk
-function saveBase64Image($base64Str, $subDir, $prefix) {
-    if (empty($base64Str)) return null;
-    if (preg_match('/^data:image\/(\w+);base64,(.*)$/is', $base64Str, $matches)) {
-        $ext = strtolower($matches[1]);
-        $data = base64_decode($matches[2]);
-        if ($data === false) return $base64Str;
-        $uploadDir = __DIR__ . '/../Uploads/' . $subDir . '/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-        if ($ext === 'jpeg') $ext = 'jpg';
-        $filename = uniqid($prefix . '_') . '.' . $ext;
-        if (file_put_contents($uploadDir . $filename, $data) !== false) {
-            return 'Uploads/' . $subDir . '/' . $filename;
-        }
-    }
-    return $base64Str;
-}
-
-$sender_avatar = saveBase64Image($sender_avatar, 'roomchats', 'bubble_av');
+$sender_avatar = uploadToCloud($sender_avatar);
 
 if ($chapter_id <= 0 || $roomchat_id<=0) {
     http_response_code(400);
