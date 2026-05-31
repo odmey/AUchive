@@ -165,7 +165,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
 
                     <?php elseif ($block['type'] === 'roomchat' && $block['roomchat_id']):
                         $stmt_b = $pdo->prepare("
-                            SELECT bubble_text, contact_name, color, position, time_label, sender_avatar
+                            SELECT bubble_text, contact_name, color, position, time_label, sender_avatar, bubble_image
                             FROM bubbles WHERE roomchat_id = ?
                             ORDER BY sort_order ASC
                         ");
@@ -210,14 +210,21 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
-                                    <div class="reader-bubble <?= $b['position'] ?>"
-                                        style="background:<?= htmlspecialchars($b['color']) ?>">
-                                        <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
-                                            <div class="bubble-sender-name"><?= htmlspecialchars($b['contact_name']) ?></div>
-                                        <?php endif; ?>
-                                        <?= htmlspecialchars($b['bubble_text']) ?>
-                                        <span class="reader-bubble-time"><?= htmlspecialchars($b['time_label']) ?></span>
-                                    </div>
+                                     <div class="reader-bubble <?= $b['position'] ?>"
+                                         style="background:<?= htmlspecialchars($b['color']) ?>">
+                                         <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
+                                             <div class="bubble-sender-name"><?= htmlspecialchars($b['contact_name']) ?></div>
+                                         <?php endif; ?>
+                                         <?php if (!empty($b['bubble_image'])): ?>
+                                             <div class="bubble-img-wrap">
+                                                 <img src="<?= htmlspecialchars($b['bubble_image']) ?>" alt="image">
+                                             </div>
+                                         <?php endif; ?>
+                                         <?php if ($b['bubble_text'] !== '' && $b['bubble_text'] !== null): ?>
+                                             <?= htmlspecialchars($b['bubble_text']) ?>
+                                         <?php endif; ?>
+                                         <span class="reader-bubble-time"><?= htmlspecialchars($b['time_label']) ?></span>
+                                     </div>
                                     <?php if ($b['position'] === 'right'): ?>
                                         <div class="reader-bubble-av">
                                             <?php if (!empty($b['sender_avatar'])): ?>

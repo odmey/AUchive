@@ -33,7 +33,7 @@ $stmt = $pdo->prepare("
         u.name      AS author_name,
         u.profile_pic,
         u.bio,
-        (SELECT COUNT(*) FROM chapters c WHERE c.story_id = s.story_id) AS chapter_count
+        (SELECT COUNT(*) FROM chapters c WHERE c.story_id = s.story_id AND c.status = 'published') AS chapter_count
     FROM stories s
     LEFT JOIN genres g ON g.genre_id   = s.genre_id
     LEFT JOIN users  u ON u.user_id    = s.user_id

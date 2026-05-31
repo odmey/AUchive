@@ -27,7 +27,7 @@ try {
     foreach ($blocks as &$block) {
         if ($block['type'] === 'roomchat' && $block['roomchat_id']) {
             $stmt2 = $pdo->prepare("
-                SELECT bubble_id, bubble_text, contact_name, color, position, time_label, sort_order, sender_avatar
+                SELECT bubble_id, bubble_text, contact_name, color, position, time_label, sort_order, sender_avatar, bubble_image
                 FROM bubbles
                 WHERE roomchat_id = ?
                 ORDER BY sort_order ASC
