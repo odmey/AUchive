@@ -38,7 +38,7 @@ try {
                IFNULL(SUM(s.total_views), 0)  AS total_views,
                IFNULL(SUM(s.total_likes), 0)  AS total_likes
         FROM users u
-        LEFT JOIN stories s ON s.user_id = u.user_id
+        INNER JOIN stories s ON s.user_id = u.user_id
         WHERE u.role != 'admin'
         GROUP BY u.user_id, u.username, u.profile_pic
         ORDER BY story_count DESC, total_views DESC
