@@ -87,9 +87,6 @@ if (isset($_SESSION['user_id'])) {
                 <div class="item-set" data-popup="faq">
                     <span>FAQ</span>
                 </div>
-                <div class="item-set" data-popup="contact">
-                    <span>Contact Us</span>
-                </div>
             </div>
         </div>
 
@@ -127,9 +124,6 @@ if (isset($_SESSION['user_id'])) {
                 <h4>Help Center</h4>
                 <div class="item-set" data-popup="faq">
                     <span>FAQ</span>
-                </div>
-                <div class="item-set" data-popup="contact">
-                    <span>Contact Us</span>
                 </div>
             </div>
 

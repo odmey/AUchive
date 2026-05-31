@@ -265,3 +265,31 @@ body {
     color: red;
     font-size: 20px;
 }
+
+/* ── Reading progress bar (pinned at bottom of cover image) ── */
+.card-cover-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.card-cover-wrap img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+}
+
+.card-progress-bar-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.card-progress-bar-fill {
+    height: 100%;
+    border-radius: 0 2px 2px 0;
+    transition: width 0.5s ease;
+}

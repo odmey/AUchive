@@ -47,7 +47,7 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
   </div>
 
   <nav class="menu">
-    <a href="#" class="active" data-tab="dashboard">
+    <a href="#" data-tab="dashboard">
       <span class="material-symbols-outlined">dashboard</span>
       Dashboard
     </a>
@@ -72,14 +72,14 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
       Settings
     </a>
 
-    <!-- BACK TO USER SITE -->
-    <a href="homepage.php" style="margin-top:auto; color:#74b9ff;">
-      <span class="material-symbols-outlined">home</span>
-      Back to Homepage
+    <!-- SYSTEM DEBUGGING LINK -->
+    <a href="admin_debug.php">
+      <span class="material-symbols-outlined">bug_report</span>
+      System Debugging
     </a>
 
     <!-- LOGOUT ACTIONS -->
-    <a href="#" id="sidebarLogoutBtn" style="color:#ff7675;">
+    <a href="#" id="sidebarLogoutBtn" class="menu-logout">
       <span class="material-symbols-outlined">logout</span>
       Logout
     </a>
@@ -98,11 +98,20 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
     </div>
   </div>
 
+  <!-- EMPTY INITIAL STATE -->
+  <section id="empty" class="tab-content active">
+    <div class="empty-state" style="height: 60vh;">
+      <span class="material-symbols-outlined" style="font-size: 80px; color: rgba(255,255,255,0.05); margin-bottom: 20px;">web_asset</span>
+      <h2 style="color: var(--text-muted); font-weight: 500;">Select a menu item</h2>
+      <p style="color: #666; margin-top: 8px;">Please choose an option from the sidebar to view data.</p>
+    </div>
+  </section>
+
   <!-- ────────────────────────────────────────────────────────
          SECTION 1: DASHBOARD TAB
          ──────────────────────────────────────────────────────── -->
-  <section id="dashboard" class="tab-content active">
-    <!-- High level summary cards -->
+  <section id="dashboard" class="tab-content">
+    <!-- Quick Stats Cards -->
     <div class="cards">
       <div class="card">
         <h3>Total Users</h3>
@@ -191,6 +200,37 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
         </div>
       </div>
     </div>
+
+    <!-- Add New Admin Card -->
+    <div class="data-box" style="margin-top: 25px;">
+      <div class="data-box-header">
+        <h2>Register New Admin Account</h2>
+      </div>
+      <form autocomplete="off" onsubmit="event.preventDefault();" class="settings-group">
+        <div class="settings-item">
+          <label for="new-admin-username">Username</label>
+          <input type="text" id="new-admin-username" placeholder="e.g. admin2" autocomplete="off">
+        </div>
+        <div class="settings-item">
+          <label for="new-admin-name">Full Name</label>
+          <input type="text" id="new-admin-name" placeholder="e.g. John Doe" autocomplete="off">
+        </div>
+        <div class="settings-item">
+          <label for="new-admin-email">Email</label>
+          <input type="email" id="new-admin-email" placeholder="e.g. admin2@mail.com" autocomplete="off">
+        </div>
+        <div class="settings-item">
+          <label for="new-admin-password">Password (min 8 chars)</label>
+          <input type="password" id="new-admin-password" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <div style="padding: 15px 20px;">
+          <button class="btn-primary" id="create-admin-btn" type="button" style="width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-family: Poppins, sans-serif; font-weight: 600; font-size: 14px;">
+            <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 6px;">person_add</span>
+            Create Admin Account
+          </button>
+        </div>
+      </form>
+    </div>
   </section>
 
   <!-- ────────────────────────────────────────────────────────
@@ -219,7 +259,8 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
               <th>Author</th>
               <th>Created Date</th>
               <th>Status</th>
-              <th>Views & Likes</th>
+              <th>Views</th>
+              <th>Likes</th>
               <th style="width: 150px; text-align: right;">Administrative Actions</th>
             </tr>
           </thead>
