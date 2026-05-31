@@ -67,6 +67,7 @@ $sql = "
         ls.last_read_chapter_id,
         ls.is_complete,
         ls.update_at        AS last_read_at,
+        ls.is_favorite,
         c.chapter_title     AS last_chapter_title
     FROM library_stories ls
     JOIN  stories  s ON s.story_id   = ls.story_id

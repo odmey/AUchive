@@ -187,15 +187,22 @@ function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contac
             nameHtml = `<div class="bubble-sender-name">${b.contact_name}</div>`;
         }
 
+        let imgHtml = '';
+        if (b.bubble_image) {
+            imgHtml = `<div class="bubble-img-wrap" style="margin-bottom: 4px;"><img src="${b.bubble_image}"></div>`;
+        }
+
         return `
             <div class="rc-bubble-row ${b.position}" 
                  data-sender="${b.contact_name || ''}" 
                  data-sender-avatar="${b.sender_avatar || ''}"
+                 data-bubble-image="${b.bubble_image || ''}"
                  style="align-items: flex-end; gap: 6px; margin-bottom: 4px;">
                 ${isLeft ? `<div class="rc-bubble-av">${avHtml}</div>` : ''}
                 <div class="rc-bubble" style="background:${b.color}">
                     ${nameHtml}
-                    ${b.bubble_text}
+                    ${imgHtml}
+                    ${b.bubble_text || ''}
                     <span class="rc-time">${b.time_label}</span>
                 </div>
                 ${!isLeft ? `<div class="rc-bubble-av">${avHtml}</div>` : ''}
@@ -492,6 +499,8 @@ function generatePreviewHtml() {
                         const temp = bubble.cloneNode(true);
                         const nameEl = temp.querySelector('.bubble-sender-name');
                         if (nameEl) nameEl.remove();
+                        const imgEl = temp.querySelector('.bubble-img-wrap');
+                        if (imgEl) imgEl.remove();
                         const timeEl = temp.querySelector('.rc-time');
                         if (timeEl) timeEl.remove();
                         textContent = temp.textContent.trim();
@@ -501,6 +510,12 @@ function generatePreviewHtml() {
                     const time = row.querySelector('.rc-time') ? row.querySelector('.rc-time').textContent.trim() : '';
                     const sender = row.getAttribute('data-sender');
                     const senderAvatar = row.getAttribute('data-sender-avatar');
+                    const bubbleImage = row.getAttribute('data-bubble-image');
+
+                    let imgHtml = '';
+                    if (bubbleImage) {
+                        imgHtml = `<div class="bubble-img-wrap" style="margin-bottom: 4px;"><img src="${bubbleImage}"></div>`;
+                    }
 
                     let avHtml = '';
                     if (senderAvatar) {
@@ -521,6 +536,7 @@ function generatePreviewHtml() {
                             ${position === 'left' ? `<div class="reader-bubble-av">${avHtml}</div>` : ''}
                             <div class="reader-bubble ${position}" style="background:${bg}">
                                 ${nameHtml}
+                                ${imgHtml}
                                 ${textContent}
                                 <span class="reader-bubble-time">${time}</span>
                             </div>

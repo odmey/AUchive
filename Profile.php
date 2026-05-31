@@ -190,6 +190,12 @@ $followingList = $stmtFollowingList->fetchAll();
             'image'    => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
         ], $followersList)) ?>;
 
+        const followingData = <?= json_encode(array_map(fn($x) => [
+            'user_id'  => $x['user_id'],
+            'name'     => htmlspecialchars($x['name']),
+            'username' => '@' . htmlspecialchars($x['username']),
+            'image'    => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
+        ], $followingList)) ?>;
     </script>
 
     <!-- Logic JS-nya di file terpisah -->
@@ -351,9 +357,7 @@ $followingList = $stmtFollowingList->fetchAll();
                 <img id="cropperImage" alt="Image editor preview">
             </div>
             <div class="zoom-row">
-                <span>−</span>
                 <input type="range" id="cropZoom" min="0.5" max="2" step="0.01" value="1">
-                <span>+</span>
             </div>
         </div>
     </div>

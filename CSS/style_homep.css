@@ -349,7 +349,8 @@ body {
 }
 
 .card-slider {
-    min-width: 220px;
+    position: relative;
+    width: 220px;
     height: 320px;
     border-radius: 16px;
     overflow: hidden;
@@ -363,11 +364,53 @@ body {
 }
 
 .card-slider img {
-    width: 240px;
-    height: 340px;
+    width: 100%;
+    height: 100%;
     display: block;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 16px;
+}
+
+.card-slider-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
+.card-slider-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 100%);
+    backdrop-filter: blur(4px);
+    padding: 14px 12px 12px;
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.card-slider-info h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    font-family: Poppins, sans-serif;
+}
+
+.card-slider-info span {
+    font-size: 11px;
+    color: #eee;
+    font-family: Poppins, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .arrow-btn {

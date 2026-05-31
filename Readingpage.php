@@ -11,6 +11,9 @@ if ($story_id <= 0) {
 
 $pdo = getDB();
 $from_editor = (isset($_GET['from']) && $_GET['from'] === 'editor') || (isset($_GET['preview']) && $_GET['preview'] == '1') || (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'Editor.php') !== false);
+$from_library = (isset($_GET['from']) && $_GET['from'] === 'library');
+
+$isLoggedIn = isset($_SESSION['user_id']);
 
 // Ambil data story + penulis + genre + tags
 $stmt = $pdo->prepare("
@@ -59,6 +62,13 @@ $chapters = $stmt2->fetchAll();
 $chapter_id = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
 if ($chapter_id <= 0 && !empty($chapters)) {
     $chapter_id = $chapters[0]['chapter_id'];
+}
+
+$isLiked = false;
+if ($isLoggedIn && $chapter_id > 0) {
+    $stmtLike = $pdo->prepare("SELECT 1 FROM chapter_likes WHERE user_id = ? AND chapter_id = ?");
+    $stmtLike->execute([$_SESSION['user_id'], $chapter_id]);
+    $isLiked = (bool)$stmtLike->fetch();
 }
 
 // ====================================================================
@@ -114,7 +124,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                 <?php foreach ($chapters as $ch): ?>
                     <button
                         class="chapter-btn <?= $ch['chapter_id'] == $chapter_id ? 'active' : '' ?>"
-                        onclick="window.location.href='Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $ch['chapter_id'] ?><?= $from_editor ? '&from=editor' : '' ?>'">
+                        onclick="window.location.href='Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $ch['chapter_id'] ?><?= $from_editor ? '&from=editor' : ($from_library ? '&from=library' : '') ?>'">
                         <?= htmlspecialchars($ch['chapter_title']) ?>
                     </button>
                 <?php endforeach; ?>
@@ -127,6 +137,10 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
             <?php if ($from_editor): ?>
                 <a href="Editor.php?story_id=<?= $story_id ?>&chapter_id=<?= $chapter_id ?>">
                     ← Back to Editor
+                </a>
+            <?php elseif ($from_library): ?>
+                <a href="Library.html">
+                    ← Back to Library
                 </a>
             <?php else: ?>
                 <a href="Detstory.php?story_id=<?= $story_id ?>">
@@ -165,7 +179,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
 
                     <?php elseif ($block['type'] === 'roomchat' && $block['roomchat_id']):
                         $stmt_b = $pdo->prepare("
-                            SELECT bubble_text, contact_name, color, position, time_label, sender_avatar
+                            SELECT bubble_text, contact_name, color, position, time_label, sender_avatar, bubble_image
                             FROM bubbles WHERE roomchat_id = ?
                             ORDER BY sort_order ASC
                         ");
@@ -210,14 +224,21 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
-                                    <div class="reader-bubble <?= $b['position'] ?>"
-                                        style="background:<?= htmlspecialchars($b['color']) ?>">
-                                        <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
-                                            <div class="bubble-sender-name"><?= htmlspecialchars($b['contact_name']) ?></div>
-                                        <?php endif; ?>
-                                        <?= htmlspecialchars($b['bubble_text']) ?>
-                                        <span class="reader-bubble-time"><?= htmlspecialchars($b['time_label']) ?></span>
-                                    </div>
+                                     <div class="reader-bubble <?= $b['position'] ?>"
+                                         style="background:<?= htmlspecialchars($b['color']) ?>">
+                                         <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
+                                             <div class="bubble-sender-name"><?= htmlspecialchars($b['contact_name']) ?></div>
+                                         <?php endif; ?>
+                                         <?php if (!empty($b['bubble_image'])): ?>
+                                             <div class="bubble-img-wrap">
+                                                 <img src="<?= htmlspecialchars($b['bubble_image']) ?>" alt="image">
+                                             </div>
+                                         <?php endif; ?>
+                                         <?php if ($b['bubble_text'] !== '' && $b['bubble_text'] !== null): ?>
+                                             <?= htmlspecialchars($b['bubble_text']) ?>
+                                         <?php endif; ?>
+                                         <span class="reader-bubble-time"><?= htmlspecialchars($b['time_label']) ?></span>
+                                     </div>
                                     <?php if ($b['position'] === 'right'): ?>
                                         <div class="reader-bubble-av">
                                             <?php if (!empty($b['sender_avatar'])): ?>
@@ -251,7 +272,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
 
         <div class="bottom-navigation">
             <?php if ($prev_chapter_id): ?>
-                <a href="Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $prev_chapter_id ?><?= $from_editor ? '&from=editor' : '' ?>" class="nav-link-btn prev">
+                <a href="Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $prev_chapter_id ?><?= $from_editor ? '&from=editor' : ($from_library ? '&from=library' : '') ?>" class="nav-link-btn prev">
                     <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span> Prev
                 </a>
             <?php else: ?>
@@ -262,7 +283,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
             </div>
 
             <?php if ($next_chapter_id): ?>
-                <a href="Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $next_chapter_id ?><?= $from_editor ? '&from=editor' : '' ?>" class="nav-link-btn next">
+                <a href="Readingpage.php?story_id=<?= $story_id ?>&chapter_id=<?= $next_chapter_id ?><?= $from_editor ? '&from=editor' : ($from_library ? '&from=library' : '') ?>" class="nav-link-btn next">
                     Next <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
                 </a>
             <?php else: ?>
@@ -271,7 +292,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                     
         <?php if (!$from_editor): ?>
             <div class="chapter-actions">
-               <button class="like-btn" id="likeChapterBtn">❤️ Like</button>
+               <button class="like-btn<?= $isLiked ? ' active' : '' ?>" id="likeChapterBtn"><?= $isLiked ? '❤️ Liked' : '❤️ Like' ?></button>
             </div>
         <?php endif; ?>
 

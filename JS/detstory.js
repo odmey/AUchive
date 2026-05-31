@@ -1,16 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const likeBtn = document.getElementById("likeBtn");
+    const favBtn = document.getElementById("favBtn");
     const saveBtn = document.getElementById("saveBtn");
     const followBtn = document.getElementById("followBtn");
 
-    const likeCountEl = document.getElementById("likeCount");
-
-    // ── 1. LIKE / UNLIKE ───────────────────────────────────────
-    if (likeBtn) {
-        likeBtn.addEventListener("click", async function () {
-            likeBtn.disabled = true;
+    // ── 1. FAVORITE / UNFAVORITE ───────────────────────────────
+    if (favBtn) {
+        favBtn.addEventListener("click", async function () {
+            favBtn.disabled = true;
             try {
-                const response = await fetch("PHP/like_action.php", {
+                const response = await fetch("PHP/favorite_action.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -22,23 +20,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (data.success) {
-                    if (data.action === "liked") {
-                        likeBtn.classList.add("active");
-                        likeBtn.textContent = "Liked";
+                    if (data.is_favorite) {
+                        favBtn.classList.add("active");
+                        favBtn.textContent = "Favorited";
+                        if (saveBtn) {
+                            saveBtn.classList.add("active");
+                            saveBtn.textContent = "Saved";
+                        }
                     } else {
-                        likeBtn.classList.remove("active");
-                        likeBtn.textContent = "Like";
-                    }
-                    if (likeCountEl) {
-                        likeCountEl.textContent = data.total_likes;
+                        favBtn.classList.remove("active");
+                        favBtn.textContent = "Favorite";
                     }
                 } else {
-                    alert(data.message || "Gagal menyukai cerita.");
+                    alert(data.message || "Gagal memproses favorit.");
                 }
             } catch (error) {
-                console.error("Error liking:", error);
+                console.error("Error favoriting:", error);
             } finally {
-                likeBtn.disabled = false;
+                favBtn.disabled = false;
             }
         });
     }
