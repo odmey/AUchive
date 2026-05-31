@@ -9,7 +9,7 @@ $pdo = getDB();
 
 // 1. Fetch Popular Stories (ordered by views & likes)
 $stmtPopular = $pdo->prepare("
-    SELECT story_id, title, cover 
+    SELECT story_id, title, cover, description, total_views 
     FROM stories 
     WHERE status = 'published' 
     ORDER BY total_views DESC, total_likes DESC 
@@ -20,7 +20,7 @@ $popularStories = $stmtPopular->fetchAll();
 
 // 2. Fetch Newest Stories (ordered by published_at DESC)
 $stmtNewest = $pdo->prepare("
-    SELECT story_id, title, cover 
+    SELECT story_id, title, cover, total_views 
     FROM stories 
     WHERE status = 'published' 
     ORDER BY published_at DESC 
@@ -31,17 +31,17 @@ $newestStories = $stmtNewest->fetchAll();
 
 // Static fallback stories in case DB has few elements (to maintain rich visual aesthetics)
 $staticFallbackPopular = [
-    ['story_id' => null, 'title' => 'Unseen', 'cover' => 'Pic/Unseen.png'],
-    ['story_id' => null, 'title' => 'Karya 2', 'cover' => 'Pic/karya2.jpg'],
-    ['story_id' => null, 'title' => 'Karya 3', 'cover' => 'Pic/karya3.jpg'],
-    ['story_id' => null, 'title' => 'Karya 4', 'cover' => 'Pic/karya4.jpg']
+    ['story_id' => null, 'title' => 'Unseen', 'cover' => 'Pic/Unseen.png', 'total_views' => 1500],
+    ['story_id' => null, 'title' => 'Karya 2', 'cover' => 'Pic/karya2.jpg', 'total_views' => 920],
+    ['story_id' => null, 'title' => 'Karya 3', 'cover' => 'Pic/karya3.jpg', 'total_views' => 450],
+    ['story_id' => null, 'title' => 'Karya 4', 'cover' => 'Pic/karya4.jpg', 'total_views' => 310]
 ];
 
 $staticFallbackNewest = [
-    ['story_id' => null, 'title' => 'Karya 5', 'cover' => 'Pic/karya5.jpg'],
-    ['story_id' => null, 'title' => 'Karya 6', 'cover' => 'Pic/karya6.jpg'],
-    ['story_id' => null, 'title' => 'Karya 7', 'cover' => 'Pic/karya7.jpg'],
-    ['story_id' => null, 'title' => 'Karya 8', 'cover' => 'Pic/karya8.jpg']
+    ['story_id' => null, 'title' => 'Karya 5', 'cover' => 'Pic/karya5.jpg', 'total_views' => 200],
+    ['story_id' => null, 'title' => 'Karya 6', 'cover' => 'Pic/karya6.jpg', 'total_views' => 180],
+    ['story_id' => null, 'title' => 'Karya 7', 'cover' => 'Pic/karya7.jpg', 'total_views' => 120],
+    ['story_id' => null, 'title' => 'Karya 8', 'cover' => 'Pic/karya8.jpg', 'total_views' => 90]
 ];
 ?>
 <!DOCTYPE html>
@@ -104,21 +104,42 @@ $staticFallbackNewest = [
     </div>
 
     <!-- HERO SECTION -->
+    <?php
+    $heroCover = 'Pic/cover-utama.jpg';
+    $heroTitle = 'Read, Write, and Share Your AU Story';
+    $heroDesc = 'Discover thousands of Alternate Universe stories from your favorite fandoms and start your own journey.';
+    $popularStoryId = 0;
+
+    if (!empty($popularStories)) {
+        $mostPopular = $popularStories[0];
+        $popularStoryId = (int)$mostPopular['story_id'];
+        if (!empty($mostPopular['cover'])) {
+            $heroCover = htmlspecialchars($mostPopular['cover']);
+        }
+        if (!empty($mostPopular['title'])) {
+            $heroTitle = htmlspecialchars($mostPopular['title']);
+        }
+        if (!empty($mostPopular['description'])) {
+            $heroDesc = htmlspecialchars(mb_substr($mostPopular['description'], 0, 180));
+            if (mb_strlen($mostPopular['description']) > 180) {
+                $heroDesc .= '...';
+            }
+        }
+    }
+    $readUrl = $popularStoryId > 0 ? "Detstory.php?id=" . $popularStoryId : "#";
+    ?>
     <section class="hero">
-        <img src="Pic/cover-utama.jpg" alt="Cover">
+        <img src="<?= $heroCover ?>" alt="Cover">
 
         <div class="hero-overlay">
-            <h1>Read, Write, and Share Your AU Story</h1>
-            <p>
-                Discover thousands of Alternate Universe stories
-                from your favorite fandoms and start your own journey.
-            </p>
+            <p style="font-size: 16px; text-transform: uppercase; letter-spacing: 2px; color: #FFF44F; margin-bottom: 10px; font-weight: 600;">Most People like this Story</p>
+            <h1 style="margin-top: 0; margin-bottom: 30px;"><?= $heroTitle ?></h1>
 
             <div class="hero-buttons">
-            <?php if (!$isLoggedIn): ?>
-                <button class="btn-primary" type="button" onclick="goToLibrary()">Start Reading</button>
-                <button class="btn-secondary" type="button" onclick="openSignup()">Join Now</button>
-            <?php endif; ?>
+                <button class="btn-primary" type="button" onclick="window.location.href='<?= $readUrl ?>'">Start Reading</button>
+                <?php if (!$isLoggedIn): ?>
+                    <button class="btn-secondary" type="button" onclick="openSignup()">Join Now</button>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -138,8 +159,12 @@ $staticFallbackNewest = [
                     $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
                 ?>
                     <div class="card-slider">
-                        <a href="<?= $link ?>">
+                        <a href="<?= $link ?>" class="card-slider-link">
                             <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
+                            <div class="card-slider-info">
+                                <h4><?= htmlspecialchars($s['title']) ?></h4>
+                                <span>👁️ <?= number_format((int)($s['total_views'] ?? 0)) ?> views</span>
+                            </div>
                         </a>
                     </div>
                 <?php endforeach; ?>
@@ -162,8 +187,12 @@ $staticFallbackNewest = [
                     $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
                 ?>
                     <div class="card-slider">
-                        <a href="<?= $link ?>">
+                        <a href="<?= $link ?>" class="card-slider-link">
                             <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
+                            <div class="card-slider-info">
+                                <h4><?= htmlspecialchars($s['title']) ?></h4>
+                                <span>👁️ <?= number_format((int)($s['total_views'] ?? 0)) ?> views</span>
+                            </div>
                         </a>
                     </div>
                 <?php endforeach; ?>

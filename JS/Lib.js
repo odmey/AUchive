@@ -15,10 +15,10 @@ async function loadLibrary() {
                 title: s.title,
                 img: s.cover ? s.cover : 'Pic/cover-placeholder.png',
                 link: (s.last_read_chapter_id && parseInt(s.last_read_chapter_id) > 0)
-                    ? `Readingpage.php?story_id=${s.story_id}&chapter_id=${s.last_read_chapter_id}`
-                    : `Readingpage.php?story_id=${s.story_id}`,
+                    ? `Readingpage.php?story_id=${s.story_id}&chapter_id=${s.last_read_chapter_id}&from=library`
+                    : `Readingpage.php?story_id=${s.story_id}&from=library`,
                 progress: parseFloat(s.progress_percent || 0),
-                favorite: false, // Default since favorite isn't a direct DB table but we can toggle visually if liked
+                favorite: parseInt(s.is_favorite || 0) === 1,
                 lastRead: s.last_read_at ? new Date(s.last_read_at.replace(/-/g, '/')).getTime() : 0,
                 is_complete: parseInt(s.is_complete || 0)
             }));
@@ -28,10 +28,10 @@ async function loadLibrary() {
                 title: s.title,
                 img: s.cover ? s.cover : 'Pic/cover-placeholder.png',
                 link: (s.last_read_chapter_id && parseInt(s.last_read_chapter_id) > 0)
-                    ? `Readingpage.php?story_id=${s.story_id}&chapter_id=${s.last_read_chapter_id}`
-                    : `Readingpage.php?story_id=${s.story_id}`,
+                    ? `Readingpage.php?story_id=${s.story_id}&chapter_id=${s.last_read_chapter_id}&from=library`
+                    : `Readingpage.php?story_id=${s.story_id}&from=library`,
                 progress: parseFloat(s.progress_percent || 0),
-                favorite: false,
+                favorite: parseInt(s.is_favorite || 0) === 1,
                 lastRead: s.last_read_at ? new Date(s.last_read_at.replace(/-/g, '/')).getTime() : 0,
                 is_complete: parseInt(s.is_complete || 0)
             }));
@@ -155,7 +155,7 @@ function goTo(link) {
 }
 
 function goBack() {
-    window.history.back();
+    window.location.href = "homepage.php";
 }
 
 // FILTER

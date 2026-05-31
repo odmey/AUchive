@@ -478,8 +478,8 @@ const closeBtn = document.getElementById("closeStoryPrep");
 
 if (openBtn && storyPrepModal && closeBtn) {
     openBtn.addEventListener("click", () => { storyPrepModal.style.display = "flex"; });
-    closeBtn.addEventListener("click", () => { 
-        storyPrepModal.style.display = "none"; 
+    closeBtn.addEventListener("click", () => {
+        storyPrepModal.style.display = "none";
         const form = storyPrepModal.querySelector("form");
         if (form) {
             form.reset();
@@ -672,3 +672,64 @@ document.querySelectorAll('.story-card').forEach(card => {
         }, 200);
     }
 })();
+
+// ==========================
+// FOLLOWERS / FOLLOWING MODAL
+// ==========================
+const followersBtn = document.getElementById("followersBtn");
+const followingBtn = document.getElementById("followingBtn");
+const followModal = document.getElementById("followModal");
+const closeFollowModal = document.getElementById("closeFollowModal");
+const modalTitle = document.getElementById("modalTitle");
+const userList = document.getElementById("userList");
+
+function openFollowModal(title, users) {
+    if (!followModal || !modalTitle || !userList) return;
+    modalTitle.textContent = title;
+    userList.innerHTML = "";
+
+    if (!users || users.length === 0) {
+        userList.innerHTML = `<div style="text-align:center; color:#888; padding:30px; font-size:13px;">Belum ada data.</div>`;
+    } else {
+        users.forEach(user => {
+            const redirectUrl = `profile_person.php?id=${user.user_id}`;
+            userList.innerHTML += `
+                <div class="user-item" onclick="window.location.href='${redirectUrl}'" style="display:flex; align-items:center; gap:14px; padding:10px 20px; cursor:pointer; transition:background 0.2s;">
+                    <img src="${user.image}" onerror="this.src='Pic/profileicon.jpg'" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div class="user-info" style="display:flex; flex-direction:column; gap:2px;">
+                        <h4 style="margin:0; font-size:14px; color:#fff; font-weight:600;">${user.name}</h4>
+                        <p style="margin:0; font-size:12px; color:#aaa;">${user.username}</p>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    followModal.style.display = "flex";
+}
+
+if (followersBtn) {
+    followersBtn.addEventListener("click", () => {
+        openFollowModal("Followers", followersData);
+    });
+}
+
+if (followingBtn) {
+    followingBtn.addEventListener("click", () => {
+        openFollowModal("Following", followingData);
+    });
+}
+
+if (closeFollowModal) {
+    closeFollowModal.addEventListener("click", () => {
+        followModal.style.display = "none";
+    });
+}
+
+if (followModal) {
+    followModal.addEventListener("click", (e) => {
+        if (e.target === followModal) {
+            followModal.style.display = "none";
+        }
+    });
+}

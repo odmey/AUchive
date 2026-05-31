@@ -977,3 +977,7 @@ body {
     outline: 2px solid rgba(255, 255, 255, 0.85);
     outline-offset: -1px;
 }
+
+#userList .user-item:hover {
+    background: #2a2a2a !important;
+}

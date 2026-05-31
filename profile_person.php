@@ -142,9 +142,6 @@ $joinDate = date('F Y', strtotime($author['created_at']));
                             Follow
                         </button>
                     <?php endif; ?>
-                    <button class="message-btn" onclick="alert('Fitur pesan segera datang!')">
-                        Message
-                    </button>
                 </div>
             </div>
 

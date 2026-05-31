@@ -164,8 +164,7 @@ body {
 
 /* FOLLOW BUTTON */
 
-.follow-btn,
-.message-btn {
+.follow-btn {
     padding: 8px 18px;
     border-radius: 25px;
     font-weight: 600;
@@ -185,18 +184,7 @@ body {
     background: #e6d93f;
 }
 
-/* MESSAGE */
-
-.message-btn {
-    background: transparent;
-    border: 1px solid #FFF44F;
-    color: #FFF44F;
-}
-
-.message-btn:hover {
-    background: #FFF44F;
-    color: black;
-}
+/* MESSAGE REMOVED */
 
 /* STORIES */
 
@@ -311,8 +299,7 @@ body {
         width: 100%;
     }
 
-    .follow-btn,
-    .message-btn {
+    .follow-btn {
         flex: 1;
     }
 
@@ -343,7 +330,7 @@ body {
 .follow-modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
 
     display: flex;
     justify-content: center;
