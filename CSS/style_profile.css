@@ -1013,3 +1013,32 @@ body {
 #userList .user-item:hover {
     background: #2a2a2a !important;
 }
+
+/* FOLLOW BUTTON */
+.follow-btn {
+    background: var(--accent);
+    color: #000;
+    border: 1px solid var(--accent);
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255, 244, 79, 0.08);
+}
+
+.follow-btn:hover {
+    background: #e6d93f;
+    border-color: #e6d93f;
+    transform: translateY(-2px);
+}
+
+.follow-btn.active {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
+
+.follow-btn.active:hover {
+    background: rgba(255, 244, 79, 0.1);
+}

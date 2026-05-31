@@ -97,7 +97,7 @@ $joinDate = date('F Y', strtotime($author['created_at']));
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-    <link rel="stylesheet" href="CSS/profile_person.css">
+    <link rel="stylesheet" href="CSS/style_profile.css">
     <script src="JS/profile_person.js" defer></script>
 
     <title>Profile – @<?= htmlspecialchars($author['username']) ?></title>
@@ -112,23 +112,21 @@ $joinDate = date('F Y', strtotime($author['created_at']));
         </div>
 
         <div class="center">
-            <h3><?= htmlspecialchars($author['name']) ?></h3>
-            <p><?= count($stories) ?> published stories</p>
+            <h3 id="headerUsername"><?= htmlspecialchars($author['username']) ?></h3>
+            <p><?= count($stories) ?> posts</p>
         </div>
     </header>
 
     <div class="profile-container">
         <div class="cover">
-            <img src="<?= $profileBanSrc ?>" class="cover-img" onerror="this.src='Pic/profilebanner.jpg'">
+            <img src="<?= $profileBanSrc ?>" class="cover-img" onerror="this.style.display='none'">
         </div>
 
         <div class="profile-info">
-            <img src="<?= $profilePicSrc ?>" class="profile-pic" onerror="this.src='Pic/profileicon.jpg'">
+            <img src="<?= $profilePicSrc ?>" class="profile-pic" onerror="this.style.opacity='0'">
             <div class="top-row">
                 <div>
-                    <div class="name-wrap">
-                        <h2 class="name"><?= htmlspecialchars($author['name']) ?></h2>
-                    </div>
+                    <h2 class="name"><?= htmlspecialchars($author['name']) ?></h2>
                     <p class="username">@<?= htmlspecialchars($author['username']) ?></p>
                 </div>
 
@@ -152,10 +150,10 @@ $joinDate = date('F Y', strtotime($author['created_at']));
             <p class="join">Joined <?= $joinDate ?></p>
 
             <div class="stats">
-                <span class="stat-btn" id="followingBtn">
+                <span class="stat-btn" id="followingBtn" style="cursor:pointer;">
                     <b id="followingCountVal"><?= $followingCount ?></b> Following
                 </span>
-                <span class="stat-btn" id="followersBtn">
+                <span class="stat-btn" id="followersBtn" style="cursor:pointer;">
                     <b id="followersCountVal"><?= $followersCount ?></b> Followers
                 </span>
             </div>
@@ -171,7 +169,7 @@ $joinDate = date('F Y', strtotime($author['created_at']));
             ?>
                 <div class="story-card" style="cursor:pointer;" onclick="window.location.href='Detstory.php?id=<?= $s['story_id'] ?>'">
                     <div class="story-cover">
-                        <img src="<?= $coverSrc ?>" onerror="this.src='Pic/cover-placeholder.png'">
+                        <img src="<?= $coverSrc ?>" onerror="this.style.display='none'">
                     </div>
                     <div class="story-content">
                         <div class="story-title">
@@ -191,28 +189,28 @@ $joinDate = date('F Y', strtotime($author['created_at']));
         <?php endif; ?>
     </div>
 
-    <div class="follow-modal" id="followModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Followers</h3>
-                <span class="material-symbols-outlined close-modal" id="closeModal">
-                    close
-                </span>
+    <!-- Modal Followers / Following (Matched to Profile.php) -->
+    <div id="followModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#1e1e1e; border-radius:12px; width:90%; max-width:400px; max-height:80vh; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid #333;">
+                <h3 id="modalTitle" style="margin:0; font-size:16px; color:#fff;">Followers</h3>
+                <span id="closeFollowModal" style="cursor:pointer; font-size:22px; color:#aaa;">&times;</span>
             </div>
-            <div class="user-list" id="userList">
-            </div>
+            <div id="userList" style="overflow-y:auto; padding:10px 0;"></div>
         </div>
     </div>
 
     <script>
         // Inject database follow lists directly to JS variables
         const followersData = <?= json_encode(array_map(fn($x) => [
+            'user_id'  => $x['user_id'],
             'name' => htmlspecialchars($x['name']),
             'username' => '@' . htmlspecialchars($x['username']),
             'image' => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
         ], $followersList)) ?>;
         
         const followingData = <?= json_encode(array_map(fn($x) => [
+            'user_id'  => $x['user_id'],
             'name' => htmlspecialchars($x['name']),
             'username' => '@' . htmlspecialchars($x['username']),
             'image' => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'

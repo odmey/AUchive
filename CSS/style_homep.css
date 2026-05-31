@@ -66,8 +66,10 @@ body {
 }
 
 .search-bar {
-    flex: 0 0 auto;
-    width: 470px;
+    flex: 1 1 auto;
+    width: auto;
+    max-width: 470px;
+    min-width: 180px;
     height: 44px;
     background: rgb(255, 244, 79);
     border-radius: 50px;
@@ -670,4 +672,73 @@ body.modal-open {
 
 .form-message.success {
     color: #b7ffca;
+}
+
+/* ─── RESPONSIVE NAVBAR (SPLIT SCREEN & MOBILE) ──────────── */
+@media (max-width: 900px) {
+    .nav-lib-label {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 16px;
+        gap: 12px;
+    }
+    
+    .navbar-brand {
+        flex: 0 0 auto;
+        gap: 8px;
+    }
+    
+    .nav-logo {
+        height: 24px;
+    }
+    
+    .navbar-divider {
+        display: none;
+    }
+    
+    .search-bar {
+        max-width: none;
+        height: 38px;
+        padding: 0 14px;
+        min-width: 100px;
+    }
+    
+    .search-bar input {
+        margin-left: 8px;
+        font-size: 13px;
+    }
+    
+    .right-icons {
+        flex: 0 0 auto;
+        gap: 8px;
+    }
+    
+    .nav-btn {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+    
+    .nav-profile {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .settingacc .material-symbols-outlined,
+    .notif-acc .material-symbols-outlined {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 520px) {
+    .navbar-brand {
+        /* Hide library icon on extremely narrow viewports to ensure fit */
+        display: flex;
+    }
+    .nav-lib-icon {
+        display: none;
+    }
 }

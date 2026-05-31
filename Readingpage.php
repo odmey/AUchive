@@ -79,9 +79,11 @@ $next_chapter_id = null;
 $current_index = 0;
 $total_chapters = count($chapters);
 
+$current_chapter_title = '';
 foreach ($chapters as $index => $ch) {
     if ($ch['chapter_id'] == $chapter_id) {
         $current_index = $index + 1;
+        $current_chapter_title = $ch['chapter_title'];
         
         // Periksa keberadaan chapter sebelum ini
         if (isset($chapters[$index - 1])) {
@@ -111,9 +113,10 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
     
 </head>
 <body>
-<div class="reading-page">
-
-    <aside class="chapter-sidebar">
+    <aside class="chapter-sidebar" id="chapterSidebar">
+        <button class="sidebar-pull-tab" id="chapterToggleBtn" title="Toggle Chapters">
+            <span class="material-symbols-outlined" id="toggleArrowIcon">chevron_right</span>
+        </button>
         <h2>Chapters</h2>
         <div class="chapter-list">
             <?php if (empty($chapters)): ?>
@@ -148,15 +151,10 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                 </a>
             <?php endif; ?>
         </div>
-        <div class="story-header">
-            <p>
-                <?= htmlspecialchars($story['genre_name']) ?>
-                <?= $story['tags'] ? ' • ' . htmlspecialchars($story['tags']) : '' ?>
-            </p>
-            <h1><?= htmlspecialchars($story['title']) ?></h1>
-            <p class="author">by <?= htmlspecialchars($story['username']) ?></p>
-            
-        </div>
+
+        <?php if ($chapter_id > 0): ?>
+            <h1 class="current-chapter-title"><?= htmlspecialchars($current_chapter_title) ?></h1>
+        <?php endif; ?>
 
         <section class="chapter-blocks" id="chapterBlocks">
             <?php if ($chapter_id > 0):
@@ -278,8 +276,15 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
             <?php else: ?>
                 <span></span> <?php endif; ?>
 
-            <div class="nav-progress-text">
-                Chapter <?= $current_index ?> of <?= $total_chapters ?> (<?= round($progress_pct) ?>%)
+            <div class="nav-center-actions">
+                <?php if (!$from_editor): ?>
+                    <button class="like-btn-heart<?= $isLiked ? ' active' : '' ?>" id="likeChapterBtn" title="Like Chapter">
+                        <span class="material-symbols-outlined"><?= $isLiked ? 'favorite' : 'favorite_border' ?></span>
+                    </button>
+                <?php endif; ?>
+                <div class="nav-progress-text">
+                    Chapter <?= $current_index ?> of <?= $total_chapters ?>
+                </div>
             </div>
 
             <?php if ($next_chapter_id): ?>
@@ -289,12 +294,6 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
             <?php else: ?>
                 <span></span> <?php endif; ?>
         </div>
-                    
-        <?php if (!$from_editor): ?>
-            <div class="chapter-actions">
-               <button class="like-btn<?= $isLiked ? ' active' : '' ?>" id="likeChapterBtn"><?= $isLiked ? '❤️ Liked' : '❤️ Like' ?></button>
-            </div>
-        <?php endif; ?>
 
         <?php if (!$from_editor): ?>
             <section class="comments-section">
@@ -313,7 +312,6 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
         <?php endif; ?>
 
     </main>
-</div>
 
 <script>
     const CURRENT_STORY_ID = <?= (int)$story_id ?>;
