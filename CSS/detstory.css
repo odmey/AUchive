@@ -33,8 +33,10 @@ body {
 .cover-section {
     flex: 0 0 auto;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 20px;
 }
 
 .cover-section img {
@@ -68,12 +70,18 @@ body {
     letter-spacing: 0.5px;
 }
 
+.story-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
 /* Genre */
 .genre {
     color: #d9d9d9;
     font-size: 15px;
-    margin-bottom: 18px;
-    line-height: 1.7;
+    line-height: 1;
 }
 
 /* Status */
@@ -85,7 +93,6 @@ body {
     color: #ffe66d;
     border: 1px solid rgba(255, 230, 109, 0.15);
     font-size: 14px;
-    margin-bottom: 28px;
 }
 
 /* Description */
@@ -93,26 +100,118 @@ body {
     font-size: 15px;
     line-height: 2;
     color: #cfcfcf;
-    margin-bottom: 35px;
+    margin: 0;
     max-width: 90%;
+    text-align: justify;
+}
+
+/* Description Container & WhatsApp-like Toggle */
+.description-container {
+    position: relative;
+    max-height: 120px;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.toggle-desc-btn {
+    background: none;
+    border: none;
+    color: #ffe66d;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 30px;
+    transition: 0.2s;
+    font-family: inherit;
+    display: inline-block;
+}
+
+.toggle-desc-btn:hover {
+    color: #fff1a8;
+    text-decoration: underline;
+}
+
+/* Tag List */
+.story-tags-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.tags-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    overflow: hidden;
+    max-height: 38px; /* Height of exactly one line of tags */
+    transition: max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    flex: 1;
+}
+
+.tags-wrapper.expanded {
+    max-height: 500px;
+}
+
+.story-tag {
+    font-size: 13px;
+    color: #ffe66d;
+    background: rgba(255, 230, 109, 0.05);
+    border: 1px solid rgba(255, 230, 109, 0.12);
+    padding: 6px 14px;
+    border-radius: 99px;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.story-tag:hover {
+    background: rgba(255, 230, 109, 0.1);
+    transform: translateY(-1px);
+}
+
+.toggle-tags-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ffe66d;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s;
+    padding: 6px 14px;
+    border-radius: 99px;
+}
+
+.toggle-tags-btn:hover {
+    background: #ffe66d;
+    color: #111;
+    border: 1px solid #ffe66d;
+    transform: translateY(-1px);
 }
 
 /* Stats */
 .story-stats {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
+    gap: 24px;
     margin-bottom: 35px;
 }
 
 .story-stats span {
-    padding: 12px 18px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 14px;
-    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
     color: #e8e8e8;
-    backdrop-filter: blur(10px);
+}
+
+.story-stats span .material-symbols-outlined {
+    color: #ffe66d;
+    font-size: 20px;
 }
 
 /* Buttons */
@@ -229,4 +328,160 @@ body {
     background: #ffe66d;
     color: #111;
     transform: scale(1.05);
+}
+
+/* Chapters Styling */
+.chapters-title-label {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffe66d;
+    margin-bottom: 15px;
+    margin-top: 25px;
+}
+
+.chapters-pill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-height: 480px; /* Limits display to ~10 chapters */
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Customized scrollbar for premium aesthetic */
+.chapters-pill-list::-webkit-scrollbar {
+    width: 6px;
+}
+.chapters-pill-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 99px;
+}
+.chapters-pill-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 230, 109, 0.3);
+    border-radius: 99px;
+}
+.chapters-pill-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 230, 109, 0.6);
+}
+
+.chapter-pill-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background: #ffe66d;
+    color: #111111;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    text-align: left;
+    box-shadow: 0 4px 15px rgba(255, 230, 109, 0.15);
+}
+
+.chapter-pill-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 230, 109, 0.25);
+    background: #fff093;
+}
+
+/* Responsive visibility */
+.desktop-chapters-section {
+    display: block;
+    width: 260px; /* matches cover width */
+}
+
+.mobile-chapters-section {
+    display: none;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+/* Hide desktop chapters and show mobile chapters on smaller screens / windowed mode & center all content */
+@media (max-width: 1024px) {
+    .desktop-chapters-section {
+        display: none;
+    }
+    
+    .mobile-chapters-section {
+        display: block;
+        order: 8;
+        margin-bottom: 30px;
+        width: 100%;
+    }
+
+    .story-detail-page {
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 24px;
+        gap: 35px;
+    }
+
+    .cover-section {
+        align-items: center;
+        width: 100%;
+    }
+
+    .info-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        min-width: unset;
+    }
+
+    .action-buttons {
+        order: 7;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .story-title {
+        order: 2;
+        text-align: center;
+        font-size: 36px;
+    }
+
+    .story-meta-row {
+        order: 3;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .description-container {
+        order: 4;
+        max-width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .description {
+        text-align: justify;
+    }
+
+    .toggle-desc-btn {
+        order: 5;
+        margin-bottom: 25px;
+    }
+
+    .story-tags-container {
+        order: 6;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .story-stats {
+        order: 1;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .writer-card {
+        order: 9;
+        justify-content: center;
+        text-align: left;
+        width: 100%;
+    }
 }

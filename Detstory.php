@@ -97,6 +97,16 @@ $stmtTags = $pdo->prepare("
 $stmtTags->execute([$storyId]);
 $tags = $stmtTags->fetchAll(PDO::FETCH_COLUMN);
 
+// ── 3b. Query list chapter cerita ─────────────────────────────
+$stmtChapters = $pdo->prepare("
+    SELECT chapter_id, chapter_title
+    FROM chapters
+    WHERE story_id = ? AND status = 'published'
+    ORDER BY created_at ASC
+");
+$stmtChapters->execute([$storyId]);
+$storyChapters = $stmtChapters->fetchAll();
+
 // ── 4. Siapkan variabel tampilan ─────────────────────────────
 // cover & profile_pic di DB sudah menyimpan path lengkap ("Uploads/...")
 $coverSrc     = !empty($story['cover'])
@@ -129,6 +139,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($story['title']) ?> — AUchive</title>
     <meta name="description" content="<?= htmlspecialchars(mb_substr($story['description'] ?? '', 0, 160)) ?>">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/detstory.css">
 </head>
 
@@ -145,34 +156,137 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <img src="<?= $coverSrc ?>"
                  alt="Cover <?= htmlspecialchars($story['title']) ?>"
                  onerror="this.src='Pic/cover-placeholder.png'">
+
+            <!-- Chapters list for Desktop / Full screen (hidden on mobile/windowed) -->
+            <?php if (!empty($storyChapters)): ?>
+            <div class="desktop-chapters-section">
+                <h2 class="chapters-title-label">Chapters</h2>
+                <div class="chapters-pill-list">
+                    <?php foreach ($storyChapters as $ch): ?>
+                        <a href="Readingpage.php?story_id=<?= $storyId ?>&chapter_id=<?= $ch['chapter_id'] ?>" class="chapter-pill-btn">
+                            <?= htmlspecialchars($ch['chapter_title']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
 
-        <!-- Story Info -->
+        <!-- Story Info (Right Column) -->
         <div class="info-section">
-
             <h1 class="story-title"><?= htmlspecialchars($story['title']) ?></h1>
 
-            <?php if ($genrePart || $tagList): ?>
-            <p class="genre">
-                <?= $genrePart . $tagList ?>
-            </p>
-            <?php endif; ?>
+            <div class="story-meta-row">
+                <span class="status">
+                    Status: <?= $statusLabel ?>
+                </span>
 
-            <p class="status">
-                Status: <?= $statusLabel ?>
-            </p>
+                <?php if (!empty($story['genre_name'])): ?>
+                <span class="genre">
+                    <?= htmlspecialchars($story['genre_name']) ?>
+                </span>
+                <?php endif; ?>
+            </div>
 
             <?php if (!empty($story['description'])): ?>
-            <p class="description">
-                <?= nl2br(htmlspecialchars($story['description'])) ?>
-            </p>
+            <div class="description-container" id="descContainer">
+                <p class="description" id="descText"><?= nl2br(htmlspecialchars($story['description'])) ?><span class="desc-ellipsis" id="descEllipsis" style="display: none; color: #ffe66d;"> (.....)</span></p>
+            </div>
+            <button class="toggle-desc-btn" id="toggleDescBtn" style="display: none;" onclick="toggleDescription()">lihat lebih banyak</button>
+            <script>
+                function initDescToggle() {
+                    const container = document.getElementById('descContainer');
+                    const text = document.getElementById('descText');
+                    const btn = document.getElementById('toggleDescBtn');
+                    const ellipsis = document.getElementById('descEllipsis');
+                    if (!container || !text || !btn) return;
+                    
+                    // We check height temporarily set to auto to get real scrollHeight
+                    container.style.maxHeight = 'none';
+                    const fullHeight = text.scrollHeight;
+                    
+                    if (fullHeight > 120) {
+                        if (!container.classList.contains('expanded')) {
+                            container.style.maxHeight = '120px';
+                            if (ellipsis) ellipsis.style.display = 'inline';
+                        } else {
+                            container.style.maxHeight = 'none';
+                            if (ellipsis) ellipsis.style.display = 'none';
+                        }
+                        btn.style.display = 'inline-block';
+                    } else {
+                        container.style.maxHeight = 'none';
+                        btn.style.display = 'none';
+                        if (ellipsis) ellipsis.style.display = 'none';
+                    }
+                }
+                function toggleDescription() {
+                    const container = document.getElementById('descContainer');
+                    const btn = document.getElementById('toggleDescBtn');
+                    const ellipsis = document.getElementById('descEllipsis');
+                    if (!container || !btn) return;
+                    
+                    if (container.classList.contains('expanded')) {
+                        container.classList.remove('expanded');
+                        container.style.maxHeight = '120px';
+                        btn.textContent = 'lihat lebih banyak';
+                        if (ellipsis) ellipsis.style.display = 'inline';
+                    } else {
+                        container.classList.add('expanded');
+                        container.style.maxHeight = 'none';
+                        btn.textContent = 'lebih sedikit';
+                        if (ellipsis) ellipsis.style.display = 'none';
+                    }
+                }
+                window.addEventListener('DOMContentLoaded', initDescToggle);
+                window.addEventListener('resize', initDescToggle);
+            </script>
+            <?php endif; ?>
+
+            <!-- Tag List Section: Below description, above stats -->
+            <?php if (!empty($tags)): ?>
+            <div class="story-tags-container">
+                <div class="tags-wrapper" id="tagsWrapper">
+                    <?php foreach ($tags as $tag): ?>
+                        <span class="story-tag">#<?= htmlspecialchars($tag) ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <button class="toggle-tags-btn" id="toggleTagsBtn" style="display: none;" onclick="toggleTags()">lebih banyak</button>
+            </div>
+            <script>
+                function initTagsToggle() {
+                    const wrapper = document.getElementById('tagsWrapper');
+                    const btn = document.getElementById('toggleTagsBtn');
+                    if (!wrapper || !btn) return;
+                    
+                    if (wrapper.scrollHeight > wrapper.clientHeight) {
+                        btn.style.display = 'inline-block';
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                }
+                function toggleTags() {
+                    const wrapper = document.getElementById('tagsWrapper');
+                    const btn = document.getElementById('toggleTagsBtn');
+                    if (!wrapper || !btn) return;
+                    
+                    wrapper.classList.toggle('expanded');
+                    if (wrapper.classList.contains('expanded')) {
+                        btn.textContent = 'lebih sedikit';
+                    } else {
+                        btn.textContent = 'lebih banyak';
+                    }
+                }
+                window.addEventListener('DOMContentLoaded', initTagsToggle);
+                window.addEventListener('resize', initTagsToggle);
+            </script>
             <?php endif; ?>
 
             <!-- Stats -->
             <div class="story-stats">
-                <span>📚 <?= (int)$story['chapter_count'] ?> Chapter<?= $story['chapter_count'] != 1 ? 's' : '' ?></span>
-                <span>👁️ <span id="viewCount"><?= (int)$story['total_views'] ?></span> Views</span>
-                <span>❤️ <span id="likeCount"><?= (int)$story['total_likes'] ?></span> Likes</span>
+                <span><span class="material-symbols-outlined">menu_book</span> <?= (int)$story['chapter_count'] ?></span>
+                <span><span class="material-symbols-outlined">visibility</span> <span id="viewCount"><?= (int)$story['total_views'] ?></span></span>
+                <span><span class="material-symbols-outlined">favorite</span> <span id="likeCount"><?= (int)$story['total_likes'] ?></span></span>
             </div>
 
             <!-- Buttons -->
@@ -187,23 +301,36 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                 </a>
             </div>
 
-            <!-- Writer Info -->
-            <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit;">
-                <div class="writer-card" style="cursor:pointer; transition:0.2s;">
-                    <img src="<?= $authorAvatar ?>"
-                         alt="<?= htmlspecialchars($story['author_name'] ?? $story['username']) ?>"
-                         onerror="this.src='Pic/profileicon.jpg'">
-
-                    <div class="writer-info">
-                        <h3>@<?= htmlspecialchars($story['username'] ?? '') ?></h3>
-                        <p><?= htmlspecialchars($story['bio'] ?? 'Penulis AUchive') ?></p>
-                        <small><?= (int)$story['author_chapter_count'] ?> Chapter<?= $story['author_chapter_count'] != 1 ? 's' : '' ?> ditulis</small>
-                    </div>
+            <!-- Chapters list for Mobile / Windowed (hidden on desktop) -->
+            <?php if (!empty($storyChapters)): ?>
+            <div class="mobile-chapters-section">
+                <h2 class="chapters-title-label">Chapters</h2>
+                <div class="chapters-pill-list">
+                    <?php foreach ($storyChapters as $ch): ?>
+                        <a href="Readingpage.php?story_id=<?= $storyId ?>&chapter_id=<?= $ch['chapter_id'] ?>" class="chapter-pill-btn">
+                            <?= htmlspecialchars($ch['chapter_title']) ?>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
-            </a>
+            </div>
+            <?php endif; ?>
 
         </div>
 
+        <!-- Writer Info -->
+        <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: block; width: 100%;">
+            <div class="writer-card" style="cursor:pointer; transition:0.2s;">
+                <img src="<?= $authorAvatar ?>"
+                     alt="<?= htmlspecialchars($story['author_name'] ?? $story['username']) ?>"
+                     onerror="this.src='Pic/profileicon.jpg'">
+
+                <div class="writer-info">
+                    <h3>@<?= htmlspecialchars($story['username'] ?? '') ?></h3>
+                    <p><?= htmlspecialchars($story['bio'] ?? 'Penulis AUchive') ?></p>
+                    <small><?= (int)$story['author_chapter_count'] ?> Chapter<?= $story['author_chapter_count'] != 1 ? 's' : '' ?> ditulis</small>
+                </div>
+            </div>
+        </a>
     </section>
 
     <?php if ($isLoggedIn): ?>
