@@ -31,16 +31,21 @@ body {
 
 /* Cover */
 .cover-section {
-    flex: 1 1 280px;
+    flex: 0 0 auto;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
 }
 
 .cover-section img {
-    width: 220px;
-    max-width: 320px;
-    height: auto;
+    width: 260px;
+    height: 370px;
+    min-width: 260px;
+    max-width: 260px;
+    min-height: 370px;
+    max-height: 370px;
     object-fit: cover;
+    object-position: center top;
     display: block;
     border-radius: 14px;
     box-shadow:

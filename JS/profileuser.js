@@ -41,6 +41,9 @@ let tempBannerImage = defaultBannerImage;
 // Null = tidak ada perubahan, PHP tidak akan update kolom tsb.
 let pendingProfileFile = null;
 let pendingBannerFile = null;
+let pendingEditCoverFile = null;  // Cropped cover blob for edit story
+let pendingCreateCoverFile = null; // Cropped cover blob for create story
+let tempEditCoverImage = '';       // Preview URL for current edit cover
 
 // ==========================
 // IMAGE EDITOR (CROPPER)
@@ -76,7 +79,7 @@ function openImageEditor(file, targetType) {
             setTimeout(() => {
                 destroyCropper();
                 cropper = new Cropper(cropperImage, {
-                    aspectRatio: targetType === "profile" ? 1 : 16 / 9,
+                    aspectRatio: targetType === "profile" ? 1 : ((targetType === "cover" || targetType === "create_cover") ? 2 / 3 : 16 / 9),
                     viewMode: 1,
                     dragMode: "move",
                     autoCropArea: 0.85,
@@ -140,25 +143,50 @@ if (applyCropBtn) {
     applyCropBtn.addEventListener("click", function () {
         if (!cropper) return;
 
+        // Dimensions based on target type
+        const dims = {
+            profile:      { width: 800,  height: 800  },
+            banner:       { width: 1600, height: 900  },
+            cover:        { width: 520,  height: 780  },  // 2:3 portrait book cover
+            create_cover: { width: 520,  height: 780  }
+        };
+        const { width, height } = dims[currentTarget] || dims.banner;
+
         const canvas = cropper.getCroppedCanvas({
-            width: currentTarget === "profile" ? 800 : 1600,
-            height: currentTarget === "profile" ? 800 : 900,
+            width, height,
             imageSmoothingEnabled: true,
             imageSmoothingQuality: "high"
         });
 
-        // Preview pakai dataURL (cepat, tidak perlu server)
         const previewUrl = canvas.toDataURL("image/jpeg", 0.92);
 
-        // File untuk dikirim ke PHP pakai toBlob (lebih efisien dari base64)
         canvas.toBlob(function (blob) {
-            const fileName = currentTarget === "profile" ? "profile.jpg" : "banner.jpg";
-            const croppedFile = new File([blob], fileName, { type: "image/jpeg" });
+            const fileNames = { profile: "profile.jpg", banner: "banner.jpg", cover: "cover.jpg", create_cover: "cover.jpg" };
+            const croppedFile = new File([blob], fileNames[currentTarget] || "image.jpg", { type: "image/jpeg" });
 
             if (currentTarget === "profile") {
                 tempProfileImage = previewUrl;
                 pendingProfileFile = croppedFile;
                 if (profilePreview) profilePreview.src = previewUrl;
+            } else if (currentTarget === "cover") {
+                // Update story cover preview in the edit modal
+                tempEditCoverImage = previewUrl;
+                pendingEditCoverFile = croppedFile;
+                const prev = document.getElementById("editPreviewCover");
+                const box  = prev ? prev.closest(".cover-box") : null;
+                const lbl  = box  ? box.querySelector(".upload-btn-label") : null;
+                if (prev) { prev.src = previewUrl; prev.style.display = "block"; }
+                if (box)  box.classList.add("has-image");
+                if (lbl)  lbl.textContent = "Change Cover";
+            } else if (currentTarget === "create_cover") {
+                // Update story cover preview in the create modal
+                pendingCreateCoverFile = croppedFile;
+                const prev = document.getElementById("previewCover");
+                const box  = prev ? prev.closest(".cover-box") : null;
+                const lbl  = box  ? box.querySelector(".upload-btn-label") : null;
+                if (prev) { prev.src = previewUrl; prev.style.display = "block"; }
+                if (box)  box.classList.add("has-image");
+                if (lbl)  lbl.textContent = "Change Cover";
             } else {
                 tempBannerImage = previewUrl;
                 pendingBannerFile = croppedFile;
@@ -514,31 +542,13 @@ if (openBtn && storyPrepModal && closeBtn) {
 const coverInput = document.getElementById("cover");
 if (coverInput) {
     coverInput.addEventListener("change", function () {
-        const file = this.files[0];
-        const prev = document.getElementById("previewCover");
-        const box = prev ? prev.closest(".cover-box") : null;
-        const label = box ? box.querySelector(".upload-btn-label") : null;
+        const file = this.files && this.files[0];
+        if (!file) return;
 
-        if (!file) {
-            if (prev) {
-                prev.src = "";
-                prev.style.display = "none";
-            }
-            if (box) box.classList.remove("has-image");
-            if (label) label.textContent = "Upload Cover";
-            return;
-        }
+        pendingCreateCoverFile = file;
+        openImageEditor(file, "create_cover");
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            if (prev) {
-                prev.src = e.target.result;
-                prev.style.display = "block";
-            }
-            if (box) box.classList.add("has-image");
-            if (label) label.textContent = "Change Cover";
-        };
-        reader.readAsDataURL(file);
+        setTimeout(() => { this.value = ""; }, 300);
     });
 }
 
@@ -567,82 +577,120 @@ function openEditStoryPrep(storyId) {
     const card = document.getElementById(`story-${storyId}`);
     if (!card) return;
 
-    const title = card.getAttribute('data-title') || '';
+    const title       = card.getAttribute('data-title')       || '';
     const description = card.getAttribute('data-description') || '';
-    const genre = card.getAttribute('data-genre') || '';
-    const tags = card.getAttribute('data-tags') || '';
-    const cover = card.getAttribute('data-cover') || '';
+    const genre       = card.getAttribute('data-genre')       || '';
+    const tags        = card.getAttribute('data-tags')        || '';
+    const cover       = card.getAttribute('data-cover')       || '';
 
     // Populate fields
-    document.getElementById('editStoryId').value = storyId;
-    document.getElementById('editStoryTitle').value = title;
-    document.getElementById('editStoryDesc').value = description;
-    document.getElementById('editStoryGenre').value = genre;
-    document.getElementById('editStoryTags').value = tags;
+    document.getElementById('editStoryId').value      = storyId;
+    document.getElementById('editStoryTitle').value   = title;
+    document.getElementById('editStoryDesc').value    = description;
+    document.getElementById('editStoryGenre').value   = genre;
+    document.getElementById('editStoryTags').value    = tags;
 
-    const prev = document.getElementById('editPreviewCover');
-    const box = prev ? prev.closest(".cover-box") : null;
-    const label = box ? box.querySelector(".upload-btn-label") : null;
+    // Reset pending cover state each time the modal opens
+    pendingEditCoverFile = null;
+    tempEditCoverImage   = cover;
+
+    const prev  = document.getElementById('editPreviewCover');
+    const box   = prev ? prev.closest(".cover-box") : null;
+    const label = box  ? box.querySelector(".upload-btn-label") : null;
 
     if (prev) {
         if (cover) {
             prev.src = cover;
             prev.style.display = 'block';
-            if (box) box.classList.add("has-image");
+            if (box)   box.classList.add("has-image");
             if (label) label.textContent = "Change Cover";
         } else {
             prev.src = '';
             prev.style.display = 'none';
-            if (box) box.classList.remove("has-image");
+            if (box)   box.classList.remove("has-image");
             if (label) label.textContent = "Upload Cover";
         }
     }
 
-    if (editStoryPrepModal) {
-        editStoryPrepModal.style.display = 'flex';
-    }
+    if (editStoryPrepModal) editStoryPrepModal.style.display = 'flex';
 }
 
 // ==========================
 // EDIT COVER PREVIEW
 // ==========================
+// ── Edit Story Cover → open Cropper editor ───────────────────
 const editCoverInput = document.getElementById("editCover");
 if (editCoverInput) {
     editCoverInput.addEventListener("change", function () {
-        const file = this.files[0];
-        const prev = document.getElementById("editPreviewCover");
-        const box = prev ? prev.closest(".cover-box") : null;
-        const label = box ? box.querySelector(".upload-btn-label") : null;
+        const file = this.files && this.files[0];
+        if (!file) return;
 
-        if (!file) {
-            const card = document.getElementById(`story-${document.getElementById('editStoryId').value}`);
-            const originalCover = card ? card.getAttribute('data-cover') : '';
-            if (prev) {
-                if (originalCover) {
-                    prev.src = originalCover;
-                    prev.style.display = "block";
-                    if (box) box.classList.add("has-image");
-                    if (label) label.textContent = "Change Cover";
-                } else {
-                    prev.src = "";
-                    prev.style.display = "none";
-                    if (box) box.classList.remove("has-image");
-                    if (label) label.textContent = "Upload Cover";
-                }
-            }
-            return;
+        // Capture file reference BEFORE resetting input value
+        pendingEditCoverFile = file;
+
+        // Open the shared image editor (same one used for profile/banner)
+        openImageEditor(file, "cover");
+
+        // Reset after a short delay so FileReader can read the file first
+        setTimeout(() => { this.value = ""; }, 300);
+    });
+}
+
+// ── Intercept Edit Story form submit to inject cropped cover ──
+const editStoryForm = document.querySelector("#editstoryprep form");
+if (editStoryForm) {
+    editStoryForm.addEventListener("submit", async function (e) {
+        // Only intercept when there is a cropped cover to inject
+        if (!pendingEditCoverFile) return; // let normal POST handle it
+
+        e.preventDefault();
+
+        const submitBtn = editStoryForm.querySelector("button[type='submit']");
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving..."; }
+
+        const fd = new FormData(editStoryForm);
+        // Replace whatever file was in the input with our cropped blob
+        fd.delete("cover");
+        fd.append("cover", pendingEditCoverFile, "cover.jpg");
+
+        try {
+            const res  = await fetch("PHP/edit_story_prep.php", { method: "POST", body: fd });
+            // edit_story_prep.php redirects → follow redirect URL
+            const finalUrl = res.url;
+            pendingEditCoverFile = null;
+            tempEditCoverImage   = '';
+            window.location.href = finalUrl;
+        } catch (err) {
+            alert("Gagal menyimpan cover. Coba lagi.");
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Save Changes"; }
         }
+    });
+}
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            if (prev) {
-                prev.src = e.target.result;
-                prev.style.display = "block";
-            }
-            if (box) box.classList.add("has-image");
-            if (label) label.textContent = "Change Cover";
-        };
-        reader.readAsDataURL(file);
+// ── Intercept Create Story form submit to inject cropped cover ──
+const createStoryForm = document.querySelector("#storyprep form");
+if (createStoryForm) {
+    createStoryForm.addEventListener("submit", async function (e) {
+        if (!pendingCreateCoverFile) return; // let normal POST handle it
+
+        e.preventDefault();
+
+        const submitBtn = createStoryForm.querySelector("button[type='submit']");
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving..."; }
+
+        const fd = new FormData(createStoryForm);
+        fd.delete("cover");
+        fd.append("cover", pendingCreateCoverFile, "cover.jpg");
+
+        try {
+            const res  = await fetch("PHP/story_prep.php", { method: "POST", body: fd });
+            const finalUrl = res.url;
+            pendingCreateCoverFile = null;
+            window.location.href = finalUrl;
+        } catch (err) {
+            alert("Gagal menyimpan cerita. Coba lagi.");
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Next"; }
+        }
     });
 }
 

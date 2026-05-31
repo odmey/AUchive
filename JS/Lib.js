@@ -103,23 +103,24 @@ async function removeFromLibrary(storyId) {
 }
 
 // CARD
-function createCard(s, showProgress = false) {
+function createCard(s) {
+    const pct = Math.min(100, Math.max(0, parseFloat(s.progress || 0)));
+    const isComplete = parseInt(s.is_complete || 0) === 1;
+    const barColor = isComplete ? '#2ecc71' : '#fff44f';
+
     return `
     <div class="card">
-        <div>
-            ${s.favorite ? '<div class="love">❤</div>' : ''}
+        <div class="card-cover-wrap">
+            ${s.favorite ? '<div class="love">♥</div>' : ''}
             <img src="${s.img}" onclick="goTo('${s.link}')" alt="${s.title}" onerror="this.src='Pic/cover-placeholder.png'">
-
-            <div class="card-content" onclick="goTo('${s.link}')">
-                <h3>${s.title}</h3>
-
-                ${showProgress ? `
-                <p>Membaca - ${s.progress}%</p>
-                <div class="progress">
-                    <div class="progress-bar" style="width:${s.progress}%"></div>
-                </div>
-                ` : ''}
+            <!-- Reading progress bar pinned at the bottom of the cover -->
+            <div class="card-progress-bar-track">
+                <div class="card-progress-bar-fill" style="width:${pct}%; background:${barColor};"></div>
             </div>
+        </div>
+
+        <div class="card-content" onclick="goTo('${s.link}')">
+            <h3>${s.title}</h3>
         </div>
 
         <button class="library-btn" style="background:#e74c3c; color:white; border:none; border-top:1px solid rgba(255,255,255,0.1); width:100%; padding:8px 0; font-weight:600; cursor:pointer;" onclick="removeFromLibrary(${s.id})">
@@ -135,13 +136,13 @@ function render(allData, continueData) {
 
     if (allStory) {
         allStory.innerHTML = allData.length > 0 
-            ? allData.map(s => createCard(s, false)).join("") 
+            ? allData.map(s => createCard(s)).join("") 
             : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada cerita yang disimpan.</div>`;
     }
 
     if (continueReading) {
         continueReading.innerHTML = continueData.length > 0 
-            ? continueData.map(s => createCard(s, true)).join("") 
+            ? continueData.map(s => createCard(s)).join("") 
             : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada bacaan aktif saat ini.</div>`;
     }
 }
@@ -189,7 +190,7 @@ filterBtns.forEach(btn => {
             if (continueContainer) {
                 continueContainer.style.display = "grid";
                 continueContainer.innerHTML = filteredContinue.length > 0
-                    ? filteredContinue.map(s => createCard(s, true)).join("")
+                    ? filteredContinue.map(s => createCard(s)).join("")
                     : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada bacaan aktif saat ini.</div>`;
             }
 
@@ -228,7 +229,7 @@ filterBtns.forEach(btn => {
         const allStory = document.getElementById("all-story");
         if (allStory) {
             allStory.innerHTML = filteredStories.length > 0
-                ? filteredStories.map(s => createCard(s, false)).join("")
+                ? filteredStories.map(s => createCard(s)).join("")
                 : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada cerita dalam daftar ini.</div>`;
         }
     });
