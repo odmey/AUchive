@@ -119,7 +119,7 @@ function getChapterId() {
     return parseInt(params.get('chapter_id')) || 0;
 }
 
-function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar) {
+function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubbleImage) {
     const row = document.createElement('div');
     row.className = `bubble-row ${side}`;
     row.setAttribute('data-sender', senderName || '');
@@ -139,7 +139,19 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar) {
     const b = document.createElement('div');
     b.className = 'bubble';
     b.style.background = color;
-    b.innerHTML = `${escHtml(msg)}<div class="bubble-meta"><span class="bubble-time">${ts}</span></div>`;
+    
+    let innerHTML = '';
+    if (side === 'left' && senderName) {
+        innerHTML += `<div class="bubble-sender-name">${escHtml(senderName)}</div>`;
+    }
+    if (bubbleImage) {
+        innerHTML += `<div class="bubble-img-wrap" style="margin-bottom: 4px;"><img src="${bubbleImage}"></div>`;
+    }
+    if (msg) {
+        innerHTML += `<div class="bubble-text-content">${escHtml(msg)}</div>`;
+    }
+    innerHTML += `<div class="bubble-meta"><span class="bubble-time">${ts}</span></div>`;
+    b.innerHTML = innerHTML;
     
     row.appendChild(av);
     row.appendChild(b);
@@ -173,32 +185,28 @@ function addBubble() {
     // Helper to process and send the bubble
     function processBubble(customAvatarBase64) {
         if (imgFile) {
-            const row = document.createElement('div');
-            row.className = `bubble-row ${side}`;
-            const av = document.createElement('div');
-            av.className = 'row-avatar';
-            if (customAvatarBase64) {
-                av.innerHTML = `<img src="${customAvatarBase64}" alt="">`;
-                av.setAttribute('data-custom', 'true');
-            } else {
-                const avSrc = side === 'left' ? avatars.contact : avatars.me;
-                av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
-            }
-
             const r = new FileReader();
             r.onload = e => {
-                const w = document.createElement('div');
-                w.className = 'bubble-img-wrap';
-                w.innerHTML = `<img src="${e.target.result}"><span class="bubble-time">${ts}</span>`;
-                row.appendChild(av);
-                row.appendChild(w);
-                document.getElementById('chatArea').appendChild(row);
-                scrollBottom();
+                const imgBase64 = e.target.result;
+                renderBubbleHtml(msg, side, color, ts, finalSender, customAvatarBase64, imgBase64);
+                bubbleSortOrder++;
+                postBubbleToAPI({
+                    chapter_id:    getChapterId(),
+                    roomchat_id:   getRoomchatId(), 
+                    message:       msg,
+                    sender_name:   finalSender,
+                    position:      side,
+                    color:         color,
+                    sort_order:    bubbleSortOrder,
+                    time_label:    ts,
+                    sender_avatar: customAvatarBase64 || null,
+                    bubble_image:  imgBase64
+                });
             };
             r.readAsDataURL(imgFile);
             document.getElementById('imageUpload').value = '';
         } else {
-            renderBubbleHtml(msg, side, color, ts, finalSender, customAvatarBase64);
+            renderBubbleHtml(msg, side, color, ts, finalSender, customAvatarBase64, null);
             bubbleSortOrder++;
             postBubbleToAPI({
                 chapter_id:    getChapterId(),
@@ -209,7 +217,8 @@ function addBubble() {
                 color:         color,
                 sort_order:    bubbleSortOrder,
                 time_label:    ts,
-                sender_avatar: customAvatarBase64 || null
+                sender_avatar: customAvatarBase64 || null,
+                bubble_image:  null
             });
         }
 
@@ -397,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (typeof INITIAL_BUBBLES !== 'undefined' && Array.isArray(INITIAL_BUBBLES)) {
         INITIAL_BUBBLES.forEach(b => {
-            renderBubbleHtml(b.bubble_text, b.position, b.color, b.time_label, b.contact_name, b.sender_avatar || null);
+            renderBubbleHtml(b.bubble_text, b.position, b.color, b.time_label, b.contact_name, b.sender_avatar || null, b.bubble_image || null);
             if (parseInt(b.sort_order) > bubbleSortOrder) {
                 bubbleSortOrder = parseInt(b.sort_order);
             }

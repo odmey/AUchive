@@ -726,3 +726,15 @@ body {
     font-family: 'Bitter', serif;
     text-align: center;
 }
+
+.bubble-img-wrap {
+    max-width: 220px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 4px;
+}
+.bubble-img-wrap img {
+    width: 100%;
+    display: block;
+}

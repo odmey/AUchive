@@ -31,17 +31,19 @@ $color       = isset($body['color'])       ? trim($body['color'])         : '#00
 $sort_order  = isset($body['sort_order'])  ? (int)$body['sort_order']     : 0;
 $time_label  = isset($body['time_label'])  ? trim($body['time_label'])    : '';
 $sender_avatar = isset($body['sender_avatar']) ? $body['sender_avatar']    : null;
+$bubble_image  = isset($body['bubble_image'])  ? $body['bubble_image']     : null;
 
 $sender_avatar = uploadToCloud($sender_avatar);
+$bubble_image  = uploadToCloud($bubble_image);
 
 if ($chapter_id <= 0 || $roomchat_id<=0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid roomchat_id tidak valid']);
     exit;
 }
-if ($message === '') {
+if ($message === '' && empty($bubble_image)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'message tidak boleh kosong']);
+    echo json_encode(['success' => false, 'message' => 'message atau foto tidak boleh kosong']);
     exit;
 }
 if (!in_array($position, ['left', 'right', 'center'])) {
@@ -52,9 +54,9 @@ try {
     $pdo  = getDB();
     $stmt = $pdo->prepare("
         INSERT INTO bubbles
-            (chapter_id, roomchat_id, bubble_text, contact_name, color, position, sort_order, time_label, sender_avatar)
+            (chapter_id, roomchat_id, bubble_text, contact_name, color, position, sort_order, time_label, sender_avatar, bubble_image)
         VALUES
-            (:chapter_id, :roomchat_id, :bubble_text, :contact_name, :color, :position, :sort_order, :time_label, :sender_avatar)
+            (:chapter_id, :roomchat_id, :bubble_text, :contact_name, :color, :position, :sort_order, :time_label, :sender_avatar, :bubble_image)
     ");
     $stmt->execute([
         ':chapter_id'     => $chapter_id,
@@ -66,6 +68,7 @@ try {
         ':sort_order'     => $sort_order,
         ':time_label'     => $time_label,
         ':sender_avatar'  => $sender_avatar,
+        ':bubble_image'   => $bubble_image,
     ]);
 
     echo json_encode([

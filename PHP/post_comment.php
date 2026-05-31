@@ -88,6 +88,41 @@ $stmt->execute([
 ]);
 $comment_id = $pdo->lastInsertId();
 
+// ── Trigger Notification untuk Author ────────────────────────
+try {
+    $stmtStory = $pdo->prepare("
+        SELECT c.story_id, s.title AS story_title, s.user_id AS author_id 
+        FROM chapters c 
+        JOIN stories s ON c.story_id = s.story_id 
+        WHERE c.chapter_id = ?
+    ");
+    $stmtStory->execute([$chapter_id]);
+    $storyInfo = $stmtStory->fetch();
+
+    if ($storyInfo && (int)$storyInfo['author_id'] !== (int)$user_id) {
+        $actor_username = $_SESSION['username'] ?? 'Seseorang';
+        $title = "@{$actor_username} mengomentari cerita Anda \"" . $storyInfo['story_title'] . "\"";
+        $body = $comment_text;
+        $link_url = "Readingpage.php?story_id=" . $storyInfo['story_id'] . "&chapter_id=" . $chapter_id;
+
+        $stmtNotif = $pdo->prepare("
+            INSERT INTO notifications (user_id, type, title, body, ref_story_id, actor_user_id, link_url, created_at)
+            VALUES (?, 'story', ?, ?, ?, ?, ?, NOW())
+        ");
+        $stmtNotif->execute([
+            $storyInfo['author_id'],
+            $title,
+            $body,
+            $storyInfo['story_id'],
+            $user_id,
+            $link_url
+        ]);
+    }
+} catch (Exception $e) {
+    // Log error but don't fail the comment posting
+    error_log("Failed to create comment notification: " . $e->getMessage());
+}
+
 // ── Kembalikan data komentar baru ────────────────────────────
 // JS bisa langsung render tanpa reload halaman
 echo json_encode([

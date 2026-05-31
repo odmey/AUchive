@@ -505,3 +505,16 @@ body {
   font-weight: 500;
   font-family: 'Poppins', sans-serif;
 }
+
+.bubble-img-wrap {
+  max-width: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.bubble-img-wrap img {
+  width: 100%;
+  display: block;
+}

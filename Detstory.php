@@ -33,7 +33,8 @@ $stmt = $pdo->prepare("
         u.name      AS author_name,
         u.profile_pic,
         u.bio,
-        (SELECT COUNT(*) FROM chapters c WHERE c.story_id = s.story_id) AS chapter_count
+        (SELECT COUNT(*) FROM chapters c WHERE c.story_id = s.story_id AND c.status = 'published') AS chapter_count,
+        (SELECT COUNT(*) FROM chapters c JOIN stories st ON c.story_id = st.story_id WHERE st.user_id = s.user_id AND c.status = 'published') AS author_chapter_count
     FROM stories s
     LEFT JOIN genres g ON g.genre_id   = s.genre_id
     LEFT JOIN users  u ON u.user_id    = s.user_id
@@ -50,7 +51,7 @@ if (!$story) {
 }
 
 // ── 2b. Query status interaksi user (like, follow, save) ──────
-$isLiked = false;
+$isFavorite = false;
 $isSaved = false;
 $isFollowing = false;
 
@@ -59,10 +60,17 @@ $isLoggedIn = isset($_SESSION['user_id']);
 if ($isLoggedIn) {
     $currentUserId = $_SESSION['user_id'];
     
-    // Cek likes
-    $stmtLike = $pdo->prepare("SELECT 1 FROM story_likes WHERE user_id = ? AND story_id = ?");
-    $stmtLike->execute([$currentUserId, $storyId]);
-    $isLiked = (bool)$stmtLike->fetch();
+    // Cek favorite
+    $stmtFav = $pdo->prepare("
+        SELECT ls.is_favorite FROM library_stories ls
+        JOIN library l ON l.library_id = ls.library_id
+        WHERE l.user_id = ? AND ls.story_id = ?
+    ");
+    $stmtFav->execute([$currentUserId, $storyId]);
+    $favRow = $stmtFav->fetch();
+    if ($favRow) {
+        $isFavorite = (bool)$favRow['is_favorite'];
+    }
 
     // Cek library
     $stmtLib = $pdo->prepare("
@@ -170,7 +178,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <!-- Buttons -->
             <div class="action-buttons">
                 <?php if ($isLoggedIn): ?>
-                    <button class="like-btn<?= $isLiked ? ' active' : '' ?>"   id="likeBtn"><?= $isLiked ? 'Liked' : 'Like' ?></button>
+                    <button class="fav-btn<?= $isFavorite ? ' active' : '' ?>"   id="favBtn"><?= $isFavorite ? 'Favorited' : 'Favorite' ?></button>
                     <button class="save-btn<?= $isSaved ? ' active' : '' ?>"   id="saveBtn"><?= $isSaved ? 'Saved' : 'Save' ?></button>
                     <button class="follow-btn<?= $isFollowing ? ' active' : '' ?>" id="followBtn"><?= $isFollowing ? 'Following' : 'Follow' ?></button>
                 <?php endif; ?>
@@ -189,7 +197,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                     <div class="writer-info">
                         <h3>@<?= htmlspecialchars($story['username'] ?? '') ?></h3>
                         <p><?= htmlspecialchars($story['bio'] ?? 'Penulis AUchive') ?></p>
-                        <small><?= (int)$story['chapter_count'] ?> Chapter<?= $story['chapter_count'] != 1 ? 's' : '' ?> ditulis</small>
+                        <small><?= (int)$story['author_chapter_count'] ?> Chapter<?= $story['author_chapter_count'] != 1 ? 's' : '' ?> ditulis</small>
                     </div>
                 </div>
             </a>

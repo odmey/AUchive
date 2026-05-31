@@ -130,6 +130,7 @@ body {
 
 /* Secondary Buttons */
 .like-btn,
+.fav-btn,
 .save-btn,
 .follow-btn {
     background: rgba(255, 255, 255, 0.05);
@@ -138,6 +139,7 @@ body {
 }
 
 .like-btn.active,
+.fav-btn.active,
 .save-btn.active,
 .follow-btn.active {
     background: #ffe66d;

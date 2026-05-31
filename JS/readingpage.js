@@ -2,10 +2,10 @@
 function escapeHTML(str) {
     if (!str) return '';
     return str.replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&#039;");
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 window.addEventListener("DOMContentLoaded", function () {
@@ -42,6 +42,37 @@ window.addEventListener("DOMContentLoaded", function () {
     }
 
     loadComments();
+
+    // LIKE BUTTON FOR CHAPTER IN READINGPAGE
+    const likeChapterBtn = document.getElementById("likeChapterBtn");
+    if (likeChapterBtn && typeof CURRENT_CHAPTER_ID !== 'undefined' && CURRENT_CHAPTER_ID > 0) {
+        likeChapterBtn.addEventListener("click", async function () {
+            likeChapterBtn.disabled = true;
+            try {
+                const response = await fetch("PHP/like_chapter_action.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chapter_id: CURRENT_CHAPTER_ID })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    if (result.action === 'liked') {
+                        likeChapterBtn.classList.add("active");
+                        likeChapterBtn.textContent = "❤️ Liked";
+                    } else {
+                        likeChapterBtn.classList.remove("active");
+                        likeChapterBtn.textContent = "❤️ Like";
+                    }
+                } else {
+                    alert(result.message || "Gagal menyukai chapter.");
+                }
+            } catch (error) {
+                console.error("Error liking chapter:", error);
+            } finally {
+                likeChapterBtn.disabled = false;
+            }
+        });
+    }
 });
 
 

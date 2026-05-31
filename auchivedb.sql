@@ -39,6 +39,7 @@ CREATE TABLE `bubbles` (
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `time_label` varchar(20) NOT NULL DEFAULT '',
   `sender_avatar` varchar(255) DEFAULT NULL,
+  `bubble_image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -61,6 +62,21 @@ CREATE TABLE `bubble_image` (
   `bubble_id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL,
   `display_order` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chapter_likes`
+--
+
+CREATE TABLE `chapter_likes` (
+  `like_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `chapter_id` int(11) NOT NULL,
+  `liked_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`like_id`),
+  UNIQUE KEY `unique_user_chapter` (`user_id`,`chapter_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -224,6 +240,7 @@ CREATE TABLE `library_stories` (
   `last_read_chapter_id` int(11) DEFAULT NULL,
   `progress_percent` decimal(5,2) DEFAULT 0.00,
   `is_complete` tinyint(1) DEFAULT 0,
+  `is_favorite` tinyint(1) DEFAULT 0,
   `update_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
