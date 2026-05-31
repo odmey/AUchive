@@ -263,6 +263,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 window.closeLogin();
                 loginForm.reset();
+                // Admins go directly to the admin portal
+                if (data.role === "admin") {
+                    window.location.href = "Etmin.php";
+                    return;
+                }
                 await checkSession();
             } else {
                 setMessage(loginMessage, data.message, "error");
@@ -289,8 +294,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await res.json();
 
             if (data.success) {
-                currentUser = { username: data.username, name: data.name };
-                updateNavbar();
+                // Public signup always creates a regular user
+                await checkSession();
                 window.closeSignup();
                 signupForm.reset();
             } else {

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // ── Unified Application State ─────────────────────────────
   const state = {
-    activeTab: "dashboard",
+    activeTab: "empty",
     
     // Pagination & Search States
     users: { page: 1, limit: 15, total: 0, search: "" },
@@ -179,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Set title and reload data
     const titleMap = {
+      empty: "Admin Portal",
       dashboard: "Admin Dashboard",
       users: "Manage Users",
       stories: "Manage Stories",
@@ -351,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ── Tab 3: Stories Loader ─────────────────────────────────
   async function loadStories() {
-    el.storiesTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px 0;">Loading stories list...</td></tr>`;
+    el.storiesTable.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px 0;">Loading stories list...</td></tr>`;
     
     const params = new URLSearchParams({
       page: state.stories.page,
@@ -370,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     el.storiesTable.innerHTML = "";
     if (data.stories.length === 0) {
-      el.storiesTable.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px 0;">No matching stories found</td></tr>`;
+      el.storiesTable.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px 0;">No matching stories found</td></tr>`;
       return;
     }
 
@@ -394,7 +395,8 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>@${escapeHtml(story.author)}</td>
         <td>${story.published_at ? new Date(story.published_at).toLocaleDateString() : '-'}</td>
         <td><span class="status ${statusClass}">${statusLabel}</span></td>
-        <td>👁️ ${story.total_views} | ❤️ ${story.total_likes}</td>
+        <td>👁️ ${story.total_views}</td>
+        <td>❤️ ${story.total_likes}</td>
         <td>
           <div class="btn-action-row" style="justify-content: flex-end;">
             ${isDraft ? `
@@ -839,8 +841,44 @@ document.addEventListener("DOMContentLoaded", function () {
       .replace(/'/g, "&#039;");
   }
 
+  // ── Create Admin Account Handler ────────────────────────────
+  const createAdminBtn = document.getElementById("create-admin-btn");
+  if (createAdminBtn) {
+    createAdminBtn.addEventListener("click", async function () {
+      const username = document.getElementById("new-admin-username").value.trim();
+      const name = document.getElementById("new-admin-name").value.trim();
+      const email = document.getElementById("new-admin-email").value.trim();
+      const password = document.getElementById("new-admin-password").value;
+
+      if (!username || !name || !email || !password) {
+        showToast("All fields are required to create an admin account.", "error");
+        return;
+      }
+
+      createAdminBtn.disabled = true;
+      createAdminBtn.textContent = "Creating...";
+
+      const res = await apiFetch("PHP/admin_action.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "create_admin", username, name, email, password })
+      });
+
+      createAdminBtn.disabled = false;
+      createAdminBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;">person_add</span> Create Admin Account`;
+
+      if (res && res.success) {
+        showToast(res.message);
+        document.getElementById("new-admin-username").value = "";
+        document.getElementById("new-admin-name").value = "";
+        document.getElementById("new-admin-email").value = "";
+        document.getElementById("new-admin-password").value = "";
+      }
+    });
+  }
+
   // ── System Initializer ──────────────────────────────────────
-  // Trigger standard dashboard view immediately
-  switchTab("dashboard");
+  // Trigger standard empty view immediately
+  switchTab("empty");
 
 });

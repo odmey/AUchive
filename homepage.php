@@ -43,6 +43,18 @@ $staticFallbackNewest = [
     ['story_id' => null, 'title' => 'Karya 7', 'cover' => 'Pic/karya7.jpg'],
     ['story_id' => null, 'title' => 'Karya 8', 'cover' => 'Pic/karya8.jpg']
 ];
+
+// Fetch system warning
+$systemWarning = '';
+try {
+    $warnStmt = $pdo->query("SELECT setting_value FROM system_settings WHERE setting_key = 'system_warning' LIMIT 1");
+    $warnRow = $warnStmt ? $warnStmt->fetch() : false;
+    if ($warnRow && !empty($warnRow['setting_value'])) {
+        $systemWarning = htmlspecialchars($warnRow['setting_value']);
+    }
+} catch (Exception $e) {
+    // Table may not exist yet, ignore
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,6 +75,15 @@ $staticFallbackNewest = [
 </head>
 
 <body>
+
+    <?php if (!empty($systemWarning)): ?>
+    <!-- SYSTEM WARNING BANNER -->
+    <div id="systemWarningBanner" style="background:linear-gradient(90deg,#e74c3c,#c0392b);color:#fff;padding:12px 20px;text-align:center;font-family:Poppins,sans-serif;font-size:14px;font-weight:500;position:relative;z-index:9998;display:flex;align-items:center;justify-content:center;gap:10px;">
+        <span class="material-symbols-outlined" style="font-size:20px;">warning</span>
+        <span><?= $systemWarning ?></span>
+        <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;margin-left:15px;line-height:1;">&times;</button>
+    </div>
+    <?php endif; ?>
 
     <!-- HEADER -->
     <div class="header-wrapper">

@@ -22,8 +22,66 @@ $body   = json_decode(file_get_contents('php://input'), true) ?? [];
 $action = trim($body['action'] ?? '');
 $pdo    = getDB();
 
+// Auto-create system_settings table if it doesn't exist
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS `system_settings` (
+        `setting_key`   varchar(100) NOT NULL,
+        `setting_value` text         DEFAULT NULL,
+        PRIMARY KEY (`setting_key`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+");
+
+// Insert defaults if not present
+$defaults = [
+    'site_name'      => 'AUchive Fanfiction Platform',
+    'system_warning' => '',
+    'server_mode'    => 'online',
+    'engine_version' => 'v1.4.0-production'
+];
+foreach ($defaults as $k => $v) {
+    $check = $pdo->prepare("SELECT COUNT(*) FROM system_settings WHERE setting_key = ?");
+    $check->execute([$k]);
+    if ((int)$check->fetchColumn() === 0) {
+        $pdo->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES (?, ?)")->execute([$k, $v]);
+    }
+}
+
 try {
     switch ($action) {
+
+        // ── ADMIN REGISTRATION ───────────────────────────
+        case 'create_admin':
+            $username = trim($body['username'] ?? '');
+            $name     = trim($body['name'] ?? '');
+            $email    = trim($body['email'] ?? '');
+            $password = $body['password'] ?? '';
+
+            if (empty($username) || empty($name) || empty($email) || empty($password)) {
+                throw new Exception('All fields are required.');
+            }
+            if (strlen($username) < 3 || !preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+                throw new Exception('Username must be at least 3 alphanumeric characters/underscores.');
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new Exception('Invalid email format.');
+            }
+            if (strlen($password) < 8) {
+                throw new Exception('Password must be at least 8 characters.');
+            }
+
+            // Check if username or email already exists
+            $stmt = $pdo->prepare('SELECT user_id FROM users WHERE email = ? OR username = ?');
+            $stmt->execute([$email, $username]);
+            if ($stmt->fetch()) {
+                throw new Exception('Email or username is already registered.');
+            }
+
+            $hash = password_hash($password, PASSWORD_BCRYPT);
+            $stmt = $pdo->prepare('INSERT INTO users (username, name, email, password, role) VALUES (?, ?, ?, ?, ?)');
+            $stmt->execute([$username, $name, $email, $hash, 'admin']);
+
+            echo json_encode(['success' => true, 'message' => 'New admin account created successfully!']);
+            break;
 
         // ── USER ACTIONS ─────────────────────────────────
         case 'ban_user':
@@ -121,6 +179,23 @@ try {
             if ($rid <= 0) throw new Exception('Invalid report ID');
             $pdo->prepare("UPDATE reports SET status = 'dismissed' WHERE report_id = ?")->execute([$rid]);
             echo json_encode(['success' => true, 'message' => 'Report has been dismissed']);
+            break;
+
+        // ── SYSTEM SETTINGS ACTIONS ──────────────────────
+        case 'update_system_warning':
+            $warning = trim($body['warning'] ?? '');
+            $pdo->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = 'system_warning'")->execute([$warning]);
+            echo json_encode(['success' => true, 'message' => $warning ? 'System warning published successfully!' : 'System warning cleared.']);
+            break;
+
+        case 'update_system_settings':
+            $allowed = ['site_name', 'engine_version', 'server_mode'];
+            foreach ($allowed as $key) {
+                if (isset($body[$key])) {
+                    $pdo->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = ?")->execute([trim($body[$key]), $key]);
+                }
+            }
+            echo json_encode(['success' => true, 'message' => 'System settings updated successfully!']);
             break;
 
         default:
