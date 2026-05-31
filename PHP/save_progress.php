@@ -97,13 +97,12 @@ $stmt->execute([$library_id, $story_id]);
 $existing = $stmt->fetch();
 
 if ($existing) {
-    // ── Update progress yang sudah ada ───────────────────────
-    // Hanya update jika progress NAIK (jangan turunkan progress)
+    // ── Update progress (dinamis: ikuti chapter yang sedang dibaca sekarang) ─
     $stmt = $pdo->prepare("
         UPDATE library_stories
         SET last_read_chapter_id = ?,
-            progress_percent     = GREATEST(progress_percent, ?),
-            is_complete          = IF(? >= 100, 1, is_complete),
+            progress_percent     = ?,
+            is_complete          = IF(? >= 100, 1, 0),
             update_at            = NOW()
         WHERE library_id = ? AND story_id = ?
     ");
