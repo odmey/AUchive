@@ -82,7 +82,7 @@ $followingList = $stmtFollowingList->fetchAll();
     <title>Profile – <?= htmlspecialchars($user['username']) ?></title>
 </head>
 
-<body>
+<body class="own-profile">
 
     <header class="profile-header">
         <div class="left">
@@ -104,70 +104,75 @@ $followingList = $stmtFollowingList->fetchAll();
         <div class="profile-info">
             <img src="<?= htmlspecialchars($profilePic) ?>" class="profile-pic" onerror="this.style.opacity='0'">
 
-            <div class="top-row">
-                <div>
-                    <h2 class="name"><?= htmlspecialchars($user['name']) ?></h2>
-                    <p class="username">@<?= htmlspecialchars($user['username']) ?></p>
-                </div>
-
+            <div class="profile-actions-row">
                 <button data-modal-target="#editMenu" class="edit-btn" type="button">Edit Profile</button>
+                <a href="Notification.php" class="action-icon-btn" title="Notifications">
+                    <span class="material-symbols-outlined">notifications</span>
+                </a>
+                <a href="Setting.php" class="action-icon-btn" title="Settings">
+                    <span class="material-symbols-outlined">settings</span>
+                </a>
+            </div>
 
-                <div class="edit-menu" id="editMenu">
-                    <div class="edit-menu-header">
-                        <div class="title">Edit Profile</div>
-                        <button data-close-button class="close-button" type="button">&times;</button>
+            <div class="profile-details">
+                <h2 class="name"><?= htmlspecialchars($user['name']) ?></h2>
+                <p class="username">@<?= htmlspecialchars($user['username']) ?></p>
+                <p class="bio"><?= htmlspecialchars($bio) ?></p>
+                <p class="join">Joined <?= $joinDate ?></p>
+
+                <div class="stats">
+                    <span class="stat-btn" id="followingBtn" style="cursor:pointer;">
+                        <b id="followingCountVal"><?= $followingCount ?></b> Following
+                    </span>
+                    <span class="stat-btn" id="followersBtn" style="cursor:pointer;">
+                        <b id="followersCountVal"><?= $followersCount ?></b> Followers
+                    </span>
+                </div>
+            </div>
+
+            <div class="edit-menu" id="editMenu">
+                <div class="edit-menu-header">
+                    <div class="title">Edit Profile</div>
+                    <button data-close-button class="close-button" type="button">&times;</button>
+                </div>
+                <div class="edit-menu-body">
+                    <div class="edit-section">
+                        <label>Profile Picture</label>
+                        <div class="image-row">
+                            <img id="profilePreview" class="preview-img preview-circle"
+                                src="<?= htmlspecialchars($profilePic) ?>" alt="Profile preview">
+                            <input type="file" id="editProfileImage" accept="image/*">
+                        </div>
                     </div>
-                    <div class="edit-menu-body">
-                        <div class="edit-section">
-                            <label>Profile Picture</label>
-                            <div class="image-row">
-                                <img id="profilePreview" class="preview-img preview-circle"
-                                    src="<?= htmlspecialchars($profilePic) ?>" alt="Profile preview">
-                                <input type="file" id="editProfileImage" accept="image/*">
-                            </div>
+                    <div class="edit-section">
+                        <label>Banner</label>
+                        <div class="image-row banner-row">
+                            <img id="bannerPreview" class="preview-img preview-banner"
+                                src="<?= htmlspecialchars($profileBan) ?>" alt="Banner preview">
+                            <input type="file" id="editBannerImage" accept="image/*">
                         </div>
-                        <div class="edit-section">
-                            <label>Banner</label>
-                            <div class="image-row banner-row">
-                                <img id="bannerPreview" class="preview-img preview-banner"
-                                    src="<?= htmlspecialchars($profileBan) ?>" alt="Banner preview">
-                                <input type="file" id="editBannerImage" accept="image/*">
-                            </div>
-                        </div>
-                        <div class="edit-section">
-                            <label for="editName">Name</label>
-                            <input type="text" id="editName" placeholder="Your name"
-                                value="<?= htmlspecialchars($user['name']) ?>">
+                    </div>
+                    <div class="edit-section">
+                        <label for="editName">Name</label>
+                        <input type="text" id="editName" placeholder="Your name"
+                            value="<?= htmlspecialchars($user['name']) ?>">
 
-                            <label for="editUsername">Username</label>
-                            <input type="text" id="editUsername" placeholder="Your username"
-                                value="<?= htmlspecialchars($user['username']) ?>">
+                        <label for="editUsername">Username</label>
+                        <input type="text" id="editUsername" placeholder="Your username"
+                            value="<?= htmlspecialchars($user['username']) ?>">
 
-                            <label for="editBio">Bio</label>
-                            <textarea id="editBio"
-                                placeholder="Write your bio..."><?= htmlspecialchars($user['bio'] ?? '') ?></textarea>
-                        </div>
-                        <div class="modal-actions">
-                            <button type="button" class="cancel-btn" data-close-button>Cancel</button>
-                            <button type="button" class="save-btn" id="saveProfileBtn">Save</button>
-                        </div>
+                        <label for="editBio">Bio</label>
+                        <textarea id="editBio"
+                            placeholder="Write your bio..."><?= htmlspecialchars($user['bio'] ?? '') ?></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" data-close-button>Cancel</button>
+                        <button type="button" class="save-btn" id="saveProfileBtn">Save</button>
                     </div>
                 </div>
-
-                <div id="overlay"></div>
             </div>
 
-            <p class="bio"><?= htmlspecialchars($bio) ?></p>
-            <p class="join">Joined <?= $joinDate ?></p>
-
-            <div class="stats">
-                <span class="stat-btn" id="followingBtn" style="cursor:pointer;">
-                    <b id="followingCountVal"><?= $followingCount ?></b> Following
-                </span>
-                <span class="stat-btn" id="followersBtn" style="cursor:pointer;">
-                    <b id="followersCountVal"><?= $followersCount ?></b> Followers
-                </span>
-            </div>
+            <div id="overlay"></div>
         </div>
     </div>
     <!-- Modal Followers / Following -->

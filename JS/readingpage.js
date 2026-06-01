@@ -8,6 +8,34 @@ function escapeHTML(str) {
         .replace(/'/g, "&#039;");
 }
 
+// ==============================
+// GUEST LOGIN TOAST
+// ==============================
+let _toastTimer = null;
+function showLoginToast() {
+    const toast = document.getElementById('loginToast');
+    const backdrop = document.getElementById('loginToastBackdrop');
+    if (!toast) return;
+
+    toast.classList.add('show');
+    if (backdrop) backdrop.classList.add('show');
+
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+        if (backdrop) backdrop.classList.remove('show');
+    }, 3000);
+
+    // Klik backdrop untuk tutup toast
+    if (backdrop) {
+        backdrop.onclick = () => {
+            toast.classList.remove('show');
+            backdrop.classList.remove('show');
+            clearTimeout(_toastTimer);
+        };
+    }
+}
+
 window.addEventListener("DOMContentLoaded", function () {
 
     const storyData = JSON.parse(localStorage.getItem("storyData"));
@@ -47,6 +75,11 @@ window.addEventListener("DOMContentLoaded", function () {
     const likeChapterBtn = document.getElementById("likeChapterBtn");
     if (likeChapterBtn && typeof CURRENT_CHAPTER_ID !== 'undefined' && CURRENT_CHAPTER_ID > 0) {
         likeChapterBtn.addEventListener("click", async function () {
+            // Cek guest
+            if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
+                showLoginToast();
+                return;
+            }
             likeChapterBtn.disabled = true;
             try {
                 const response = await fetch("PHP/like_chapter_action.php", {
@@ -56,12 +89,13 @@ window.addEventListener("DOMContentLoaded", function () {
                 });
                 const result = await response.json();
                 if (result.success) {
+                    const icon = likeChapterBtn.querySelector('.material-symbols-outlined');
                     if (result.action === 'liked') {
                         likeChapterBtn.classList.add("active");
-                        likeChapterBtn.textContent = "❤️ Liked";
+                        if (icon) icon.textContent = "favorite";
                     } else {
                         likeChapterBtn.classList.remove("active");
-                        likeChapterBtn.textContent = "❤️ Like";
+                        if (icon) icon.textContent = "favorite_border";
                     }
                 } else {
                     alert(result.message || "Gagal menyukai chapter.");
@@ -70,6 +104,52 @@ window.addEventListener("DOMContentLoaded", function () {
                 console.error("Error liking chapter:", error);
             } finally {
                 likeChapterBtn.disabled = false;
+            }
+        });
+    }
+
+    // INTERCEPT COMMENT BOX UNTUK GUEST
+    if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
+        const commentInput = document.getElementById('commentInput');
+        const postBtn = document.querySelector('.post-btn');
+        if (commentInput) {
+            commentInput.addEventListener('focus', function (e) {
+                e.preventDefault();
+                commentInput.blur();
+                showLoginToast();
+            });
+            commentInput.addEventListener('click', function () {
+                showLoginToast();
+            });
+        }
+        if (postBtn) {
+            postBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                showLoginToast();
+            }, true);
+        }
+    }
+
+    // TOGGLE CHAPTERS SIDEBAR (ARROW TAB)
+    const chapterToggleBtn = document.getElementById("chapterToggleBtn");
+    const chapterSidebar = document.getElementById("chapterSidebar");
+    const toggleArrowIcon = document.getElementById("toggleArrowIcon");
+    if (chapterToggleBtn && chapterSidebar && toggleArrowIcon) {
+        chapterToggleBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const isOpen = chapterSidebar.classList.toggle("show");
+            if (isOpen) {
+                toggleArrowIcon.textContent = "chevron_left";
+            } else {
+                toggleArrowIcon.textContent = "chevron_right";
+            }
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!chapterSidebar.contains(e.target) && e.target !== chapterToggleBtn && !chapterToggleBtn.contains(e.target)) {
+                chapterSidebar.classList.remove("show");
+                toggleArrowIcon.textContent = "chevron_right";
             }
         });
     }
@@ -155,6 +235,12 @@ async function addToLibrary(storyId) {
 // POST COMMENT
 async function postComment() {
 
+    // Guard: guest tidak boleh komentar
+    if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
+        showLoginToast();
+        return;
+    }
+
     const commentInput = document.getElementById("commentInput");
     const comment = commentInput.value.trim();
 
@@ -208,10 +294,10 @@ async function loadComments() {
         const comments = await response.json();
 
         commentList.innerHTML = comments.map(c => `
-            <div class="comment-item" style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 8px;">
-                <b style="color: #333; font-size: 14px;">${escapeHTML(c.username)}</b>
-                <p style="margin: 4px 0 0; color: #555; font-size: 13px;">${escapeHTML(c.comment_text)}</p>
-                <small style="color: #999; font-size: 11px;">${escapeHTML(c.created_at)}</small>
+            <div class="comment-item" style="padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 8px; background: #181818; border-radius: 12px;">
+                <b style="color: #FFF44F; font-size: 14px; display: block; margin-bottom: 4px;">${escapeHTML(c.username)}</b>
+                <p style="margin: 0 0 8px 0; color: #e0e0e0; font-size: 13.5px; line-height: 1.4;">${escapeHTML(c.comment_text)}</p>
+                <small style="color: #888; font-size: 11px;">${escapeHTML(c.created_at)}</small>
             </div>
         `).join("");
 

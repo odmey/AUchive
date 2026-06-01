@@ -84,43 +84,42 @@ try {
     </div>
     <?php endif; ?>
 
-    <!-- HEADER (Copied from homepage.php) -->
+    <!-- NAVBAR -->
     <div class="header-wrapper" style="position: sticky; top: 0; z-index: 100;">
-        <div class="banner">
-            <a href="homepage.php"><img src="Pic/TextLogo.png" alt="Logo"></a>
-        </div>
+        <nav class="navbar">
+            <!-- Left: Logo + Library -->
+            <div class="navbar-brand">
+                <img src="Pic/TextLogo.png" alt="AUchive" class="nav-logo" style="cursor:pointer;" onclick="window.location.href='homepage.php'">
+                <span class="navbar-divider"></span>
+                <span class="material-symbols-outlined nav-lib-icon" id="libBtn" title="Library">library_books</span>
+                <span class="nav-lib-label">Library</span>
+            </div>
 
-        <div class="white-banner">
-            <div class="search-container">
-                <span class="material-symbols-outlined icon" id="libBtn" title="Library">
-                    library_books
-                </span>
+            <!-- Center: Search -->
+            <div class="search-bar">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="searchInput" placeholder="Search AU Story..." value="<?= htmlspecialchars($keyword) ?>">
+                <div class="search-result" id="searchResult"></div>
+            </div>
 
-                <div class="search-bar">
-                    <span class="material-symbols-outlined">search</span>
-                    <input type="text" id="searchInput" placeholder="Search AU Story..." value="<?= htmlspecialchars($keyword) ?>">
-                    <div class="search-result" id="searchResult"></div>
+            <!-- Right: Nav Buttons / User Icons -->
+            <div class="right-icons" id="navArea">
+                <div class="guest-nav" id="guestNav" style="display:<?php echo $isLoggedIn ? 'none' : 'flex'; ?>">
+                    <button class="nav-btn" type="button" onclick="openLogin()">Login</button>
+                    <button class="nav-btn signup" type="button" onclick="openSignup()">Sign Up</button>
                 </div>
 
-                <div class="right-icons" id="navArea">
-                    <div class="guest-nav" id="guestNav" style="display:<?php echo $isLoggedIn ? 'none' : 'flex'; ?>">
-                        <button class="nav-btn" type="button" onclick="openLogin()">Login</button>
-                        <button class="nav-btn signup" type="button" onclick="openSignup()">Sign Up</button>
+                <div class="user-nav" id="userNav" style="display:<?php echo $isLoggedIn ? 'flex' : 'none'; ?>">
+                    <div class="notif-acc" id="notifBtn" title="Notifications">
+                        <span class="material-symbols-outlined">notifications</span>
                     </div>
-
-                    <div class="user-nav" id="userNav" style="display:<?php echo $isLoggedIn ? 'flex' : 'none'; ?>">
-                        <img src="Pic/profileicon.jpg" alt="Profile" class="nav-profile" id="profileBtn"
-                            title="Profile">
-                        <div class="settingacc" id="settingBtn" title="Settings">
-                            <span class="material-symbols-outlined">settings</span>
-                        </div>
-                        <div class="notif-acc" id="notifBtn" title="Notifications">
-                            <span class="material-symbols-outlined">notifications</span>
-                        </div>
+                    <div class="settingacc" id="settingBtn" title="Settings">
+                        <span class="material-symbols-outlined">settings</span>
                     </div>
+                    <img src="Pic/profileicon.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
                 </div>
             </div>
-        </div>
+        </nav>
     </div>
 
     <div class="search-page-container">

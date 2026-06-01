@@ -11,14 +11,6 @@
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <span class="material-icons icon" data-title="Beranda">home</span>
-    <span class="material-icons icon active" data-title="Library">menu_book</span>
-    <span class="material-icons icon" data-title="Profil">person</span>
-    <span class="material-icons icon" data-title="Pengaturan">settings</span>
-</div>
-
 <!-- MAIN -->
 <div class="main">
 

@@ -9,10 +9,11 @@ $pdo = getDB();
 
 // 1. Fetch Popular Stories (ordered by views & likes)
 $stmtPopular = $pdo->prepare("
-    SELECT story_id, title, cover, description, total_views 
-    FROM stories 
-    WHERE status = 'published' 
-    ORDER BY total_views DESC, total_likes DESC 
+    SELECT s.story_id, s.title, s.cover, s.description, s.total_views, u.username AS author_username
+    FROM stories s
+    LEFT JOIN users u ON s.user_id = u.user_id
+    WHERE s.status = 'published'
+    ORDER BY s.total_views DESC, s.total_likes DESC
     LIMIT 10
 ");
 $stmtPopular->execute();
@@ -20,10 +21,11 @@ $popularStories = $stmtPopular->fetchAll();
 
 // 2. Fetch Newest Stories (ordered by published_at DESC)
 $stmtNewest = $pdo->prepare("
-    SELECT story_id, title, cover, total_views 
-    FROM stories 
-    WHERE status = 'published' 
-    ORDER BY published_at DESC 
+    SELECT s.story_id, s.title, s.cover, s.total_views, u.username AS author_username
+    FROM stories s
+    LEFT JOIN users u ON s.user_id = u.user_id
+    WHERE s.status = 'published'
+    ORDER BY s.published_at DESC
     LIMIT 10
 ");
 $stmtNewest->execute();
@@ -31,17 +33,17 @@ $newestStories = $stmtNewest->fetchAll();
 
 // Static fallback stories in case DB has few elements (to maintain rich visual aesthetics)
 $staticFallbackPopular = [
-    ['story_id' => null, 'title' => 'Unseen', 'cover' => 'Pic/Unseen.png', 'total_views' => 1500],
-    ['story_id' => null, 'title' => 'Karya 2', 'cover' => 'Pic/karya2.jpg', 'total_views' => 920],
-    ['story_id' => null, 'title' => 'Karya 3', 'cover' => 'Pic/karya3.jpg', 'total_views' => 450],
-    ['story_id' => null, 'title' => 'Karya 4', 'cover' => 'Pic/karya4.jpg', 'total_views' => 310]
+    ['story_id' => null, 'title' => 'Unseen',  'cover' => 'Pic/Unseen.png',  'total_views' => 1500, 'author_username' => 'odmey_'],
+    ['story_id' => null, 'title' => 'Karya 2', 'cover' => 'Pic/karya2.jpg', 'total_views' => 920,  'author_username' => 'user_'],
+    ['story_id' => null, 'title' => 'Karya 3', 'cover' => 'Pic/karya3.jpg', 'total_views' => 450,  'author_username' => 'user_'],
+    ['story_id' => null, 'title' => 'Karya 4', 'cover' => 'Pic/karya4.jpg', 'total_views' => 310,  'author_username' => 'user_'],
 ];
 
 $staticFallbackNewest = [
-    ['story_id' => null, 'title' => 'Karya 5', 'cover' => 'Pic/karya5.jpg', 'total_views' => 200],
-    ['story_id' => null, 'title' => 'Karya 6', 'cover' => 'Pic/karya6.jpg', 'total_views' => 180],
-    ['story_id' => null, 'title' => 'Karya 7', 'cover' => 'Pic/karya7.jpg', 'total_views' => 120],
-    ['story_id' => null, 'title' => 'Karya 8', 'cover' => 'Pic/karya8.jpg', 'total_views' => 90]
+    ['story_id' => null, 'title' => 'Karya 5', 'cover' => 'Pic/karya5.jpg', 'total_views' => 200, 'author_username' => 'user_'],
+    ['story_id' => null, 'title' => 'Karya 6', 'cover' => 'Pic/karya6.jpg', 'total_views' => 180, 'author_username' => 'user_'],
+    ['story_id' => null, 'title' => 'Karya 7', 'cover' => 'Pic/karya7.jpg', 'total_views' => 120, 'author_username' => 'user_'],
+    ['story_id' => null, 'title' => 'Karya 8', 'cover' => 'Pic/karya8.jpg', 'total_views' => 90,  'author_username' => 'user_'],
 ];
 
 // Fetch system warning
@@ -68,7 +70,7 @@ try {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="CSS/style_homep.css">
 
     <script src="JS/lgsgpopmenu.js?v=2" defer></script>
@@ -85,43 +87,42 @@ try {
     </div>
     <?php endif; ?>
 
-    <!-- HEADER -->
+    <!-- NAVBAR -->
     <div class="header-wrapper">
-        <div class="banner">
-            <img src="Pic/TextLogo.png" alt="Logo">
-        </div>
+        <nav class="navbar">
+            <!-- Left: Logo + Library -->
+            <div class="navbar-brand">
+                <img src="Pic/TextLogo.png" alt="AUchive" class="nav-logo">
+                <span class="navbar-divider"></span>
+                <span class="material-symbols-outlined nav-lib-icon" id="libBtn" title="Library">library_books</span>
+                <span class="nav-lib-label">Library</span>
+            </div>
 
-        <div class="white-banner">
-            <div class="search-container">
-                <span class="material-symbols-outlined icon" id="libBtn" title="Library">
-                    library_books
-                </span>
+            <!-- Center: Search -->
+            <div class="search-bar">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="searchInput" placeholder="Search AU Story...">
+                <div class="search-result" id="searchResult"></div>
+            </div>
 
-                <div class="search-bar">
-                    <span class="material-symbols-outlined">search</span>
-                    <input type="text" id="searchInput" placeholder="Search AU Story...">
-                    <div class="search-result" id="searchResult"></div>
+            <!-- Right: Nav Buttons / User Icons -->
+            <div class="right-icons" id="navArea">
+                <div class="guest-nav" id="guestNav" style="display:<?php echo $isLoggedIn ? 'none' : 'flex'; ?>">
+                    <button class="nav-btn" type="button" onclick="openLogin()">Login</button>
+                    <button class="nav-btn signup" type="button" onclick="openSignup()">Sign Up</button>
                 </div>
 
-                <div class="right-icons" id="navArea">
-                    <div class="guest-nav" id="guestNav" style="display:<?php echo $isLoggedIn ? 'none' : 'flex'; ?>">
-                        <button class="nav-btn" type="button" onclick="openLogin()">Login</button>
-                        <button class="nav-btn signup" type="button" onclick="openSignup()">Sign Up</button>
+                <div class="user-nav" id="userNav" style="display:<?php echo $isLoggedIn ? 'flex' : 'none'; ?>">
+                    <div class="notif-acc" id="notifBtn" title="Notifications">
+                        <span class="material-symbols-outlined">notifications</span>
                     </div>
-
-                    <div class="user-nav" id="userNav" style="display:<?php echo $isLoggedIn ? 'flex' : 'none'; ?>">
-                        <img src="Pic/profileicon.jpg" alt="Profile" class="nav-profile" id="profileBtn"
-                            title="Profile">
-                        <div class="settingacc" id="settingBtn" title="Settings">
-                            <span class="material-symbols-outlined">settings</span>
-                        </div>
-                        <div class="notif-acc" id="notifBtn" title="Notifications">
-                            <span class="material-symbols-outlined">notifications</span>
-                        </div>
+                    <div class="settingacc" id="settingBtn" title="Settings">
+                        <span class="material-symbols-outlined">settings</span>
                     </div>
+                    <img src="Pic/profileicon.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
                 </div>
             </div>
-        </div>
+        </nav>
     </div>
 
     <!-- HERO SECTION -->
@@ -183,10 +184,13 @@ try {
                         <a href="<?= $link ?>" class="card-slider-link">
                             <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
                             <div class="card-slider-info">
-                                <h4><?= htmlspecialchars($s['title']) ?></h4>
-                                <span>👁️ <?= number_format((int)($s['total_views'] ?? 0)) ?> views</span>
+                                <span><span class="material-symbols-outlined">visibility</span> <?= number_format((int)($s['total_views'] ?? 0)) ?></span>
                             </div>
                         </a>
+                        <div class="card-slider-footer">
+                            <h4><?= htmlspecialchars($s['title']) ?></h4>
+                            <span class="card-author">by <?= htmlspecialchars($s['author_username'] ?? 'unknown') ?>_</span>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -211,10 +215,13 @@ try {
                         <a href="<?= $link ?>" class="card-slider-link">
                             <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
                             <div class="card-slider-info">
-                                <h4><?= htmlspecialchars($s['title']) ?></h4>
-                                <span>👁️ <?= number_format((int)($s['total_views'] ?? 0)) ?> views</span>
+                                <span><span class="material-symbols-outlined">visibility</span> <?= number_format((int)($s['total_views'] ?? 0)) ?></span>
                             </div>
                         </a>
+                        <div class="card-slider-footer">
+                            <h4><?= htmlspecialchars($s['title']) ?></h4>
+                            <span class="card-author">by <?= htmlspecialchars($s['author_username'] ?? 'unknown') ?>_</span>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </div>

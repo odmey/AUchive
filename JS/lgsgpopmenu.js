@@ -130,19 +130,24 @@ document.addEventListener("DOMContentLoaded", function () {
         toast.textContent = message;
         toast.style.cssText = `
             position: fixed;
-            top: 24px;
-            right: 24px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
             z-index: 9999;
-            background: ${type === "success" ? "#2d8a4e" : "#c0392b"};
+            background: ${type === "success" ? "rgba(45, 138, 78, 0.95)" : "rgba(192, 57, 43, 0.95)"};
             color: #fff;
-            padding: 14px 22px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 500;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            pointer-events: none;
         `;
         document.body.appendChild(toast);
 
@@ -150,14 +155,14 @@ document.addEventListener("DOMContentLoaded", function () {
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 toast.style.opacity = "1";
-                toast.style.transform = "translateY(0)";
+                toast.style.transform = "translate(-50%, -50%) scale(1)";
             });
         });
 
         // Fade out setelah 3 detik
         setTimeout(() => {
             toast.style.opacity = "0";
-            toast.style.transform = "translateY(-10px)";
+            toast.style.transform = "translate(-50%, -50%) scale(0.95)";
             setTimeout(() => toast.remove(), 350);
         }, 3000);
     }
@@ -169,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const cleanUrl = window.location.pathname;
         history.replaceState(null, "", cleanUrl);
         // Tampilkan toast setelah DOM siap
-        setTimeout(() => showToast("✓ Berhasil logout. Sampai jumpa!"), 200);
+        setTimeout(() => showToast("✓ Logged out successfully. See you again!"), 200);
     }
 
     // ── Modal helpers ─────────────────────────────────────────────
@@ -240,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
         currentUser ? window.location.href = "Setting.php" : window.openLogin();
     });
     notifBtn.addEventListener("click", () => {
-        currentUser ? window.location.href = "Notification.html" : window.openLogin();
+        currentUser ? window.location.href = "Notification.php" : window.openLogin();
     });
     libraryBtn.addEventListener("click", () => {
         currentUser ? window.location.href = "Library.html" : window.openLogin();
@@ -268,12 +273,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.location.href = "Etmin.php";
                     return;
                 }
+                // Redirect ke halaman sebelumnya jika ada param redirect
+                const redirectUrl = params.get("redirect");
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                    return;
+                }
                 await checkSession();
             } else {
                 setMessage(loginMessage, data.message, "error");
             }
         } catch {
-            setMessage(loginMessage, "Terjadi kesalahan. Coba lagi.", "error");
+            setMessage(loginMessage, "An error occurred. Please try again.", "error");
         } finally {
             setLoading(btn, false);
         }
@@ -302,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 setMessage(signupMessage, data.message, "error");
             }
         } catch {
-            setMessage(signupMessage, "Terjadi kesalahan. Coba lagi.", "error");
+            setMessage(signupMessage, "An error occurred. Please try again.", "error");
         } finally {
             setLoading(btn, false);
         }

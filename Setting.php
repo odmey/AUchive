@@ -55,7 +55,7 @@ if (isset($_SESSION['user_id'])) {
 
     <header>
         <div class="left">
-            <a href="homepage.php" class="back-link" aria-label="Back">
+            <a href="<?= $isLoggedIn ? 'Profile.php' : 'homepage.php' ?>" class="back-link" aria-label="Back">
                 <span class="material-symbols-outlined">arrow_back</span>
             </a>
         </div>
