@@ -11,23 +11,6 @@ body {
     color: white;
 }
 
-/* SIDEBAR */
-.sidebar {
-    position: fixed;
-    left: -260px;
-    top: 0;
-    width: 240px;
-    height: 100vh;
-    background: #1C1C1C;
-    padding: 25px 15px;
-    transition: 0.3s ease;
-    z-index: 1000;
-}
-
-.sidebar.active {
-    left: 0;
-}
-
 /* MENU */
 .menu {
     display: flex;
@@ -104,21 +87,8 @@ body {
 .logo {
     width: 40px;
     cursor: pointer;
+    pointer-events: none;
     transition: 0.2s;
-}
-
-.logo:hover {
-    transform: scale(1.1);
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.icon-btn .material-icons {
-    color: white; /* default */
 }
 
 /* saat hover */
@@ -292,4 +262,4 @@ body {
     height: 100%;
     border-radius: 0 2px 2px 0;
     transition: width 0.5s ease;
-}
+}
