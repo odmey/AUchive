@@ -184,7 +184,7 @@ filterBtns.forEach(btn => {
 
         if (type === "latest") {
             // 1. Ubah judul menjadi informasi terakhir dibaca
-            if (sectionTitle) sectionTitle.innerText = "Semua Cerita (Terakhir Dibaca)";
+            if (sectionTitle) sectionTitle.innerText = "Terakhir Dibaca";
 
             // 2. ISI DAN MUNCULKAN konten Lanjutkan Membaca hanya di tab Latest
             if (continueContainer) {
@@ -241,26 +241,5 @@ document.addEventListener("DOMContentLoaded", function () {
     if (continueContainer) {
         continueContainer.innerHTML = "";
         continueContainer.style.display = "none";
-    }
-});
-
-// SIDEBAR
-document.addEventListener("DOMContentLoaded", function () {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const toggle = document.getElementById("toggleSidebar");
-
-    if (toggle) {
-        toggle.addEventListener("click", function () {
-            sidebar.classList.toggle("active");
-            overlay.classList.toggle("active");
-        });
-    }
-
-    if (overlay) {
-        overlay.addEventListener("click", function () {
-            sidebar.classList.remove("active");
-            overlay.classList.remove("active");
-        });
     }
 });

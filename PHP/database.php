@@ -3,7 +3,7 @@
 // DATABASE CONFIG - PDO
 // ==========================
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'auchive');
+define('DB_NAME', 'auchive1');
 define('DB_USER', 'root');   // ganti sesuai MySQL kamu
 define('DB_PASS', '');       // ganti sesuai MySQL kamu
 define('DB_CHARSET', 'utf8mb4');
