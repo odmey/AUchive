@@ -699,3 +699,82 @@ body {
   width: 100%;
   display: block;
 }
+
+/* ============================
+   GUEST LOGIN TOAST
+   ============================ */
+#loginToast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.92);
+  background: #1c1c1c;
+  border: 1px solid rgba(255, 244, 79, 0.35);
+  border-radius: 20px;
+  padding: 28px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,244,79,0.08);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+#loginToast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+#loginToast .toast-icon {
+  font-size: 36px;
+  color: #FFF44F;
+  display: flex;
+  align-items: center;
+}
+
+#loginToast .toast-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #f0f0f0;
+}
+
+#loginToast .toast-link {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  text-decoration: none;
+  background: #FFF44F;
+  padding: 8px 24px;
+  border-radius: 10px;
+  transition: background 0.2s ease, transform 0.15s ease;
+  margin-left: 0;
+  margin-top: 2px;
+}
+
+#loginToast .toast-link:hover {
+  background: #ffe94a;
+  transform: scale(1.04);
+}
+
+/* Backdrop overlay */
+#loginToastBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+#loginToastBackdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}

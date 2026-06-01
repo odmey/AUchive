@@ -86,6 +86,48 @@ try {
         $stmtUpdate->execute([$chapter_id]);
 
         $action = 'liked';
+
+        // Trigger Notification for author
+        try {
+            $stmtStory = $pdo->prepare("
+                SELECT s.user_id AS author_id, s.title AS story_title 
+                FROM chapters c 
+                JOIN stories s ON c.story_id = s.story_id 
+                WHERE c.chapter_id = ?
+            ");
+            $stmtStory->execute([$chapter_id]);
+            $storyInfo = $stmtStory->fetch();
+
+            if ($storyInfo && (int)$storyInfo['author_id'] !== (int)$user_id) {
+                $notifTitle = 'liked your story chapter';
+                $notifBody = $chapter_title;
+                $link_url = "Readingpage.php?story_id=" . $story_id . "&chapter_id=" . $chapter_id;
+
+                // Check table exists
+                $tableExists = false;
+                try {
+                    $pdo->query("SELECT 1 FROM notifications LIMIT 1");
+                    $tableExists = true;
+                } catch (PDOException $e) {}
+
+                if ($tableExists) {
+                    $stmtNotif = $pdo->prepare("
+                        INSERT INTO notifications (user_id, type, title, body, ref_story_id, actor_user_id, link_url, created_at)
+                        VALUES (?, 'story', ?, ?, ?, ?, ?, NOW())
+                    ");
+                    $stmtNotif->execute([
+                        $storyInfo['author_id'],
+                        $notifTitle,
+                        $notifBody,
+                        $story_id,
+                        $user_id,
+                        $link_url
+                    ]);
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Failed to create like notification: " . $e->getMessage());
+        }
     }
 
     // 7. Recalculate story's total_likes (Sum of all its chapter likes)

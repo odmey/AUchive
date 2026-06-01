@@ -8,6 +8,34 @@ function escapeHTML(str) {
         .replace(/'/g, "&#039;");
 }
 
+// ==============================
+// GUEST LOGIN TOAST
+// ==============================
+let _toastTimer = null;
+function showLoginToast() {
+    const toast = document.getElementById('loginToast');
+    const backdrop = document.getElementById('loginToastBackdrop');
+    if (!toast) return;
+
+    toast.classList.add('show');
+    if (backdrop) backdrop.classList.add('show');
+
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+        if (backdrop) backdrop.classList.remove('show');
+    }, 3000);
+
+    // Klik backdrop untuk tutup toast
+    if (backdrop) {
+        backdrop.onclick = () => {
+            toast.classList.remove('show');
+            backdrop.classList.remove('show');
+            clearTimeout(_toastTimer);
+        };
+    }
+}
+
 window.addEventListener("DOMContentLoaded", function () {
 
     const storyData = JSON.parse(localStorage.getItem("storyData"));
@@ -47,6 +75,11 @@ window.addEventListener("DOMContentLoaded", function () {
     const likeChapterBtn = document.getElementById("likeChapterBtn");
     if (likeChapterBtn && typeof CURRENT_CHAPTER_ID !== 'undefined' && CURRENT_CHAPTER_ID > 0) {
         likeChapterBtn.addEventListener("click", async function () {
+            // Cek guest
+            if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
+                showLoginToast();
+                return;
+            }
             likeChapterBtn.disabled = true;
             try {
                 const response = await fetch("PHP/like_chapter_action.php", {
@@ -73,6 +106,29 @@ window.addEventListener("DOMContentLoaded", function () {
                 likeChapterBtn.disabled = false;
             }
         });
+    }
+
+    // INTERCEPT COMMENT BOX UNTUK GUEST
+    if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
+        const commentInput = document.getElementById('commentInput');
+        const postBtn = document.querySelector('.post-btn');
+        if (commentInput) {
+            commentInput.addEventListener('focus', function (e) {
+                e.preventDefault();
+                commentInput.blur();
+                showLoginToast();
+            });
+            commentInput.addEventListener('click', function () {
+                showLoginToast();
+            });
+        }
+        if (postBtn) {
+            postBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                showLoginToast();
+            }, true);
+        }
     }
 
     // TOGGLE CHAPTERS SIDEBAR (ARROW TAB)
@@ -178,6 +234,12 @@ async function addToLibrary(storyId) {
 
 // POST COMMENT
 async function postComment() {
+
+    // Guard: guest tidak boleh komentar
+    if (typeof IS_LOGGED_IN !== 'undefined' && !IS_LOGGED_IN) {
+        showLoginToast();
+        return;
+    }
 
     const commentInput = document.getElementById("commentInput");
     const comment = commentInput.value.trim();

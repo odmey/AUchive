@@ -313,10 +313,19 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
 
     </main>
 
+    <!-- Login Toast for Guest -->
+    <div id="loginToastBackdrop"></div>
+    <div id="loginToast">
+        <span class="toast-icon material-symbols-outlined">lock</span>
+        <span class="toast-text">Login first to interact</span>
+        <a class="toast-link" href="homepage.php?auth=login&redirect=<?= urlencode('Readingpage.php?story_id=' . $story_id . '&chapter_id=' . $chapter_id) ?>">Login</a>
+    </div>
+
 <script>
     const CURRENT_STORY_ID = <?= (int)$story_id ?>;
     const CURRENT_CHAPTER_ID = <?= (int)$chapter_id ?>;
     const CURRENT_PROGRESS_PCT = <?= (float)$progress_pct ?>;
+    const IS_LOGGED_IN = <?= $isLoggedIn ? 'true' : 'false' ?>;
 </script>
 <script src="JS/readingpage.js"></script>
 </body>

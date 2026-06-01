@@ -1,102 +1,160 @@
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background-color: #1C1C1C;
+    background-color: #121212;
     color: #ffffff;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between; /* ini yang bikin kiri-kanan */
-    align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.header-left {
+/* HEADER — matches Profile.php header style */
+.profile-header {
+    background: #FFF44F;
+    color: #000;
+    height: 64px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding: 0 24px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
-.back-btn {
+.profile-header .left {
+    z-index: 2;
+    display: flex;
+    align-items: center;
+}
+
+.back-link {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
     cursor: pointer;
+}
+
+.back-link .material-symbols-outlined {
     font-size: 24px;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Bitter', serif;
-    font-size: 24px;
+.profile-header .center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
 }
 
-.logo-au {
-    color: #fff44f;
-}
-
-.logo-chive {
-    color: #ffffff;
-}
-
-.logo-img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
+.profile-header .center h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
 }
 
 .icon-btn {
     cursor: pointer;
 }
 
+/* TABS CONTAINER & TABS */
+.tabs-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+}
+
 .tabs {
     display: flex;
     gap: 10px;
-    padding: 10px 20px;
 }
 
 .tab {
-    padding: 6px 12px;
+    padding: 8px 16px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.08);
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.tab:hover {
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .tab.active {
-    background: #fff44f;
+    background: #FFF44F;
     color: #000;
+    font-weight: 600;
 }
 
+/* CLEAR ALL BUTTON */
+#clearAllBtn {
+    background: none;
+    border: none;
+    color: #FFF44F;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+#clearAllBtn:hover {
+    background: rgba(255, 244, 79, 0.1);
+    transform: scale(1.1);
+}
+
+#clearAllBtn .material-symbols-outlined {
+    font-size: 22px;
+}
+
+/* NOTIFICATIONS */
 .container {
     padding: 10px 20px;
 }
 
 .notification {
     display: flex;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 10px;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
     margin-bottom: 10px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 10px rgba(255, 244, 79, 0.04), 0 1px 4px rgba(255, 255, 255, 0.03);
 }
 
 .notification:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(255, 244, 79, 0.08), 0 2px 6px rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
 }
 
 .notification.unread {
-    border-left: 3px solid #fff44f;
+    border-left: 3px solid #FFF44F;
+    box-shadow: 0 3px 14px rgba(255, 244, 79, 0.1), 0 1px 5px rgba(255, 255, 255, 0.04);
+}
+
+/* FADE OUT ANIMATION FOR CLEARING */
+.notification.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+    overflow: hidden;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: #fff44f;
+    background: #FFF44F;
+    flex-shrink: 0;
 }
 
 .content {
@@ -106,17 +164,25 @@ body {
 .title {
     font-weight: 500;
     font-size: 14px;
+    line-height: 1.4;
+}
+
+.title strong {
+    font-weight: 700;
+    color: #FFF44F;
 }
 
 .preview {
     font-family: 'Lora', serif;
     font-size: 13px;
     opacity: 0.7;
+    margin-top: 2px;
 }
 
 .time {
     font-size: 11px;
     opacity: 0.5;
+    margin-top: 4px;
 }
 
 .empty {
@@ -125,7 +191,8 @@ body {
     opacity: 0.6;
 }
 
-.empty .material-icons {
+.empty .material-icons,
+.empty .material-symbols-outlined {
     font-size: 50px;
-    color: #fff44f;
+    color: #FFF44F;
 }
