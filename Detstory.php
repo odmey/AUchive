@@ -25,6 +25,7 @@ $stmt = $pdo->prepare("
         s.description,
         s.cover,
         s.status,
+        s.progress_status,
         s.total_views,
         s.total_likes,
         s.published_at,
@@ -76,7 +77,7 @@ if ($isLoggedIn) {
     $stmtLib = $pdo->prepare("
         SELECT 1 FROM library_stories ls
         JOIN library l ON l.library_id = ls.library_id
-        WHERE l.user_id = ? AND ls.story_id = ?
+        WHERE l.user_id = ? AND ls.story_id = ? AND ls.is_saved = 1
     ");
     $stmtLib->execute([$currentUserId, $storyId]);
     $isSaved = (bool)$stmtLib->fetch();
@@ -117,10 +118,11 @@ $authorAvatar = !empty($story['profile_pic'])
     ? htmlspecialchars($story['profile_pic'])
     : 'Pic/profileicon.jpg';
 
-$statusLabel  = match($story['status']) {
-    'published' => 'Terbit',
-    'ongoing'   => 'Ongoing',
-    default     => 'Draft',
+$prog = $story['progress_status'] ?? 'ongoing';
+$statusLabel  = match($prog) {
+    'complete' => 'Complete',
+    'hiatus'   => 'Hiatus',
+    default     => 'Ongoing',
 };
 
 $tagList = !empty($tags)
@@ -141,6 +143,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
     <meta name="description" content="<?= htmlspecialchars(mb_substr($story['description'] ?? '', 0, 160)) ?>">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/detstory.css">
+    <script src="JS/custom_alert.js"></script>
 </head>
 
 <body>
@@ -177,8 +180,8 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <h1 class="story-title"><?= htmlspecialchars($story['title']) ?></h1>
 
             <div class="story-meta-row">
-                <span class="status">
-                    Status: <?= $statusLabel ?>
+                <span class="status <?= htmlspecialchars($prog) ?>">
+                    <?= $statusLabel ?>
                 </span>
 
                 <?php if (!empty($story['genre_name'])): ?>
@@ -248,7 +251,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <div class="story-tags-container">
                 <div class="tags-wrapper" id="tagsWrapper">
                     <?php foreach ($tags as $tag): ?>
-                        <span class="story-tag">#<?= htmlspecialchars($tag) ?></span>
+                        <a href="search_result.php?q=<?= urlencode('#' . $tag) ?>" class="story-tag" style="text-decoration: none; display: inline-block;">#<?= htmlspecialchars($tag) ?></a>
                     <?php endforeach; ?>
                 </div>
                 <button class="toggle-tags-btn" id="toggleTagsBtn" style="display: none;" onclick="toggleTags()">lebih banyak</button>
@@ -294,7 +297,6 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                 <?php if ($isLoggedIn): ?>
                     <button class="fav-btn<?= $isFavorite ? ' active' : '' ?>"   id="favBtn"><?= $isFavorite ? 'Favorited' : 'Favorite' ?></button>
                     <button class="save-btn<?= $isSaved ? ' active' : '' ?>"   id="saveBtn"><?= $isSaved ? 'Saved' : 'Save' ?></button>
-                    <button class="follow-btn<?= $isFollowing ? ' active' : '' ?>" id="followBtn"><?= $isFollowing ? 'Following' : 'Follow' ?></button>
                 <?php endif; ?>
                 <a href="Readingpage.php?story_id=<?= $storyId ?>">
                     <button class="read-btn" id="readBtn">Start Reading</button>
@@ -318,19 +320,31 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
         </div>
 
         <!-- Writer Info -->
-        <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: block; width: 100%;">
-            <div class="writer-card" style="cursor:pointer; transition:0.2s;">
+        <div class="writer-card" style="cursor:pointer; transition:0.2s;">
+            <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: flex; align-items: center; gap: 20px; flex: 1;">
                 <img src="<?= $authorAvatar ?>"
                      alt="<?= htmlspecialchars($story['author_name'] ?? $story['username']) ?>"
                      onerror="this.src='Pic/profileicon.jpg'">
 
                 <div class="writer-info">
-                    <h3>@<?= htmlspecialchars($story['username'] ?? '') ?></h3>
-                    <p><?= htmlspecialchars($story['bio'] ?? 'Penulis AUchive') ?></p>
-                    <small><?= (int)$story['author_chapter_count'] ?> Chapter<?= $story['author_chapter_count'] != 1 ? 's' : '' ?> ditulis</small>
+                    <h3 style="margin: 0; color: #fff4a3; font-size: 18px; font-weight: 700;">@<?= htmlspecialchars($story['username'] ?? '') ?></h3>
                 </div>
-            </div>
-        </a>
+            </a>
+
+            <?php if ($isLoggedIn && $currentUserId != $story['user_id']): ?>
+                <div class="writer-actions" onclick="event.stopPropagation()">
+                    <button class="follow-btn<?= $isFollowing ? ' active' : '' ?>" id="followBtn">
+                        <?= $isFollowing ? 'Following' : 'Follow' ?>
+                    </button>
+                </div>
+            <?php elseif (!$isLoggedIn): ?>
+                <div class="writer-actions" onclick="event.stopPropagation()">
+                    <button class="follow-btn" onclick="window.location.href='homepage.php?auth=login'">
+                        Follow
+                    </button>
+                </div>
+            <?php endif; ?>
+        </div>
     </section>
 
     <?php if ($isLoggedIn): ?>

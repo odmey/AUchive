@@ -99,6 +99,7 @@ $joinDate = date('F Y', strtotime($author['created_at']));
 
     <link rel="stylesheet" href="CSS/style_profile.css">
     <script src="JS/profile_person.js" defer></script>
+    <script src="JS/custom_alert.js"></script>
 
     <title>Profile – @<?= htmlspecialchars($author['username']) ?></title>
 </head>

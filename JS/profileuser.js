@@ -232,23 +232,70 @@ function closeModal(modal) {
 }
 
 // ==========================
-// DROPDOWN ACTION (3 MENU)
+// DROPDOWN ACTION
 // ==========================
+
+// ── Progress Status (Ongoing / Complete / Hiatus) ─────────────
+function handleProgress(value, storyId, selectEl) {
+    if (!value) return;
+    const id = storyId.replace('story-', '');
+    updateProgressStatus(id, value, storyId, selectEl);
+}
+
+async function updateProgressStatus(storyId, progressStatus, elemId, selectEl) {
+    try {
+        const res = await fetch('PHP/update_progress_status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ story_id: storyId, progress_status: progressStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+            const badge = document.querySelector(`#${elemId} .progress-badge`);
+            if (badge) {
+                const labels = { ongoing: 'Ongoing', complete: 'Complete', hiatus: 'Hiatus' };
+                badge.textContent = labels[progressStatus] || progressStatus;
+                badge.className = `status-badge progress-badge ${progressStatus}`;
+            }
+            const card = document.getElementById(elemId);
+            if (card) {
+                card.setAttribute('data-progress-status', progressStatus);
+            }
+            const toasts = { ongoing: '\u2713 Ongoing', complete: '\u2713 Complete', hiatus: '\u2713 Hiatus' };
+            showToastProfile(toasts[progressStatus] || 'Progress diperbarui.');
+        } else {
+            alert('Gagal update progress: ' + (data.message || ''));
+            // Revert
+            const card = document.getElementById(elemId);
+            if (card && selectEl) {
+                selectEl.value = card.getAttribute('data-progress-status') || 'ongoing';
+            }
+        }
+    } catch (err) {
+        alert('Koneksi gagal.');
+        // Revert
+        const card = document.getElementById(elemId);
+        if (card && selectEl) {
+            selectEl.value = card.getAttribute('data-progress-status') || 'ongoing';
+        }
+    }
+}
+
+// ── Publish / Draft / Delete ──────────────────────────────────
 function handleAction(value, storyId, selectEl) {
     const id = storyId.replace('story-', '');
 
     if (value === 'hapus') {
-        selectedStory = { elemId: storyId, id: id };
+        selectedStory = { elemId: storyId, id: id, selectEl: selectEl };
         openPopup();
     } else if (value === 'publish') {
-        updateStoryStatus(id, 'published', storyId);
+        updateStoryStatus(id, 'published', storyId, selectEl);
     } else if (value === 'draft') {
-        updateStoryStatus(id, 'draft', storyId);
+        updateStoryStatus(id, 'draft', storyId, selectEl);
     }
-
-    if (selectEl) selectEl.selectedIndex = 0;
 }
-async function updateStoryStatus(storyId, status, elemId) {
+
+async function updateStoryStatus(storyId, status, elemId, selectEl) {
     try {
         const res = await fetch('PHP/update_story_status.php', {
             method: 'POST',
@@ -257,64 +304,30 @@ async function updateStoryStatus(storyId, status, elemId) {
         });
         const data = await res.json();
         if (data.success) {
-            // Update badge status di card
-            const badge = document.querySelector(`#${elemId} .status-badge`);
+            const badge = document.querySelector(`#${elemId} .publish-badge`);
             if (badge) {
                 badge.textContent = status === 'published' ? 'Published' : 'Draft';
-                badge.className = `status-badge ${status}`;
+                badge.className = `status-badge publish-badge ${status}`;
             }
-            showToastProfile(status === 'published' ? 'Cerita dipublikasikan!' : 'Cerita dijadikan draft.');
+            showToastProfile(status === 'published' ? '\u2713 Cerita dipublikasikan!' : 'Cerita dijadikan draft.');
         } else {
             alert('Gagal update status: ' + data.message);
+            // Revert
+            const badge = document.querySelector(`#${elemId} .publish-badge`);
+            if (badge && selectEl) {
+                const isPublished = badge.classList.contains('published');
+                selectEl.value = isPublished ? 'publish' : 'draft';
+            }
         }
     } catch (err) {
         alert('Koneksi gagal.');
-    }
-}
-async function yesAction() {
-    if (selectedStory) {
-        try {
-            const res = await fetch('PHP/delete_story.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ story_id: selectedStory.id })
-            });
-            const data = await res.json();
-            if (data.success) {
-                const el = document.getElementById(selectedStory.elemId);
-                if (el) {
-                    el.style.transition = '0.3s';
-                    el.style.opacity = '0';
-                    el.style.transform = 'scale(0.9)';
-                    setTimeout(() => el.remove(), 300);
-                }
-                showToastProfile('Cerita berhasil dihapus.');
-            } else {
-                alert('Gagal hapus: ' + data.message);
-            }
-        } catch (err) {
-            alert('Koneksi gagal.');
+        // Revert
+        const badge = document.querySelector(`#${elemId} .publish-badge`);
+        if (badge && selectEl) {
+            const isPublished = badge.classList.contains('published');
+            selectEl.value = isPublished ? 'publish' : 'draft';
         }
     }
-    closePopup();
-}
-function showToastProfile(msg) {
-    let toast = document.getElementById('profileToast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'profileToast';
-        toast.style.cssText = `
-            position:fixed; bottom:24px; right:24px;
-            background:#1a1a1a; color:#fff;
-            padding:10px 20px; border-radius:8px;
-            font-size:13px; z-index:9999;
-            opacity:0; transition:opacity .3s;
-        `;
-        document.body.appendChild(toast);
-    }
-    toast.textContent = msg;
-    toast.style.opacity = '1';
-    setTimeout(() => { toast.style.opacity = '0'; }, 2500);
 }
 // ==========================
 // POPUP (CONFIRM DELETE)
@@ -331,6 +344,15 @@ function closePopup() {
     if (!popup) return;
     popup.classList.remove("active");
     if (overlay) overlay.classList.remove("active");
+
+    // Revert the delete selection back to the current status in the card!
+    if (selectedStory && selectedStory.selectEl && selectedStory.elemId) {
+        const badge = document.querySelector(`#${selectedStory.elemId} .publish-badge`);
+        if (badge) {
+            const isPublished = badge.classList.contains('published');
+            selectedStory.selectEl.value = isPublished ? 'publish' : 'draft';
+        }
+    }
 }
 
 async function yesAction() {
@@ -589,6 +611,11 @@ function openEditStoryPrep(storyId) {
     document.getElementById('editStoryDesc').value    = description;
     document.getElementById('editStoryGenre').value   = genre;
     document.getElementById('editStoryTags').value    = tags;
+
+    // Populate progress status dropdown
+    const progressStatus = card.getAttribute('data-progress-status') || 'ongoing';
+    const editProgressEl = document.getElementById('editStoryProgress');
+    if (editProgressEl) editProgressEl.value = progressStatus;
 
     // Reset pending cover state each time the modal opens
     pendingEditCoverFile = null;

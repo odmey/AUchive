@@ -73,7 +73,7 @@ $sql = "
     JOIN  stories  s ON s.story_id   = ls.story_id
     LEFT JOIN genres   g ON g.genre_id   = s.genre_id
     LEFT JOIN chapters c ON c.chapter_id = ls.last_read_chapter_id
-    WHERE ls.library_id = :library_id
+    WHERE ls.library_id = :library_id AND ls.is_saved = 1
 ";
 
 switch ($filter) {

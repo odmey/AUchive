@@ -112,8 +112,8 @@ if ($existing) {
     $stmt = $pdo->prepare("
         INSERT INTO library_stories
             (library_id, story_id, saved_at, last_read_chapter_id,
-             progress_percent, is_complete, update_at)
-        VALUES (?, ?, NOW(), ?, ?, ?, NOW())
+             progress_percent, is_complete, update_at, is_saved)
+        VALUES (?, ?, NOW(), ?, ?, ?, NOW(), 0)
     ");
     $stmt->execute([$library_id, $story_id, $chapter_id, $progress_pct, $is_complete]);
 }

@@ -78,19 +78,33 @@ try {
     }
 
     // 5. Cek apakah cerita sudah ada di library_stories
-    $stmt = $pdo->prepare("SELECT is_favorite FROM library_stories WHERE library_id = ? AND story_id = ?");
+    $stmt = $pdo->prepare("SELECT is_favorite, is_saved FROM library_stories WHERE library_id = ? AND story_id = ?");
     $stmt->execute([$library_id, $story_id]);
     $existing = $stmt->fetch();
 
     if ($existing) {
         // Toggle is_favorite
         $new_favorite = (int)$existing['is_favorite'] === 1 ? 0 : 1;
-        $stmt = $pdo->prepare("UPDATE library_stories SET is_favorite = ?, saved_at = NOW() WHERE library_id = ? AND story_id = ?");
-        $stmt->execute([$new_favorite, $library_id, $story_id]);
+        if ($new_favorite === 1) {
+            // Favoriting: automatically saves the story too
+            $stmt = $pdo->prepare("UPDATE library_stories SET is_favorite = 1, is_saved = 1, saved_at = NOW() WHERE library_id = ? AND story_id = ?");
+            $stmt->execute([$library_id, $story_id]);
+        } else {
+            // Unfavoriting: 
+            if ((int)$existing['is_saved'] === 0) {
+                // If it is also not saved, we delete the row entirely
+                $stmt = $pdo->prepare("DELETE FROM library_stories WHERE library_id = ? AND story_id = ?");
+                $stmt->execute([$library_id, $story_id]);
+            } else {
+                // Keep the row but set is_favorite = 0
+                $stmt = $pdo->prepare("UPDATE library_stories SET is_favorite = 0 WHERE library_id = ? AND story_id = ?");
+                $stmt->execute([$library_id, $story_id]);
+            }
+        }
     } else {
-        // Tambahkan ke library dan set is_favorite = 1
+        // Tambahkan ke library dan set is_favorite = 1, is_saved = 1
         $new_favorite = 1;
-        $stmt = $pdo->prepare("INSERT INTO library_stories (library_id, story_id, saved_at, is_favorite) VALUES (?, ?, NOW(), 1)");
+        $stmt = $pdo->prepare("INSERT INTO library_stories (library_id, story_id, saved_at, is_favorite, is_saved) VALUES (?, ?, NOW(), 1, 1)");
         $stmt->execute([$library_id, $story_id]);
     }
 
