@@ -51,8 +51,8 @@ $systemWarning = '';
 try {
     $warnStmt = $pdo->query("SELECT setting_value FROM system_settings WHERE setting_key = 'system_warning' LIMIT 1");
     $warnRow = $warnStmt ? $warnStmt->fetch() : false;
-    if ($warnRow && !empty($warnRow['setting_value'])) {
-        $systemWarning = htmlspecialchars($warnRow['setting_value']);
+    if ($warnRow && !empty(trim($warnRow['setting_value'] ?? ''))) {
+        $systemWarning = htmlspecialchars(trim($warnRow['setting_value']));
     }
 } catch (Exception $e) {
     // Table may not exist yet, ignore
@@ -72,7 +72,7 @@ try {
         rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="CSS/style_homep.css">
-
+    <script src="JS/custom_alert.js"></script>
     <script src="JS/lgsgpopmenu.js?v=2" defer></script>
 </head>
 
@@ -80,11 +80,103 @@ try {
 
     <?php if (!empty($systemWarning)): ?>
     <!-- SYSTEM WARNING BANNER -->
-    <div id="systemWarningBanner" style="background:linear-gradient(90deg,#e74c3c,#c0392b);color:#fff;padding:12px 20px;text-align:center;font-family:Poppins,sans-serif;font-size:14px;font-weight:500;position:relative;z-index:9998;display:flex;align-items:center;justify-content:center;gap:10px;">
-        <span class="material-symbols-outlined" style="font-size:20px;">warning</span>
-        <span><?= $systemWarning ?></span>
-        <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;margin-left:15px;line-height:1;">&times;</button>
+    <style>
+    .warning-banner-marquee {
+        background: linear-gradient(90deg, #d32f2f, #f57c00);
+        color: #fff;
+        padding: 10px 0;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        position: relative;
+        z-index: 9998;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        border-bottom: 1.5px solid rgba(255, 244, 79, 0.25);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .marquee-container {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        padding-right: 50px;
+    }
+    .marquee-content {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding-left: 100%;
+        animation: marquee-scroll 25s linear infinite;
+        cursor: default;
+    }
+    .marquee-content:hover {
+        animation-play-state: paused;
+    }
+    .marquee-icon {
+        font-size: 18px;
+        color: #fff44f;
+        animation: pulse-warn 1.5s infinite ease-in-out;
+        vertical-align: middle;
+    }
+    .marquee-close-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        font-size: 18px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        z-index: 9999;
+        transition: all 0.3s ease;
+    }
+    .marquee-close-btn:hover {
+        background: #e74c3c;
+        border-color: #e74c3c;
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+    }
+    @keyframes marquee-scroll {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-100%, 0, 0); }
+    }
+    @keyframes pulse-warn {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); filter: drop-shadow(0 0 4px #fff44f); }
+    }
+    </style>
+    <div id="systemWarningBanner" class="warning-banner-marquee">
+        <div class="marquee-container">
+            <div class="marquee-content">
+                <span class="material-symbols-outlined marquee-icon">warning</span>
+                <span><?= $systemWarning ?></span>
+            </div>
+        </div>
+        <button onclick="dismissWarningBanner(this)" class="marquee-close-btn">&times;</button>
     </div>
+    <script>
+    function dismissWarningBanner(btn) {
+        const banner = document.getElementById('systemWarningBanner');
+        if (banner) {
+            banner.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(-100%)';
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 400);
+        }
+    }
+    </script>
     <?php endif; ?>
 
     <!-- NAVBAR -->
@@ -101,7 +193,7 @@ try {
             <!-- Center: Search -->
             <div class="search-bar">
                 <span class="material-symbols-outlined">search</span>
-                <input type="text" id="searchInput" placeholder="Search AU Story...">
+                <input type="text" id="searchInput" placeholder="Search AU Story..." autocomplete="off">
                 <div class="search-result" id="searchResult"></div>
             </div>
 
@@ -159,9 +251,7 @@ try {
 
             <div class="hero-buttons">
                 <button class="btn-primary" type="button" onclick="window.location.href='<?= $readUrl ?>'">Start Reading</button>
-                <?php if (!$isLoggedIn): ?>
-                    <button class="btn-secondary" type="button" onclick="openSignup()">Join Now</button>
-                <?php endif; ?>
+                <button class="btn-secondary" type="button" id="joinNowBtn" onclick="openSignup()" style="<?= $isLoggedIn ? 'display:none' : '' ?>">Join Now</button>
             </div>
         </div>
     </section>
@@ -171,16 +261,21 @@ try {
         <h3>Popular Stories</h3>
 
         <div class="slider-container">
-            <button class="arrow-btn" type="button" onclick="scrollSlider(this)">❯</button>
+            <button class="arrow-btn prev" type="button" onclick="scrollSlider(this, 'left')">❮</button>
+            <button class="arrow-btn next" type="button" onclick="scrollSlider(this, 'right')">❯</button>
 
             <div class="slider">
                 <?php 
                 $displayPopular = count($popularStories) >= 1 ? $popularStories : $staticFallbackPopular;
+                $rank = 1;
                 foreach ($displayPopular as $s): 
                     $coverSrc = !empty($s['cover']) ? htmlspecialchars($s['cover']) : 'Pic/cover-placeholder.png';
                     $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
                 ?>
                     <div class="card-slider">
+                        <?php if ($rank <= 3): ?>
+                            <div class="rank-badge rank-<?= $rank ?>"><?= $rank ?></div>
+                        <?php endif; ?>
                         <a href="<?= $link ?>" class="card-slider-link">
                             <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
                             <div class="card-slider-info">
@@ -189,10 +284,13 @@ try {
                         </a>
                         <div class="card-slider-footer">
                             <h4><?= htmlspecialchars($s['title']) ?></h4>
-                            <span class="card-author">by <?= htmlspecialchars($s['author_username'] ?? 'unknown') ?>_</span>
+                            <span class="card-author">by <?= htmlspecialchars($s['author_username'] ?? 'unknown') ?></span>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php 
+                    $rank++;
+                endforeach; 
+                ?>
             </div>
         </div>
     </section>
@@ -202,7 +300,8 @@ try {
         <h3>Newest Stories</h3>
 
         <div class="slider-container">
-            <button class="arrow-btn" type="button" onclick="scrollSlider(this)">❯</button>
+            <button class="arrow-btn prev" type="button" onclick="scrollSlider(this, 'left')">❮</button>
+            <button class="arrow-btn next" type="button" onclick="scrollSlider(this, 'right')">❯</button>
 
             <div class="slider">
                 <?php 
@@ -220,7 +319,7 @@ try {
                         </a>
                         <div class="card-slider-footer">
                             <h4><?= htmlspecialchars($s['title']) ?></h4>
-                            <span class="card-author">by <?= htmlspecialchars($s['author_username'] ?? 'unknown') ?>_</span>
+                            <span class="card-author">by <?= htmlspecialchars($s['author_username'] ?? 'unknown') ?></span>
                         </div>
                     </div>
                 <?php endforeach; ?>

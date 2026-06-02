@@ -42,6 +42,13 @@ if (!$user || !password_verify($password, $user['password'])) {
     exit;
 }
 
+// ── Cek banned ───────────────────────────────────────────────────
+if (($user['role'] ?? '') === 'banned') {
+    echo json_encode(['success' => false, 'message' => 'Akun kamu telah dinonaktifkan oleh admin. Hubungi dukungan jika ada pertanyaan.']);
+    exit;
+}
+
+
 // ── Set session ──────────────────────────────────────────────────
 session_regenerate_id(true);
 

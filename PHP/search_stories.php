@@ -16,7 +16,9 @@ if (mb_strlen($keyword) < 2) {
 }
 
 // ── 2. Siapkan pola LIKE ─────────────────────────────────────
+$tagKeyword = ltrim($keyword, '#');
 $pattern = '%' . $keyword . '%';
+$tagPattern = '%' . $tagKeyword . '%';
 
 try {
     $pdo  = getDB();
@@ -45,6 +47,7 @@ try {
             s.title,
             s.cover,
             s.status,
+            s.progress_status,
             'story' as type
         FROM stories s
         LEFT JOIN story_tags st ON st.story_id = s.story_id
@@ -54,7 +57,7 @@ try {
         LIMIT 10
     ";
     $stmtStories = $pdo->prepare($sqlStories);
-    $stmtStories->execute([$pattern, $pattern]);
+    $stmtStories->execute([$pattern, $tagPattern]);
     $stories = $stmtStories->fetchAll(PDO::FETCH_ASSOC);
 
     // Combine results

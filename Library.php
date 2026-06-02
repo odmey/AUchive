@@ -1,3 +1,13 @@
+<?php
+session_start();
+$isLoggedIn = isset($_SESSION['user_id']);
+
+// Redirect ke login jika belum login
+if (!$isLoggedIn) {
+    header('Location: homepage.php?auth=login');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,6 +20,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="JS/custom_alert.js"></script>
 </head>
 
 <body>

@@ -417,6 +417,98 @@ body {
     border: 0.5px solid rgba(136, 136, 136, 0.2);
 }
 
+.progress-badge {
+    margin-right: 6px;
+    font-weight: 600;
+}
+
+.progress-badge.ongoing {
+    background: rgba(52, 152, 219, 0.15);
+    color: #3498db;
+    border: 0.5px solid rgba(52, 152, 219, 0.3);
+}
+
+.progress-badge.complete {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 0.5px solid rgba(46, 204, 113, 0.3);
+}
+
+.progress-badge.hiatus {
+    background: rgba(230, 126, 34, 0.15);
+    color: #e67e22;
+    border: 0.5px solid rgba(230, 126, 34, 0.3);
+}
+
+/* DELETE POPUP WARNING PREMIUM STYLES */
+.popup-danger {
+    border: 1px solid rgba(231, 76, 60, 0.3) !important;
+    width: 350px !important;
+    padding: 32px 24px !important;
+}
+
+.popup-icon {
+    margin-bottom: 12px;
+}
+
+.popup-icon span {
+    font-size: 48px;
+    color: #e74c3c;
+}
+
+.popup-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.popup-subtitle {
+    font-size: 13px;
+    color: #b8b8b8;
+    line-height: 1.6;
+    margin-bottom: 24px !important;
+}
+
+.popup-actions-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.popup-cancel-btn {
+    background: #2a2a2a !important;
+    color: #ffffff !important;
+    padding: 10px 20px !important;
+    border-radius: 99px !important;
+    font-size: 13px;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.popup-cancel-btn:hover {
+    background: #3a3a3a !important;
+}
+
+.popup-confirm-delete-btn {
+    background: #e74c3c !important;
+    color: #ffffff !important;
+    padding: 10px 20px !important;
+    border-radius: 99px !important;
+    font-size: 13px;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.popup-confirm-delete-btn:hover {
+    background: #c0392b !important;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
 /* DELETE POPUP */
 .popup {
     display: flex;

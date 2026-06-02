@@ -56,6 +56,7 @@ if ($chapter_id > 0) {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/style_story.css?v=<?= time() ?>">
     <link rel="stylesheet" href="CSS/readingpage.css?v=<?= time() ?>">
+    <script src="JS/custom_alert.js"></script>
 </head>
 <body>
 

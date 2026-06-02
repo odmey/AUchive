@@ -6,7 +6,9 @@ $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
 require_once 'PHP/database.php';
 
 $keyword = trim($_GET['q'] ?? '');
+$tagKeyword = ltrim($keyword, '#');
 $pattern = '%' . $keyword . '%';
+$tagPattern = '%' . $tagKeyword . '%';
 
 $pdo = getDB();
 
@@ -26,6 +28,7 @@ $sqlStories = "
         s.title,
         s.cover,
         s.status,
+        s.progress_status,
         s.description,
         s.total_views,
         s.total_likes,
@@ -39,7 +42,7 @@ $sqlStories = "
       AND s.status = 'published'
 ";
 $stmtStories = $pdo->prepare($sqlStories);
-$stmtStories->execute([$pattern, $pattern]);
+$stmtStories->execute([$pattern, $tagPattern]);
 $stories = $stmtStories->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch system warning
@@ -47,11 +50,24 @@ $systemWarning = '';
 try {
     $warnStmt = $pdo->query("SELECT setting_value FROM system_settings WHERE setting_key = 'system_warning' LIMIT 1");
     $warnRow = $warnStmt ? $warnStmt->fetch() : false;
-    if ($warnRow && !empty($warnRow['setting_value'])) {
-        $systemWarning = htmlspecialchars($warnRow['setting_value']);
+    if ($warnRow && !empty(trim($warnRow['setting_value'] ?? ''))) {
+        $systemWarning = htmlspecialchars(trim($warnRow['setting_value']));
     }
 } catch (Exception $e) {
     // Table may not exist yet, ignore
+}
+
+function formatNumberShorthand($num) {
+    $num = (float)$num;
+    if ($num >= 1000000) {
+        $val = $num / 1000000;
+        return ($val == (int)$val ? number_format($val, 0, '.', '') : number_format($val, 1, '.', '')) . 'M';
+    }
+    if ($num >= 1000) {
+        $val = $num / 1000;
+        return ($val == (int)$val ? number_format($val, 0, '.', '') : number_format($val, 1, '.', '')) . 'K';
+    }
+    return number_format($num, 0, '.', '');
 }
 ?>
 <!DOCTYPE html>
@@ -69,7 +85,7 @@ try {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/style_homep.css">
     <link rel="stylesheet" href="CSS/style_search.css">
-
+    <script src="JS/custom_alert.js"></script>
     <script src="JS/lgsgpopmenu.js?v=3" defer></script>
 </head>
 
@@ -77,11 +93,103 @@ try {
 
     <?php if (!empty($systemWarning)): ?>
     <!-- SYSTEM WARNING BANNER -->
-    <div id="systemWarningBanner" style="background:linear-gradient(90deg,#e74c3c,#c0392b);color:#fff;padding:12px 20px;text-align:center;font-family:Poppins,sans-serif;font-size:14px;font-weight:500;position:relative;z-index:9998;display:flex;align-items:center;justify-content:center;gap:10px;">
-        <span class="material-symbols-outlined" style="font-size:20px;">warning</span>
-        <span><?= $systemWarning ?></span>
-        <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;margin-left:15px;line-height:1;">&times;</button>
+    <style>
+    .warning-banner-marquee {
+        background: linear-gradient(90deg, #d32f2f, #f57c00);
+        color: #fff;
+        padding: 10px 0;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        position: relative;
+        z-index: 9998;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        border-bottom: 1.5px solid rgba(255, 244, 79, 0.25);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .marquee-container {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        padding-right: 50px;
+    }
+    .marquee-content {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding-left: 100%;
+        animation: marquee-scroll 25s linear infinite;
+        cursor: default;
+    }
+    .marquee-content:hover {
+        animation-play-state: paused;
+    }
+    .marquee-icon {
+        font-size: 18px;
+        color: #fff44f;
+        animation: pulse-warn 1.5s infinite ease-in-out;
+        vertical-align: middle;
+    }
+    .marquee-close-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        font-size: 18px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        z-index: 9999;
+        transition: all 0.3s ease;
+    }
+    .marquee-close-btn:hover {
+        background: #e74c3c;
+        border-color: #e74c3c;
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+    }
+    @keyframes marquee-scroll {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-100%, 0, 0); }
+    }
+    @keyframes pulse-warn {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); filter: drop-shadow(0 0 4px #fff44f); }
+    }
+    </style>
+    <div id="systemWarningBanner" class="warning-banner-marquee">
+        <div class="marquee-container">
+            <div class="marquee-content">
+                <span class="material-symbols-outlined marquee-icon">warning</span>
+                <span><?= $systemWarning ?></span>
+            </div>
+        </div>
+        <button onclick="dismissWarningBanner(this)" class="marquee-close-btn">&times;</button>
     </div>
+    <script>
+    function dismissWarningBanner(btn) {
+        const banner = document.getElementById('systemWarningBanner');
+        if (banner) {
+            banner.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(-100%)';
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 400);
+        }
+    }
+    </script>
     <?php endif; ?>
 
     <!-- NAVBAR -->
@@ -98,7 +206,7 @@ try {
             <!-- Center: Search -->
             <div class="search-bar">
                 <span class="material-symbols-outlined">search</span>
-                <input type="text" id="searchInput" placeholder="Search AU Story..." value="<?= htmlspecialchars($keyword) ?>">
+                <input type="text" id="searchInput" placeholder="Search AU Story..." value="<?= htmlspecialchars($keyword) ?>" autocomplete="off">
                 <div class="search-result" id="searchResult"></div>
             </div>
 
@@ -145,34 +253,54 @@ try {
                     <?php foreach ($stories as $story): 
                         $coverSrc = !empty($story['cover']) ? htmlspecialchars($story['cover']) : 'Pic/cover-placeholder.png';
                         
-                        $statusLabel = "Draft";
-                        $statusClass = "status-draft";
-                        if ($story['status'] === 'published') {
-                            $statusLabel = "Terbit";
-                            $statusClass = "status-published";
-                        } elseif ($story['status'] === 'ongoing') {
-                            $statusLabel = "Ongoing";
-                            $statusClass = "status-ongoing";
-                        }
+                        $prog = $story['progress_status'] ?? 'ongoing';
+                        $statusLabel = match($prog) {
+                            'complete' => 'Lengkap',
+                            'hiatus'   => 'Hiatus',
+                            default    => 'Bersambung',
+                        };
+                        $statusClass = match($prog) {
+                            'complete' => 'status-published',
+                            'hiatus'   => 'status-hiatus',
+                            default    => 'status-ongoing',
+                        };
                     ?>
                         <a href="Detstory.php?id=<?= $story['story_id'] ?>" class="story-card">
                             <img class="story-cover" src="<?= $coverSrc ?>" alt="Cover" onerror="this.src='Pic/cover-placeholder.png'">
                             <div class="story-info">
                                 <div class="story-title" title="<?= htmlspecialchars($story['title']) ?>"><?= htmlspecialchars($story['title']) ?></div>
-                                <div class="story-author">by <?= htmlspecialchars($story['author_name'] ?? 'Unknown') ?></div>
-                                <p class="story-desc"><?= htmlspecialchars(mb_strimwidth($story['description'] ?? '', 0, 200, '...')) ?></p>
-                                <div class="story-meta">
-                                    <span class="story-meta-item">
-                                        <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:3px;">visibility</span><?= number_format($story['total_views'] ?? 0) ?>
-                                    </span>
-                                    <span class="story-meta-item">
-                                        <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:3px;">favorite</span><?= number_format($story['total_likes'] ?? 0) ?>
-                                    </span>
-                                    <span class="story-meta-item">
-                                        <span class="material-symbols-outlined" style="font-size:16px; vertical-align:middle; margin-right:3px;">format_list_bulleted</span><?= $story['chapter_count'] ?? 0 ?> Ch
-                                    </span>
+                                <div class="story-author-status-row">
                                     <span class="story-status <?= $statusClass ?>"><?= $statusLabel ?></span>
+                                    <span class="story-author">by <?= htmlspecialchars($story['author_name'] ?? 'Unknown') ?></span>
                                 </div>
+                                
+                                <div class="story-meta-wattpad">
+                                    <div class="meta-col">
+                                        <div class="meta-label">
+                                            <span class="material-symbols-outlined">visibility</span>
+                                            <span>Dibaca</span>
+                                        </div>
+                                        <div class="meta-val"><?= formatNumberShorthand($story['total_views'] ?? 0) ?></div>
+                                    </div>
+                                    <div class="meta-sep"></div>
+                                    <div class="meta-col">
+                                        <div class="meta-label">
+                                            <span class="material-symbols-outlined">favorite</span>
+                                            <span>Vote</span>
+                                        </div>
+                                        <div class="meta-val"><?= formatNumberShorthand($story['total_likes'] ?? 0) ?></div>
+                                    </div>
+                                    <div class="meta-sep"></div>
+                                    <div class="meta-col">
+                                        <div class="meta-label">
+                                            <span class="material-symbols-outlined">format_list_bulleted</span>
+                                            <span>Bab</span>
+                                        </div>
+                                        <div class="meta-val"><?= $story['chapter_count'] ?? 0 ?></div>
+                                    </div>
+                                </div>
+                                
+                                <p class="story-desc"><?= htmlspecialchars(mb_strimwidth($story['description'] ?? '', 0, 200, '...')) ?></p>
                             </div>
                         </a>
                     <?php endforeach; ?>

@@ -49,9 +49,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ── Navbar ──────────────────────────────────────────────
     function updateNavbar() {
+        const joinNowBtn = document.getElementById("joinNowBtn");
         if (currentUser) {
             guestNav.style.display = "none";
             userNav.style.display = "flex";
+
+            // Hide "Join Now" hero button after login
+            if (joinNowBtn) joinNowBtn.style.display = "none";
 
             // Set foto profil dari database (bukan hardcoded)
             if (profileBtn) {
@@ -114,6 +118,10 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             guestNav.style.display = "flex";
             userNav.style.display = "none";
+
+            // Show "Join Now" hero button when logged out
+            if (joinNowBtn) joinNowBtn.style.display = "";
+
             const adminBtn = document.getElementById("adminPanelBtn");
             if (adminBtn) adminBtn.style.display = "none";
         }
@@ -214,13 +222,14 @@ document.addEventListener("DOMContentLoaded", function () {
     window.closeSignup = () => closeModal(signupModal);
 
     window.goToLibrary = function () {
-        if (currentUser) window.location.href = "Library.html";
+        if (currentUser) window.location.href = "Library.php";
         else window.openLogin();
     };
 
-    window.scrollSlider = function (button) {
+    window.scrollSlider = function (button, direction = "right") {
         const slider = button.parentElement.querySelector(".slider");
-        slider.scrollBy({ left: 300, behavior: "smooth" });
+        const amount = direction === "left" ? -300 : 300;
+        slider.scrollBy({ left: amount, behavior: "smooth" });
     };
 
     // ── Tutup modal ───────────────────────────────────────────────
@@ -248,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
         currentUser ? window.location.href = "Notification.php" : window.openLogin();
     });
     libraryBtn.addEventListener("click", () => {
-        currentUser ? window.location.href = "Library.html" : window.openLogin();
+        currentUser ? window.location.href = "Library.php" : window.openLogin();
     });
 
     // ── LOGIN form submit → fetch PHP/login_action.php ────────────
@@ -355,6 +364,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderSearchResults(items) {
         searchResult.innerHTML = "";
 
+        const historyDiv = document.getElementById("searchHistory");
+        if (historyDiv) historyDiv.style.display = "none";
+
         if (!Array.isArray(items) || items.length === 0) {
             searchResult.innerHTML =
                 `<div class="search-item search-empty">Tidak ditemukan</div>`;
@@ -379,6 +391,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     `;
                     item.addEventListener("click", () => {
+                        const keyword = searchInput.value.trim();
+                        if (keyword) saveHistoryItem(keyword);
                         searchResult.style.display = "none";
                         searchInput.value = "";
                         window.location.href = `profile_person.php?id=${result.user_id}`;
@@ -386,10 +400,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 } else {
                     // ── Tampilan hasil STORY ──
-                    const statusLabel = result.status === "published" ? "Terbit"
-                        : result.status === "ongoing" ? "Ongoing" : "Draft";
-                    const statusClass = result.status === "published" ? "badge-published"
-                        : result.status === "ongoing" ? "badge-ongoing" : "badge-draft";
+                    const prog = result.progress_status || "ongoing";
+                    const statusLabel = prog === "complete" ? "Complete"
+                        : prog === "hiatus" ? "Hiatus" : "Ongoing";
+                    const statusClass = prog === "complete" ? "badge-published"
+                        : prog === "hiatus" ? "badge-hiatus" : "badge-ongoing";
                     const coverSrc = result.cover
                         ? result.cover : "Pic/cover-placeholder.png";
 
@@ -402,6 +417,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     `;
                     item.addEventListener("click", () => {
+                        const keyword = searchInput.value.trim();
+                        if (keyword) saveHistoryItem(keyword);
                         searchResult.style.display = "none";
                         searchInput.value = "";
                         window.location.href = `Detstory.php?id=${result.story_id}`;
@@ -415,37 +432,203 @@ document.addEventListener("DOMContentLoaded", function () {
         searchResult.style.display = "flex";
     }
 
-    // Handle Enter key
-    searchInput.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-            const keyword = this.value.trim();
-            if (keyword.length >= 2) {
-                window.location.href = `search_result.php?q=${encodeURIComponent(keyword)}`;
+    // ─── SEARCH HISTORY LOGIC ──────────────────────────────────
+    const HISTORY_KEY = "auchive_search_history";
+
+    function getHistory() {
+        try {
+            const data = localStorage.getItem(HISTORY_KEY);
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveHistoryItem(item) {
+        if (!item || item.trim().length < 2) return;
+        const history = getHistory();
+        const cleanItem = item.trim();
+        const index = history.indexOf(cleanItem);
+        if (index > -1) {
+            history.splice(index, 1);
+        }
+        history.unshift(cleanItem);
+        if (history.length > 5) {
+            history.pop();
+        }
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function deleteHistoryItem(item) {
+        const history = getHistory();
+        const index = history.indexOf(item);
+        if (index > -1) {
+            history.splice(index, 1);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        }
+    }
+
+    function clearAllHistory() {
+        localStorage.removeItem(HISTORY_KEY);
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#039;");
+    }
+
+    window.deleteSingleHistoryItem = function(query, e) {
+        e.stopPropagation();
+        deleteHistoryItem(query);
+        const keyword = searchInput ? searchInput.value.trim() : "";
+        renderSearchHistory(keyword);
+        if (searchInput) searchInput.focus();
+    };
+
+    window.clearAllSearchHistory = function(e) {
+        e.stopPropagation();
+        clearAllHistory();
+        renderSearchHistory();
+        if (searchInput) searchInput.focus();
+    };
+
+    function renderSearchHistory(filterKeyword = "") {
+        if (!searchInput) return;
+
+        let historyDiv = document.getElementById("searchHistory");
+        if (!historyDiv) {
+            historyDiv = document.createElement("div");
+            historyDiv.id = "searchHistory";
+            historyDiv.className = "search-history-dropdown";
+            const searchBar = document.querySelector(".search-bar");
+            if (searchBar) {
+                searchBar.appendChild(historyDiv);
+            } else {
+                return;
             }
         }
-    });
 
-    // Debounce: tunggu 300 ms setelah huruf terakhir baru kirim request
-    searchInput.addEventListener("input", function () {
-        const keyword = this.value.trim();
-        searchResult.style.display = "none";
-        clearTimeout(searchTimer);
+        let history = getHistory();
+        if (filterKeyword) {
+            const cleanKeyword = filterKeyword.toLowerCase().trim();
+            history = history.filter(item => item.toLowerCase().includes(cleanKeyword));
+        }
 
-        if (keyword.length < 2) return;
+        // Always show dropdown — even when empty, show empty state
+        if (history.length === 0) {
+            historyDiv.innerHTML = `
+                <div class="history-header">
+                    <span class="history-title">${filterKeyword ? "No Matching History" : "Recent Searches"}</span>
+                </div>
+                <div class="history-empty">
+                    <span class="material-symbols-outlined" style="color:rgba(255,244,79,0.4);font-size:28px;margin-bottom:6px;">manage_search</span>
+                    <span style="color:rgba(255,255,255,0.4);font-size:13px;">No recent searches yet</span>
+                </div>
+            `;
+            historyDiv.style.display = "flex";
+            return;
+        }
 
-        searchTimer = setTimeout(() => fetchSearch(keyword), 300);
-    });
+        let html = `
+            <div class="history-header">
+                <span class="history-title">${filterKeyword ? "Matching History" : "Recent Searches"}</span>
+                <button type="button" class="history-clear-btn" onclick="clearAllSearchHistory(event)">Clear All</button>
+            </div>
+            <div class="history-items">
+        `;
+
+        history.forEach(item => {
+            html += `
+                <div class="history-item" data-query="${encodeURIComponent(item)}">
+                    <span class="material-symbols-outlined history-clock-icon">history</span>
+                    <span class="history-item-text">${escapeHtml(item)}</span>
+                    <span class="material-symbols-outlined history-delete-btn" onclick="deleteSingleHistoryItem('${item.replace(/'/g, "\\'")}', event)">close</span>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        historyDiv.innerHTML = html;
+
+        // Attach event listeners for clicking the query
+        historyDiv.querySelectorAll(".history-item").forEach(el => {
+            el.querySelector(".history-item-text").addEventListener("click", () => {
+                const query = decodeURIComponent(el.dataset.query);
+                searchInput.value = query;
+                saveHistoryItem(query);
+                window.location.href = `search_result.php?q=${encodeURIComponent(query)}`;
+            });
+        });
+
+        historyDiv.style.display = "flex";
+    }
+
+    // Bind focus and click events to show history dropdown immediately
+    const showHistoryDropdown = () => {
+        if (!searchInput) return;
+        const keyword = searchInput.value.trim();
+        if (keyword.length === 0) {
+            renderSearchHistory();
+            if (searchResult) searchResult.style.display = "none";
+        } else {
+            renderSearchHistory(keyword);
+        }
+    };
+
+    if (searchInput) {
+        searchInput.addEventListener("focus", showHistoryDropdown);
+        searchInput.addEventListener("click", showHistoryDropdown);
+    }
+
+    // Handle Enter key
+    if (searchInput) {
+        searchInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                const keyword = this.value.trim();
+                if (keyword.length >= 2) {
+                    saveHistoryItem(keyword);
+                    window.location.href = `search_result.php?q=${encodeURIComponent(keyword)}`;
+                }
+            }
+        });
+
+        // Debounce: tunggu 300 ms setelah huruf terakhir baru kirim request
+        searchInput.addEventListener("input", function () {
+            const keyword = this.value.trim();
+            if (searchResult) searchResult.style.display = "none";
+
+            const historyDiv = document.getElementById("searchHistory");
+            clearTimeout(searchTimer);
+
+            if (keyword.length === 0) {
+                renderSearchHistory();
+                return;
+            }
+
+            // Show matching search history items (filter by typed text)
+            renderSearchHistory(keyword);
+            if (historyDiv) historyDiv.style.display = "flex";
+
+            if (keyword.length < 2) return;
+            searchTimer = setTimeout(() => fetchSearch(keyword), 300);
+        });
+    }
 
     // Tutup dropdown kalau klik di luar search bar
     document.addEventListener("click", function (e) {
         if (!e.target.closest(".search-bar")) {
-            searchResult.style.display = "none";
+            if (searchResult) searchResult.style.display = "none";
+            const historyDiv = document.getElementById("searchHistory");
+            if (historyDiv) historyDiv.style.display = "none";
         }
     });
 
     // ── Init: simpan label tombol untuk loading state ─────────────
-    loginForm.querySelectorAll("button[type=submit]").forEach(b => b.dataset.label = b.textContent);
-    signupForm.querySelectorAll("button[type=submit]").forEach(b => b.dataset.label = b.textContent);
+    if (loginForm) loginForm.querySelectorAll("button[type=submit]").forEach(b => b.dataset.label = b.textContent);
+    if (signupForm) signupForm.querySelectorAll("button[type=submit]").forEach(b => b.dataset.label = b.textContent);
 
     // ── Cek session saat halaman load ─────────────────────────────
     checkSession();

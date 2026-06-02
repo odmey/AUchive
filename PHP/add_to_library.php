@@ -82,7 +82,7 @@ if (!$lib) {
 
 // ── Cek apakah cerita sudah ada di library_stories ───────────
 $stmt = $pdo->prepare("
-    SELECT library_id FROM library_stories
+    SELECT library_id, is_saved, is_favorite FROM library_stories
     WHERE library_id = ? AND story_id = ?
 ");
 $stmt->execute([$library_id, $story_id]);
@@ -93,18 +93,31 @@ switch ($action) {
     // ── Tambah ke library ─────────────────────────────────────
     case 'add':
         if ($existing) {
-            echo json_encode([
-                'success'    => true,
-                'message'    => 'Cerita sudah ada di library.',
-                'in_library' => true,
-            ]);
-            exit;
+            if ((int)$existing['is_saved'] === 1) {
+                echo json_encode([
+                    'success'    => true,
+                    'message'    => 'Cerita sudah ada di library.',
+                    'in_library' => true,
+                ]);
+                exit;
+            } else {
+                // Baris ada tapi status is_saved = 0, update ke 1
+                $stmt = $pdo->prepare("
+                    UPDATE library_stories
+                    SET is_saved = 1, saved_at = NOW()
+                    WHERE library_id = ? AND story_id = ?
+                ");
+                $stmt->execute([$library_id, $story_id]);
+            }
+        } else {
+            // Baris belum ada sama sekali
+            $stmt = $pdo->prepare("
+                INSERT INTO library_stories (library_id, story_id, saved_at, is_saved)
+                VALUES (?, ?, NOW(), 1)
+            ");
+            $stmt->execute([$library_id, $story_id]);
         }
-        $stmt = $pdo->prepare("
-            INSERT INTO library_stories (library_id, story_id, saved_at)
-            VALUES (?, ?, NOW())
-        ");
-        $stmt->execute([$library_id, $story_id]);
+
         echo json_encode([
             'success'    => true,
             'message'    => 'Cerita berhasil ditambahkan ke library.',
@@ -114,7 +127,8 @@ switch ($action) {
 
     // ── Hapus dari library ────────────────────────────────────
     case 'remove':
-        if (!$existing) {
+        // Dianggap "tidak ada di library" jika baris tidak ada ATAU is_saved = 0
+        if (!$existing || (int)$existing['is_saved'] === 0) {
             echo json_encode([
                 'success'    => false,
                 'message'    => 'Cerita tidak ada di library.',
@@ -122,11 +136,24 @@ switch ($action) {
             ]);
             exit;
         }
-        $stmt = $pdo->prepare("
-            DELETE FROM library_stories
-            WHERE library_id = ? AND story_id = ?
-        ");
-        $stmt->execute([$library_id, $story_id]);
+
+        if ((int)$existing['is_favorite'] === 1) {
+            // Jika masih difavoritkan, jangan hapus baris. Cukup set is_saved = 0
+            $stmt = $pdo->prepare("
+                UPDATE library_stories
+                SET is_saved = 0
+                WHERE library_id = ? AND story_id = ?
+            ");
+            $stmt->execute([$library_id, $story_id]);
+        } else {
+            // Jika tidak difavoritkan, hapus baris dari database
+            $stmt = $pdo->prepare("
+                DELETE FROM library_stories
+                WHERE library_id = ? AND story_id = ?
+            ");
+            $stmt->execute([$library_id, $story_id]);
+        }
+
         echo json_encode([
             'success'    => true,
             'message'    => 'Cerita dihapus dari library.',

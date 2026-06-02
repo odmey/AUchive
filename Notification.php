@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action']) && $_GET['ac
                     FROM chapters c
                     WHERE c.story_id = ls.story_id AND c.status = 'published'
                 )
-                WHERE ls.library_id = ?
+                WHERE ls.library_id = ? AND ls.is_saved = 1
             ");
             $stmtUpdate->execute([$library_id]);
         }
@@ -165,7 +165,7 @@ if ($tableExists) {
             JOIN stories  s ON s.story_id  = ls.story_id
             JOIN chapters c ON c.story_id  = s.story_id
                            AND c.status    = 'published'
-            WHERE ls.library_id = ?
+            WHERE ls.library_id = ? AND ls.is_saved = 1
               AND c.chapter_id > COALESCE(ls.last_read_chapter_id, 0)
             ORDER BY c.created_at DESC
             LIMIT 50
@@ -250,9 +250,16 @@ if ($tableExists) {
                 $isComment = (stripos($n['title'] ?? '', 'mengomentari') !== false || stripos($n['title'] ?? '', 'commented') !== false);
                 $isFollow = ($type === 'follow' || stripos($n['title'] ?? '', 'follow') !== false || stripos($n['title'] ?? '', 'pengikut') !== false || stripos($n['title'] ?? '', 'mengikuti') !== false);
                 $isLike = ($type === 'like' || stripos($n['title'] ?? '', 'like') !== false || stripos($n['title'] ?? '', 'menyukai') !== false);
+
+                // Dynamically map to appropriate category for filter tabs
+                if ($isComment || $isFollow || $isLike) {
+                    $displayType = 'social';
+                } else {
+                    $displayType = 'story';
+                }
             ?>
                 <div class="notification <?= $isUnread ? 'unread' : '' ?>"
-                     data-type="<?= htmlspecialchars($type) ?>"
+                     data-type="<?= htmlspecialchars($displayType) ?>"
                      onclick="window.location.href='<?= htmlspecialchars($link) ?>'">
                     <div class="avatar" style="overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                         <?php if (!empty($cover)): ?>

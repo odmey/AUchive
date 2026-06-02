@@ -12,8 +12,12 @@ $user_id     = $_SESSION['user_id'];
 $story_id    = (int)($_POST['story_id'] ?? 0);
 $title       = trim($_POST['title'] ?? '');
 $description = trim($_POST['description'] ?? '');
-$genre_name  = trim($_POST['genre'] ?? '');
-$tags        = trim($_POST['tags'] ?? '');
+$genre_name      = trim($_POST['genre'] ?? '');
+$tags            = trim($_POST['tags'] ?? '');
+$progress_status = trim($_POST['progress_status'] ?? 'ongoing');
+if (!in_array($progress_status, ['ongoing', 'complete', 'hiatus'])) {
+    $progress_status = 'ongoing';
+}
 
 // Validasi input minimal
 if ($story_id <= 0) {
@@ -74,10 +78,10 @@ if ($genre) {
 try {
     $stmt = $pdo->prepare("
         UPDATE stories 
-        SET title = ?, description = ?, genre_id = ?, cover = ? 
+        SET title = ?, description = ?, genre_id = ?, cover = ?, progress_status = ?
         WHERE story_id = ? AND user_id = ?
     ");
-    $stmt->execute([$title, $description, $genre_id, $cover_path, $story_id, $user_id]);
+    $stmt->execute([$title, $description, $genre_id, $cover_path, $progress_status, $story_id, $user_id]);
 } catch (PDOException $e) {
     echo "Error updating story: " . $e->getMessage();
     die();

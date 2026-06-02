@@ -33,6 +33,7 @@ if ($roomchat_id > 0) {
       <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap" rel="stylesheet">
      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
      <link rel="stylesheet" href="CSS/style_bblchat.css?v=<?= time() ?>">
+     <script src="JS/custom_alert.js"></script>
     </head>
     <body class="theme-wa">
       <div class="topnav">

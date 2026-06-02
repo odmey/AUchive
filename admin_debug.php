@@ -76,15 +76,15 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
 
   <link rel="stylesheet" href="CSS/style_Etmin.css">
   <link rel="stylesheet" href="CSS/style_debug.css">
+  <script src="JS/custom_alert.js"></script>
 </head>
 
 <body>
 
 <!-- SIDEBAR NAVIGATION (matches Etmin.php) -->
 <aside class="sidebar">
-  <div class="logo">
-    <span class="material-symbols-outlined" style="font-size:32px;">shield</span>
-    <span>AU</span>chive
+  <div class="logo" style="cursor: pointer;" onclick="window.location.href='homepage.php'">
+    <img src="Pic/TextLogo.png" alt="AUchive Logo" style="height: 32px; width: auto; display: block;">
   </div>
 
   <nav class="menu">

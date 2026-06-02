@@ -49,6 +49,14 @@ try {
 
     if ($chapter_id > 0) {
         // UPDATE chapter yang sudah ada
+        $stmtCheck = $pdo->prepare("SELECT status, published_at FROM chapters WHERE chapter_id = ?");
+        $stmtCheck->execute([$chapter_id]);
+        $oldChapter = $stmtCheck->fetch();
+        $isBrandNewPublish = false;
+        if ($oldChapter && $status === 'published' && $oldChapter['status'] !== 'published') {
+            $isBrandNewPublish = true;
+        }
+
         $stmt = $pdo->prepare("
             UPDATE chapters
             SET chapter_title = :title,
@@ -72,6 +80,8 @@ try {
 
     } else {
         // INSERT chapter baru
+        $isBrandNewPublish = ($status === 'published');
+
         $stmt = $pdo->prepare("
             INSERT INTO chapters (story_id, chapter_title, chapter_text, status)
             VALUES (:story_id, :title, :text, :status)
@@ -93,6 +103,60 @@ try {
             WHERE chapter_id = :chapter_id
         ");
         $stmt->execute([':chapter_id' => $chapter_id]);
+
+        // Send notifications to library subscribers
+        if ($isBrandNewPublish) {
+            try {
+                $tableExists = false;
+                try {
+                    $pdo->query("SELECT 1 FROM notifications LIMIT 1");
+                    $tableExists = true;
+                } catch (PDOException $e) {}
+
+                if ($tableExists) {
+                    $stmtStory = $pdo->prepare("SELECT user_id, title FROM stories WHERE story_id = ?");
+                    $stmtStory->execute([$story_id]);
+                    $storyInfo = $stmtStory->fetch();
+
+                    if ($storyInfo) {
+                        $author_id = (int)$storyInfo['user_id'];
+                        $story_title = $storyInfo['title'];
+
+                        $stmtSubscribers = $pdo->prepare("
+                            SELECT l.user_id 
+                            FROM library_stories ls
+                            JOIN library l ON ls.library_id = l.library_id
+                            WHERE ls.story_id = ? AND l.user_id != ?
+                        ");
+                        $stmtSubscribers->execute([$story_id, $author_id]);
+                        $subscribers = $stmtSubscribers->fetchAll(PDO::FETCH_COLUMN);
+
+                        if (!empty($subscribers)) {
+                            $stmtNotif = $pdo->prepare("
+                                INSERT INTO notifications (user_id, type, title, body, ref_story_id, actor_user_id, link_url, created_at)
+                                VALUES (?, 'story', ?, ?, ?, ?, ?, NOW())
+                            ");
+                            foreach ($subscribers as $sub_id) {
+                                $notifTitle = 'Chapter baru: ' . $story_title;
+                                $notifBody = '"' . $chapter_title . '" sudah tersedia.';
+                                $link_url = "Readingpage.php?story_id=" . $story_id . "&chapter_id=" . $chapter_id;
+
+                                $stmtNotif->execute([
+                                    $sub_id,
+                                    $notifTitle,
+                                    $notifBody,
+                                    $story_id,
+                                    $author_id,
+                                    $link_url
+                                ]);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                error_log("Failed to send new chapter notifications: " . $e->getMessage());
+            }
+        }
     }
 
     echo json_encode([

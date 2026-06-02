@@ -33,6 +33,7 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="CSS/style_setting.css">
     <title>Setting</title>
+    <script src="JS/custom_alert.js"></script>
 </head>
 
 <body>
