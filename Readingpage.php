@@ -146,7 +146,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                     ← Back to Library
                 </a>
             <?php else: ?>
-                <a href="Detstory.php?story_id=<?= $story_id ?>">
+                <a href="Detstory.php?id=<?= $story_id ?>">
                     ← Back to Story
                 </a>
             <?php endif; ?>

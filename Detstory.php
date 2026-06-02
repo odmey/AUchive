@@ -35,7 +35,7 @@ $stmt = $pdo->prepare("
         u.profile_pic,
         u.bio,
         (SELECT COUNT(*) FROM chapters c WHERE c.story_id = s.story_id AND c.status = 'published') AS chapter_count,
-        (SELECT COUNT(*) FROM chapters c JOIN stories st ON c.story_id = st.story_id WHERE st.user_id = s.user_id AND c.status = 'published') AS author_chapter_count
+        (SELECT COUNT(*) FROM stories st WHERE st.user_id = s.user_id AND st.status != 'draft') AS author_story_count
     FROM stories s
     LEFT JOIN genres g ON g.genre_id   = s.genre_id
     LEFT JOIN users  u ON u.user_id    = s.user_id
@@ -149,8 +149,25 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
 <body>
 
     <div class="back-button">
-        <a href="javascript:void(0);" onclick="if(document.referrer && document.referrer.includes(window.location.hostname)) { history.back(); } else { window.location.href='homepage.php'; }">✕</a>
+        <a href="javascript:void(0);" id="backButtonLink">✕</a>
     </div>
+    <script>
+        (function() {
+            // Catat asal halaman sebelum masuk ke halaman baca
+            if (document.referrer && !document.referrer.includes('Readingpage.php') && document.referrer.includes(window.location.hostname)) {
+                sessionStorage.setItem('story_back_url', document.referrer);
+            }
+            document.getElementById('backButtonLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                const backUrl = sessionStorage.getItem('story_back_url');
+                if (backUrl) {
+                    window.location.href = backUrl;
+                } else {
+                    window.location.href = 'homepage.php';
+                }
+            });
+        })();
+    </script>
 
     <section class="story-detail-page">
 
@@ -321,7 +338,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
 
         <!-- Writer Info -->
         <div class="writer-card" style="cursor:pointer; transition:0.2s;">
-            <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: flex; align-items: center; gap: 20px; flex: 1;">
+            <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: flex; align-items: center; gap: 20px;">
                 <img src="<?= $authorAvatar ?>"
                      alt="<?= htmlspecialchars($story['author_name'] ?? $story['username']) ?>"
                      onerror="this.src='Pic/profileicon.jpg'">

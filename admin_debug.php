@@ -83,8 +83,8 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
 
 <!-- SIDEBAR NAVIGATION (matches Etmin.php) -->
 <aside class="sidebar">
-  <div class="logo" style="cursor: pointer;" onclick="window.location.href='homepage.php'">
-    <img src="Pic/TextLogo.png" alt="AUchive Logo" style="height: 32px; width: auto; display: block;">
+  <div class="logo" style="gap: 0;">
+    <span>AU</span><span>chive</span>
   </div>
 
   <nav class="menu">

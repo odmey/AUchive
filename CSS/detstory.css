@@ -244,7 +244,7 @@ body {
 .action-buttons button {
     padding: 14px 26px;
     border: none;
-    border-radius: 16px;
+    border-radius: 99px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -286,12 +286,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 30px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 24px;
     padding: 24px;
     backdrop-filter: blur(12px);
+    width: 100%;
 }
 
 .writer-card img {
@@ -309,11 +310,11 @@ body {
 }
 
 .writer-card .follow-btn {
-    padding: 12px 28px;
+    padding: 10px 24px;
     border: none;
     border-radius: 99px;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
     background: rgba(255, 255, 255, 0.05);
@@ -414,7 +415,7 @@ body {
     color: #111111;
     font-weight: 600;
     text-decoration: none;
-    border-radius: 12px;
+    border-radius: 99px;
     font-size: 14px;
     transition: all 0.2s ease;
     text-align: left;
