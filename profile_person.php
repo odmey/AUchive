@@ -104,7 +104,7 @@ $joinDate = date('F Y', strtotime($author['created_at']));
     <title>Profile – @<?= htmlspecialchars($author['username']) ?></title>
 </head>
 
-<body>
+<body class="own-profile">
     <header class="profile-header">
         <div class="left">
             <a href="homepage.php" class="back-link">
@@ -125,38 +125,43 @@ $joinDate = date('F Y', strtotime($author['created_at']));
 
         <div class="profile-info">
             <img src="<?= $profilePicSrc ?>" class="profile-pic" onerror="this.style.opacity='0'">
-            <div class="top-row">
-                <div>
-                    <h2 class="name"><?= htmlspecialchars($author['name']) ?></h2>
-                    <p class="username">@<?= htmlspecialchars($author['username']) ?></p>
-                </div>
 
-                <div class="profile-actions">
-                    <?php if ($isLoggedIn): ?>
-                        <button class="follow-btn<?= $isFollowing ? ' active' : '' ?>" id="followBtn" style="<?= $isFollowing ? 'background:transparent; color:#FFF44F; border:1px solid #FFF44F;' : '' ?>">
-                            <?= $isFollowing ? 'Following' : 'Follow' ?>
-                        </button>
-                    <?php else: ?>
-                        <button class="follow-btn" onclick="window.location.href='homepage.php?auth=login'">
-                            Follow
-                        </button>
-                    <?php endif; ?>
-                </div>
+            <div class="profile-actions-row">
+                <?php if ($isLoggedIn): ?>
+                    <button class="follow-btn<?= $isFollowing ? ' active' : '' ?>" id="followBtn" style="<?= $isFollowing ? 'background:transparent; color:#FFF44F; border:1px solid #FFF44F;' : '' ?>">
+                        <?= $isFollowing ? 'Following' : 'Follow' ?>
+                    </button>
+                    <button class="report-btn" id="reportUserBtn" title="Report User">
+                        <span class="material-symbols-outlined">flag</span>
+                    </button>
+                <?php else: ?>
+                    <button class="follow-btn" onclick="window.location.href='homepage.php?auth=login'">
+                        Follow
+                    </button>
+                    <button class="report-btn" onclick="window.location.href='homepage.php?auth=login'" title="Report User">
+                        <span class="material-symbols-outlined">flag</span>
+                    </button>
+                <?php endif; ?>
             </div>
 
-            <p class="bio">
-                <?= nl2br(htmlspecialchars($author['bio'] ?? 'Penulis AUchive.')) ?>
-            </p>
+            <div class="profile-details">
+                <h2 class="name"><?= htmlspecialchars($author['name']) ?></h2>
+                <p class="username">@<?= htmlspecialchars($author['username']) ?></p>
+                
+                <p class="bio">
+                    <?= nl2br(htmlspecialchars($author['bio'] ?? 'Penulis AUchive.')) ?>
+                </p>
 
-            <p class="join">Joined <?= $joinDate ?></p>
+                <p class="join">Joined <?= $joinDate ?></p>
 
-            <div class="stats">
-                <span class="stat-btn" id="followingBtn" style="cursor:pointer;">
-                    <b id="followingCountVal"><?= $followingCount ?></b> Following
-                </span>
-                <span class="stat-btn" id="followersBtn" style="cursor:pointer;">
-                    <b id="followersCountVal"><?= $followersCount ?></b> Followers
-                </span>
+                <div class="stats">
+                    <span class="stat-btn" id="followingBtn" style="cursor:pointer;">
+                        <b id="followingCountVal"><?= $followingCount ?></b> Following
+                    </span>
+                    <span class="stat-btn" id="followersBtn" style="cursor:pointer;">
+                        <b id="followersCountVal"><?= $followersCount ?></b> Followers
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -198,6 +203,41 @@ $joinDate = date('F Y', strtotime($author['created_at']));
                 <span id="closeFollowModal" style="cursor:pointer; font-size:22px; color:#aaa;">&times;</span>
             </div>
             <div id="userList" style="overflow-y:auto; padding:10px 0;"></div>
+        </div>
+    </div>
+
+    <!-- Modal Report User -->
+    <div id="reportModalContainer" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center; backdrop-filter: blur(5px);">
+        <div style="background:#1e1e1e; border: 1px solid rgba(255, 244, 79, 0.2); border-radius:18px; width:90%; max-width:400px; padding: 24px; display:flex; flex-direction:column; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom: 10px;">
+                <h3 style="margin:0; font-size:18px; color:#FFF44F; font-weight:700; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined">flag</span> Report User
+                </h3>
+                <span id="closeReportModal" style="cursor:pointer; font-size:22px; color:#aaa; font-weight:bold;">&times;</span>
+            </div>
+            
+            <form id="reportForm" style="display:flex; flex-direction:column; gap:12px;">
+                <div>
+                    <label style="color:#ccc; font-size:13px; display:block; margin-bottom:6px;">Reason for Report</label>
+                    <select id="reportReason" required style="width:100%; padding:10px; border-radius:8px; border:1px solid #333; background:#2a2a2a; color:white; outline:none; font-family:inherit;">
+                        <option value="spam">Spam / Advertising</option>
+                        <option value="harassment">Harassment / Bullying</option>
+                        <option value="inappropriate">Inappropriate / Adult Content</option>
+                        <option value="violence">Violence / Gore</option>
+                        <option value="plagiarism">Plagiarism / Copyright Violation</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color:#ccc; font-size:13px; display:block; margin-bottom:6px;">Details / Description (Optional)</label>
+                    <textarea id="reportDescription" placeholder="Provide additional details..." style="width:100%; min-height:80px; padding:10px; border-radius:8px; border:1px solid #333; background:#2a2a2a; color:white; outline:none; resize:vertical; font-family:inherit;"></textarea>
+                </div>
+                
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                    <button type="button" id="cancelReportBtn" style="background:#444; color:white; border:none; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button>
+                    <button type="submit" id="submitReportBtn" style="background:#FFF44F; color:black; border:none; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; font-family:inherit;">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 

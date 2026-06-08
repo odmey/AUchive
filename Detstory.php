@@ -318,6 +318,15 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                 <a href="Readingpage.php?story_id=<?= $storyId ?>">
                     <button class="read-btn" id="readBtn">Start Reading</button>
                 </a>
+                <?php if ($isLoggedIn): ?>
+                    <button class="report-btn" id="reportStoryBtn" title="Report Story">
+                        <span class="material-symbols-outlined">flag</span>
+                    </button>
+                <?php else: ?>
+                    <button class="report-btn" onclick="window.location.href='homepage.php?auth=login'" title="Report Story">
+                        <span class="material-symbols-outlined">flag</span>
+                    </button>
+                <?php endif; ?>
             </div>
 
             <!-- Chapters list for Mobile / Windowed (hidden on desktop) -->
@@ -363,6 +372,41 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <?php endif; ?>
         </div>
     </section>
+
+    <!-- Modal Report Story -->
+    <div id="reportModalContainer" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center; backdrop-filter: blur(5px);">
+        <div style="background:#1e1e1e; border: 1px solid rgba(255, 244, 79, 0.2); border-radius:18px; width:90%; max-width:400px; padding: 24px; display:flex; flex-direction:column; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); font-family: 'Poppins', sans-serif;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom: 10px;">
+                <h3 style="margin:0; font-size:18px; color:#FFF44F; font-weight:700; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined">flag</span> Report Story
+                </h3>
+                <span id="closeReportModal" style="cursor:pointer; font-size:22px; color:#aaa; font-weight:bold;">&times;</span>
+            </div>
+            
+            <form id="reportForm" style="display:flex; flex-direction:column; gap:12px;">
+                <div>
+                    <label style="color:#ccc; font-size:13px; display:block; margin-bottom:6px;">Reason for Report</label>
+                    <select id="reportReason" required style="width:100%; padding:10px; border-radius:8px; border:1px solid #333; background:#2a2a2a; color:white; outline:none; font-family:inherit;">
+                        <option value="spam">Spam / Advertising</option>
+                        <option value="harassment">Harassment / Bullying</option>
+                        <option value="inappropriate">Inappropriate / Adult Content</option>
+                        <option value="violence">Violence / Gore</option>
+                        <option value="plagiarism">Plagiarism / Copyright Violation</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color:#ccc; font-size:13px; display:block; margin-bottom:6px;">Details / Description (Optional)</label>
+                    <textarea id="reportDescription" placeholder="Provide additional details..." style="width:100%; min-height:80px; padding:10px; border-radius:8px; border:1px solid #333; background:#2a2a2a; color:white; outline:none; resize:vertical; font-family:inherit;"></textarea>
+                </div>
+                
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                    <button type="button" id="cancelReportBtn" style="background:#444; color:white; border:none; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button>
+                    <button type="submit" id="submitReportBtn" style="background:#FFF44F; color:black; border:none; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; font-family:inherit;">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <?php if ($isLoggedIn): ?>
         <script>
