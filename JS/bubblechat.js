@@ -138,7 +138,18 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubble
     
     const b = document.createElement('div');
     b.className = 'bubble';
-    b.style.background = color;
+    
+    // Check if the color is default for this theme & side. If so, don't write inline color.
+    const themeCard = document.querySelector('.theme-card.active');
+    let theme = 'wa';
+    if (themeCard && themeCard.classList.contains('tc-im')) {
+        theme = 'im';
+    }
+    const cfg = THEMES[theme];
+    const defaultColor = side === 'left' ? cfg.receiverBg : cfg.senderBg;
+    if (color && color.toLowerCase() !== defaultColor.toLowerCase()) {
+        b.style.background = color;
+    }
     
     let innerHTML = '';
     if (side === 'left' && senderName) {
@@ -182,6 +193,16 @@ function addBubble() {
         return;
     }
 
+    // Determine final color (use null if it matches the theme's default color)
+    const themeCard = document.querySelector('.theme-card.active');
+    let theme = 'wa';
+    if (themeCard && themeCard.classList.contains('tc-im')) {
+        theme = 'im';
+    }
+    const cfg = THEMES[theme];
+    const defaultColor = side === 'left' ? cfg.receiverBg : cfg.senderBg;
+    const finalColor = (color.toLowerCase() === defaultColor.toLowerCase()) ? null : color;
+
     // Helper to process and send the bubble
     function processBubble(customAvatarBase64) {
         if (imgFile) {
@@ -196,7 +217,7 @@ function addBubble() {
                     message:       msg,
                     sender_name:   finalSender,
                     position:      side,
-                    color:         color,
+                    color:         finalColor,
                     sort_order:    bubbleSortOrder,
                     time_label:    ts,
                     sender_avatar: customAvatarBase64 || null,
@@ -214,7 +235,7 @@ function addBubble() {
                 message:       msg,
                 sender_name:   finalSender,
                 position:      side,
-                color:         color,
+                color:         finalColor,
                 sort_order:    bubbleSortOrder,
                 time_label:    ts,
                 sender_avatar: customAvatarBase64 || null,
@@ -257,7 +278,7 @@ async function saveStory() {
     const chapterId = getChapterId();
     const roomchatId = getRoomchatId();
     if (chapterId <= 0 || roomchatId <= 0) {
-        alert('Chapter ID atau Roomchat ID tidak ditemukan.');
+        alert('Chapter ID or Roomchat ID not found.');
         return;
     }
 
@@ -296,20 +317,21 @@ async function saveStory() {
                 window.location.href = `Editor.php?story_id=${STORY_ID}&chapter_id=${chapterId}`;
             }, 800);
         } else {
-            alert('Gagal menyimpan roomchat: ' + result.message);
+            alert('Failed to save roomchat: ' + result.message);
             btn.textContent = 'SAVE STORY';
             btn.disabled = false;
         }
     } catch (err) {
         console.error(err);
-        alert('Koneksi gagal saat menyimpan.');
+        alert('Connection failed while saving.');
         btn.textContent = 'SAVE STORY';
         btn.disabled = false;
     }
 }
 
 async function clearChat() {
-    if (!confirm('Hapus semua bubble di roomchat ini? Data di database juga akan terhapus.')) return;
+    const confirmed = await customConfirm('Delete all bubbles in this roomchat? Data in the database will also be deleted.');
+    if (!confirmed) return;
     
     const roomchatId = getRoomchatId();
     if (roomchatId <= 0) {
@@ -329,10 +351,10 @@ async function clearChat() {
             document.getElementById('chatArea').innerHTML = '<div class="date-chip"><span>Today</span></div>';
             bubbleSortOrder = 0;
         } else {
-            alert('Gagal hapus bubble: ' + result.message);
+            alert('Failed to delete bubble: ' + result.message);
         }
     } catch (err) {
-        alert('Koneksi gagal.');
+        alert('Connection failed.');
     }
 }
 

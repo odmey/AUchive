@@ -33,7 +33,7 @@ if (followBtn) {
                     followersCountVal.textContent = data.follower_count;
                 }
             } else {
-                alert(data.message || "Gagal mengikuti penulis.");
+                alert(data.message || "Failed to follow author.");
             }
         } catch (error) {
             console.error("Error following:", error);
@@ -175,11 +175,11 @@ if (reportForm) {
                 alert(data.message);
                 hideReportModal();
             } else {
-                alert(data.message || "Gagal mengirimkan laporan.");
+                alert(data.message || "Failed to submit report.");
             }
         } catch (error) {
             console.error("Error submitting report:", error);
-            alert("Terjadi kesalahan sistem saat mengirimkan laporan.");
+            alert("System error occurred while submitting report.");
         } finally {
             if (submitBtn) submitBtn.disabled = false;
         }

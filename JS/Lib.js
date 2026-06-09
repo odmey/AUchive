@@ -63,10 +63,10 @@ async function addToLibrary(storyId) {
         const result = await response.json();
 
         if (result.success) {
-            alert("Cerita berhasil ditambahkan ke library!");
+            alert("Story successfully added to library!");
             loadLibrary();
         } else {
-            alert(result.message || "Gagal menambahkan cerita");
+            alert(result.message || "Failed to add story.");
         }
 
     } catch (error) {
@@ -91,10 +91,10 @@ async function removeFromLibrary(storyId) {
         const result = await response.json();
 
         if (result.success) {
-            alert("Cerita berhasil dihapus dari library!");
+            alert("Story successfully removed from library!");
             loadLibrary();
         } else {
-            alert(result.message || "Gagal menghapus cerita");
+            alert(result.message || "Failed to remove story.");
         }
 
     } catch (error) {

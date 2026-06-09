@@ -19,7 +19,7 @@ try {
         FROM chapter_blocks cb
         LEFT JOIN roomchats r ON cb.block_id = r.block_id
         WHERE cb.chapter_id = ?
-        ORDER BY cb.sort_order ASC
+        ORDER BY cb.block_id ASC
     ");
     $stmt->execute([$chapter_id]);
     $blocks = $stmt->fetchAll();

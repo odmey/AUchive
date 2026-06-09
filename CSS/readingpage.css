@@ -392,7 +392,7 @@ body {
 
 /* WhatsApp theme reader overrides */
 .reader-roomchat.theme-wa .reader-bubble.left {
-  background: #202c33 !important;
+  background: #202c33;
   color: #e9edef !important;
   border-radius: 8px 8px 8px 0;
 }
@@ -404,7 +404,7 @@ body {
 
 /* iMessage theme reader overrides */
 .reader-roomchat.theme-im .reader-bubble.left {
-  background: #e5e5ea !important;
+  background: #e5e5ea;
   color: #000 !important;
   border-radius: 18px 18px 18px 4px;
 }

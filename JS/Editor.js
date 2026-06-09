@@ -36,7 +36,7 @@ async function loadBlocks(chapterId) {
             if (b.type === 'narration') {
                 renderNarrationBlock(b.block_id, b.content, b.sort_order);
             } else if (b.type === 'roomchat') {
-                renderRoomchatBlock(b.block_id, b.roomchat_id, b.contact_name, b.theme, b.bubbles || [], b.my_avatar, b.contact_avatar, b.bg_image);
+                renderRoomchatBlock(b.block_id, b.roomchat_id, b.contact_name, b.theme, b.bubbles || [], b.my_avatar, b.contact_avatar, b.bg_image, b.sort_order);
             }
         });
     } catch (err) {
@@ -47,7 +47,7 @@ async function loadBlocks(chapterId) {
 // ── NARASI ──────────────────────────────────
 function addNarrationBlock() {
     // Kita hilangkan pengecekan CHAPTER_ID <= 0 di sini agar penulis bisa langsung menambah blok konten
-    renderNarrationBlock(null, '', blockCount);
+    renderNarrationBlock(null, '', blockCount + 1);
 }
 
 function renderNarrationBlock(blockId, content, sortOrder) {
@@ -58,7 +58,7 @@ function renderNarrationBlock(blockId, content, sortOrder) {
     div.className = 'content-block narration-block';
     div.id = localId;
     div.dataset.blockId = blockId || '';
-    div.dataset.sortOrder = sortOrder;
+    div.dataset.sortOrder = sortOrder !== undefined ? sortOrder : blockCount;
     div.innerHTML = `
         <div class="block-label">
             <span>Naration</span>
@@ -73,6 +73,7 @@ function renderNarrationBlock(blockId, content, sortOrder) {
 }
 
 async function saveNarration(localId, showFeedback = true) {
+    recalculateSortOrders();
     const div = document.getElementById(localId);
     const content = div.querySelector('.narration-textarea').value.trim();
     const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
@@ -106,10 +107,10 @@ async function saveNarration(localId, showFeedback = true) {
 // ── ROOMCHAT ─────────────────────────────────
 function addRoomchatBlock() {
     // Kita hilangkan pengecekan CHAPTER_ID <= 0 di sini agar penulis bisa langsung menambah blok konten
-    renderRoomchatBlock(null, null, 'Contact', 'wa', []);
+    renderRoomchatBlock(null, null, 'Contact', 'wa', [], '', '', '', blockCount + 1);
 }
 
-function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, myAvatar = '', contactAvatar = '', bgImage = '') {
+function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, myAvatar = '', contactAvatar = '', bgImage = '', sortOrder = null) {
     blockCount++;
     const localId = 'block-' + blockCount;
     const container = document.getElementById('blocksContainer');
@@ -118,7 +119,7 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
     div.id = localId;
     div.dataset.blockId = blockId || '';
     div.dataset.roomchatId = roomchatId || '';
-    div.dataset.sortOrder = blockCount;
+    div.dataset.sortOrder = sortOrder !== null && sortOrder !== undefined ? sortOrder : blockCount;
 
     const isWa = theme === 'wa';
     const avatarHtml = contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤';
@@ -146,7 +147,7 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
                 </div>
             </div>
             <div class="rc-bubbles" id="rc-bubbles-${localId}" ${bgStyle}>
-                ${renderBubblesPreview(bubbles, myAvatar, contactAvatar, contactName)}
+                ${renderBubblesPreview(bubbles, myAvatar, contactAvatar, contactName, theme)}
             </div>
         </div>
         <div class="rc-edit-btn-row">
@@ -158,7 +159,7 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
     container.appendChild(div);
 }
 
-function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contactName = '') {
+function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contactName = '', theme = 'wa') {
     if (!bubbles || bubbles.length === 0) return '<p class="rc-empty">Belum ada bubble. Klik "Edit Bubble Chat".</p>';
 
     // Check if there is any custom sender name or custom avatar to declare GC mode
@@ -192,6 +193,13 @@ function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contac
             imgHtml = `<div class="bubble-img-wrap" style="margin-bottom: 4px;"><img src="${b.bubble_image}"></div>`;
         }
 
+        // WhatsApp defaults: left #202c33, right #005c4b
+        // iMessage defaults: left #e5e5ea, right #007aff
+        const isWa = theme === 'wa';
+        const defaultColor = isLeft ? (isWa ? '#202c33' : '#e5e5ea') : (isWa ? '#005c4b' : '#007aff');
+        const isDefault = b.color && b.color.toLowerCase() === defaultColor.toLowerCase();
+        const bgStyle = (b.color && !isDefault) ? `style="background:${b.color}"` : '';
+
         return `
             <div class="rc-bubble-row ${b.position}" 
                  data-sender="${b.contact_name || ''}" 
@@ -199,7 +207,7 @@ function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contac
                  data-bubble-image="${b.bubble_image || ''}"
                  style="align-items: flex-end; gap: 6px; margin-bottom: 4px;">
                 ${isLeft ? `<div class="rc-bubble-av">${avHtml}</div>` : ''}
-                <div class="rc-bubble" style="background:${b.color}">
+                <div class="rc-bubble" ${bgStyle}>
                     ${nameHtml}
                     ${imgHtml}
                     ${b.bubble_text || ''}
@@ -214,6 +222,7 @@ function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contac
 
 
 async function saveRoomchat(localId, showFeedback = true) {
+    recalculateSortOrders();
     const div = document.getElementById(localId);
     const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
     const roomchatId = div.dataset.roomchatId ? parseInt(div.dataset.roomchatId) : 0;
@@ -245,7 +254,7 @@ async function saveRoomchat(localId, showFeedback = true) {
         });
         const blockResult = await resBlock.json();
         if (!blockResult.success) {
-            if (showFeedback) alert('Gagal buat block.');
+            if (showFeedback) alert('Failed to create block.');
             return;
         }
         finalBlockId = blockResult.block_id;
@@ -272,7 +281,7 @@ async function saveRoomchat(localId, showFeedback = true) {
         div.dataset.roomchatId = result.roomchat_id;
         if (showFeedback) showToast('Roomchat tersimpan!');
     } else {
-        if (showFeedback) alert('Gagal simpan: ' + result.message);
+        if (showFeedback) alert('Failed to save: ' + result.message);
     }
 }
 
@@ -295,7 +304,8 @@ async function goToBubbleChat(localId) {
 
 // ── HAPUS BLOK ───────────────────────────────
 async function deleteBlock(localId) {
-    if (!confirm('Hapus blok ini?')) return;
+    const confirmed = await customConfirm('Delete this block?');
+    if (!confirmed) return;
     const div = document.getElementById(localId);
     const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
 
@@ -314,7 +324,7 @@ async function deleteBlock(localId) {
 async function saveChapter(status = 'draft', showFeedback = true) {
     const title = document.querySelector('.editor-title').value.trim();
     if (!title) {
-        if (showFeedback) alert('Judul bab tidak boleh kosong.');
+        if (showFeedback) alert('Chapter title cannot be empty.');
         return false;
     }
 
@@ -355,17 +365,25 @@ async function saveChapter(status = 'draft', showFeedback = true) {
             }
             return true;
         } else {
-            if (showFeedback) alert('Gagal simpan: ' + result.message);
+            if (showFeedback) alert('Failed to save: ' + result.message);
             return false;
         }
     } catch (err) {
-        if (showFeedback) alert('Koneksi gagal.');
+        if (showFeedback) alert('Connection failed.');
         return false;
     }
 }
 
+function recalculateSortOrders() {
+    const blocks = document.querySelectorAll('#blocksContainer .content-block');
+    blocks.forEach((div, index) => {
+        div.dataset.sortOrder = index + 1;
+    });
+}
+
 // Menyimpan semua blok yang ada di DOM secara paralel
 async function saveAllBlocks(showFeedback = false) {
+    recalculateSortOrders();
     const blocks = document.querySelectorAll('#blocksContainer .content-block');
     const promises = [];
     for (const div of blocks) {
@@ -398,7 +416,8 @@ async function addNewChapter() {
 }
 
 async function deleteChapter(chapterId) {
-    if (!confirm('Hapus chapter ini? Semua konten di dalamnya akan terhapus.')) return;
+    const confirmed = await customConfirm('Delete this chapter? All content inside will be permanently deleted.');
+    if (!confirmed) return;
     try {
         const res = await fetch('PHP/delete_chapter.php', {
             method: 'POST',
@@ -407,13 +426,13 @@ async function deleteChapter(chapterId) {
         });
         const result = await res.json();
         if (result.success) {
-            showToast('Chapter dihapus!');
+            showToast('Chapter deleted!');
             setTimeout(() => { window.location.href = `Editor.php?story_id=${STORY_ID}`; }, 800);
         } else {
-            alert('Gagal hapus: ' + result.message);
+            alert('Failed to delete: ' + result.message);
         }
     } catch (err) {
-        alert('Koneksi gagal.');
+        alert('Connection failed.');
     }
 }
 

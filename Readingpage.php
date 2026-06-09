@@ -164,7 +164,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                     FROM chapter_blocks cb
                     LEFT JOIN roomchats r ON cb.block_id = r.block_id
                     WHERE cb.chapter_id = ?
-                    ORDER BY cb.sort_order ASC
+                    ORDER BY cb.block_id ASC
                 ");
                 $stmt_blocks->execute([$chapter_id]);
                 $blocks = $stmt_blocks->fetchAll();
@@ -222,9 +222,24 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
-                                     <div class="reader-bubble <?= $b['position'] ?>"
-                                         style="background:<?= htmlspecialchars($b['color']) ?>">
-                                         <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
+                                      <?php
+                                      $isDefault = false;
+                                      if (!empty($b['color'])) {
+                                          $c = strtolower(trim($b['color']));
+                                          if ($block['theme'] === 'wa') {
+                                              if (($b['position'] === 'left' && $c === '#202c33') || ($b['position'] === 'right' && $c === '#005c4b')) {
+                                                  $isDefault = true;
+                                              }
+                                          } else {
+                                              if (($b['position'] === 'left' && $c === '#e5e5ea') || ($b['position'] === 'right' && $c === '#007aff')) {
+                                                  $isDefault = true;
+                                              }
+                                          }
+                                      }
+                                      $bgStyle = (!empty($b['color']) && !$isDefault) ? 'style="background:' . htmlspecialchars($b['color']) . '"' : '';
+                                      ?>
+                                      <div class="reader-bubble <?= $b['position'] ?>" <?= $bgStyle ?>>
+                                          <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
                                              <div class="bubble-sender-name"><?= htmlspecialchars($b['contact_name']) ?></div>
                                          <?php endif; ?>
                                          <?php if (!empty($b['bubble_image'])): ?>

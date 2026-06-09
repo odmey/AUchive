@@ -480,7 +480,8 @@ document.addEventListener("DOMContentLoaded", function () {
     btn.addEventListener("click", async function () {
       const uid = this.dataset.id;
       const uname = this.dataset.name;
-      if (!confirm("Unban user @" + uname + "?")) return;
+      const confirmed = await customConfirm("Unban user @" + uname + "?");
+      if (!confirmed) return;
       const res = await apiFetch("PHP/admin_action.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -556,7 +557,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async function (e) {
       e.preventDefault();
-      if (!confirm("Logout from admin panel?")) return;
+      const confirmed = await customConfirm("Logout from admin panel?");
+      if (!confirmed) return;
       try {
         await fetch("PHP/logout.php", { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" } });
       } finally {

@@ -98,7 +98,7 @@ window.addEventListener("DOMContentLoaded", function () {
                         if (icon) icon.textContent = "favorite_border";
                     }
                 } else {
-                    alert(result.message || "Gagal menyukai chapter.");
+                    alert(result.message || "Failed to like chapter.");
                 }
             } catch (error) {
                 console.error("Error liking chapter:", error);
@@ -221,9 +221,9 @@ async function addToLibrary(storyId) {
         const result = await response.json();
 
         if (result.success) {
-            alert(result.message || "Berhasil ditambahkan ke library");
+            alert(result.message || "Successfully added to library");
         } else {
-            alert(result.message || "Gagal tambah library");
+            alert(result.message || "Failed to add to library");
         }
 
     } catch (error) {
@@ -245,12 +245,12 @@ async function postComment() {
     const comment = commentInput.value.trim();
 
     if (!comment) {
-        alert("Komentar tidak boleh kosong");
+        alert("Comment cannot be empty");
         return;
     }
 
     if (typeof CURRENT_CHAPTER_ID === 'undefined' || CURRENT_CHAPTER_ID <= 0) {
-        alert("Chapter ID tidak valid.");
+        alert("Invalid chapter ID.");
         return;
     }
 
@@ -272,7 +272,7 @@ async function postComment() {
             commentInput.value = "";
             loadComments();
         } else {
-            alert(result.message || "Gagal mengirim komentar");
+            alert(result.message || "Failed to submit comment");
         }
 
     } catch (error) {

@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         favBtn.textContent = "Favorite";
                     }
                 } else {
-                    alert(data.message || "Gagal memproses favorit.");
+                    alert(data.message || "Failed to favorite story.");
                 }
             } catch (error) {
                 console.error("Error favoriting:", error);
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         saveBtn.textContent = "Save";
                     }
                 } else {
-                    alert(data.message || "Gagal memproses library.");
+                    alert(data.message || "Failed to process library.");
                 }
             } catch (error) {
                 console.error("Error with library:", error);
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         followBtn.textContent = "Follow";
                     }
                 } else {
-                    alert(data.message || "Gagal mengikuti penulis.");
+                    alert(data.message || "Failed to follow author.");
                 }
             } catch (error) {
                 console.error("Error following:", error);
@@ -180,11 +180,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert(data.message);
                     hideReportModal();
                 } else {
-                    alert(data.message || "Gagal mengirimkan laporan.");
+                    alert(data.message || "Failed to submit report.");
                 }
             } catch (error) {
                 console.error("Error submitting report:", error);
-                alert("Terjadi kesalahan sistem saat mengirimkan laporan.");
+                alert("System error occurred while submitting report.");
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
             }

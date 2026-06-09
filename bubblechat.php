@@ -98,9 +98,9 @@ if ($roomchat_id > 0) {
             <div class="sep"></div>
             
       <div class="field-group">
-        <label class="field-label">Contact Name</label>
-        <input type="text" id="contactName" placeholder="Enter contact name…"
-        oninput="document.getElementById('previewName').textContent=this.value||'Contact Name'">
+        <label class="field-label">Contact / Roomchat name</label>
+        <input type="text" id="contactName" placeholder="Enter contact/roomchat name…"
+        oninput="document.getElementById('previewName').textContent=this.value||'Contact / Roomchat name'">
       </div>
       
       <div class="field-group">
@@ -111,7 +111,7 @@ if ($roomchat_id > 0) {
             <input type="file" id="profileUploadme" accept="image/*" onchange="loadAvatar(this,'me')">
           </div>
           <div class="field-group">
-            <label class="field-label">Contact Profile</label>
+            <label class="field-label">Contact/Roomchat profile</label>
             <input type="file" id="profileUpload" accept="image/*" onchange="loadAvatar(this,'contact')">
           </div>
         </div>

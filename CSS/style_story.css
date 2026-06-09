@@ -437,7 +437,7 @@ footer{
 
 /* WhatsApp theme preview overrides */
 .roomchat-preview.theme-wa .rc-bubble-row.left .rc-bubble {
-    background: #202c33 !important;
+    background: #202c33;
     color: #e9edef !important;
     border-radius: 8px 8px 8px 0;
 }
@@ -448,7 +448,7 @@ footer{
 
 /* iMessage theme preview overrides */
 .roomchat-preview.theme-im .rc-bubble-row.left .rc-bubble {
-    background: #e5e5ea !important;
+    background: #e5e5ea;
     color: #000 !important;
     border-radius: 18px 18px 18px 4px;
 }

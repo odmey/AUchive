@@ -81,7 +81,8 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('btnDeleteAccount').addEventListener('click', async () => {
                 const pwd = document.getElementById('accountDeletePwd').value;
                 if (!pwd) { alert("Please enter your password to confirm deletion."); return; }
-                if (confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+                const confirmed = await customConfirm("Are you sure you want to permanently delete your account? This action cannot be undone.");
+                if (confirmed) {
                     const fd = new FormData();
                     fd.append('password', pwd);
                     try {
@@ -214,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             window.location.href = "homepage.php";
                         }
                     } catch (err) {
-                        alert("Logout gagal.");
+                        alert("Logout failed.");
                         this.disabled = false;
                         this.textContent = "Yes, Log Out";
                     }

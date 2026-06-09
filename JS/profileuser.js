@@ -264,7 +264,7 @@ async function updateProgressStatus(storyId, progressStatus, elemId, selectEl) {
             const toasts = { ongoing: '\u2713 Ongoing', complete: '\u2713 Complete', hiatus: '\u2713 Hiatus' };
             showToastProfile(toasts[progressStatus] || 'Progress diperbarui.');
         } else {
-            alert('Gagal update progress: ' + (data.message || ''));
+            alert('Failed to update progress: ' + (data.message || ''));
             // Revert
             const card = document.getElementById(elemId);
             if (card && selectEl) {
@@ -272,7 +272,7 @@ async function updateProgressStatus(storyId, progressStatus, elemId, selectEl) {
             }
         }
     } catch (err) {
-        alert('Koneksi gagal.');
+        alert('Connection failed.');
         // Revert
         const card = document.getElementById(elemId);
         if (card && selectEl) {
@@ -311,7 +311,7 @@ async function updateStoryStatus(storyId, status, elemId, selectEl) {
             }
             showToastProfile(status === 'published' ? '\u2713 Cerita dipublikasikan!' : 'Cerita dijadikan draft.');
         } else {
-            alert('Gagal update status: ' + data.message);
+            alert('Failed to update status: ' + data.message);
             // Revert
             const badge = document.querySelector(`#${elemId} .publish-badge`);
             if (badge && selectEl) {
@@ -320,7 +320,7 @@ async function updateStoryStatus(storyId, status, elemId, selectEl) {
             }
         }
     } catch (err) {
-        alert('Koneksi gagal.');
+        alert('Connection failed.');
         // Revert
         const badge = document.querySelector(`#${elemId} .publish-badge`);
         if (badge && selectEl) {
@@ -374,10 +374,10 @@ async function yesAction() {
                 }
                 showToastProfile('Cerita berhasil dihapus.');
             } else {
-                alert('Gagal hapus: ' + data.message);
+                alert('Failed to delete: ' + data.message);
             }
         } catch (err) {
-            alert('Koneksi gagal.');
+            alert('Connection failed.');
         }
     }
     closePopup();
@@ -440,7 +440,7 @@ if (saveProfileBtn) {
         const newBio = editBioInput ? editBioInput.value.trim() : "";
 
         if (!newName || !newUsername) {
-            alert("Nama dan username wajib diisi.");
+            alert("Name and username are required.");
             return;
         }
 
@@ -499,7 +499,7 @@ if (saveProfileBtn) {
             closeModal(editMenu);
 
         } catch {
-            alert("Gagal menyimpan. Coba lagi.");
+            alert("Failed to save. Please try again.");
         } finally {
             saveProfileBtn.disabled = false;
             saveProfileBtn.textContent = "Save";
@@ -688,7 +688,7 @@ if (editStoryForm) {
             tempEditCoverImage   = '';
             window.location.href = finalUrl;
         } catch (err) {
-            alert("Gagal menyimpan cover. Coba lagi.");
+            alert("Failed to save cover. Please try again.");
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Save Changes"; }
         }
     });
@@ -715,7 +715,7 @@ if (createStoryForm) {
             pendingCreateCoverFile = null;
             window.location.href = finalUrl;
         } catch (err) {
-            alert("Gagal menyimpan cerita. Coba lagi.");
+            alert("Failed to save story. Please try again.");
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Next"; }
         }
     });
