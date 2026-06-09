@@ -110,3 +110,78 @@ if (followModal) {
         }
     });
 }
+
+/* REPORT MODAL CONTROLLER */
+const reportUserBtn = document.getElementById("reportUserBtn");
+const reportModalContainer = document.getElementById("reportModalContainer");
+const closeReportModal = document.getElementById("closeReportModal");
+const cancelReportBtn = document.getElementById("cancelReportBtn");
+const reportForm = document.getElementById("reportForm");
+
+if (reportUserBtn && reportModalContainer) {
+    reportUserBtn.addEventListener("click", () => {
+        reportModalContainer.style.display = "flex";
+    });
+}
+
+function hideReportModal() {
+    if (reportModalContainer) {
+        reportModalContainer.style.display = "none";
+        if (reportForm) reportForm.reset();
+    }
+}
+
+if (closeReportModal) {
+    closeReportModal.addEventListener("click", hideReportModal);
+}
+
+if (cancelReportBtn) {
+    cancelReportBtn.addEventListener("click", hideReportModal);
+}
+
+if (reportModalContainer) {
+    reportModalContainer.addEventListener("click", (e) => {
+        if (e.target === reportModalContainer) {
+            hideReportModal();
+        }
+    });
+}
+
+if (reportForm) {
+    reportForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const reason = document.getElementById("reportReason").value;
+        const description = document.getElementById("reportDescription").value;
+        const submitBtn = document.getElementById("submitReportBtn");
+        
+        if (submitBtn) submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch("PHP/report_action.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    reported_user_id: AUTHOR_ID,
+                    reason: reason,
+                    description: description
+                })
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                alert(data.message);
+                hideReportModal();
+            } else {
+                alert(data.message || "Gagal mengirimkan laporan.");
+            }
+        } catch (error) {
+            console.error("Error submitting report:", error);
+            alert("Terjadi kesalahan sistem saat mengirimkan laporan.");
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    });
+}
