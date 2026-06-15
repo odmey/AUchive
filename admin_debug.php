@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
   exit;
 }
 
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 $pdo = getDB();
 
 // Auto-create system_settings table
@@ -74,9 +74,9 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-  <link rel="stylesheet" href="CSS/style_Etmin.css">
-  <link rel="stylesheet" href="CSS/style_debug.css">
-  <script src="JS/custom_alert.js"></script>
+  <link rel="stylesheet" href="src/Admin/CSS/style_Etmin.css">
+  <link rel="stylesheet" href="src/Admin/CSS/style_debug.css">
+  <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 
 <body>
@@ -431,7 +431,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const warning = document.getElementById("warning-text").value.trim();
     if (!warning) { showToast("Please enter a warning message.", "error"); return; }
     this.disabled = true; this.textContent = "Publishing...";
-    const res = await apiFetch("PHP/admin_action.php", {
+    const res = await apiFetch("src/Admin/PHP/admin_action.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "update_system_warning", warning: warning })
@@ -444,7 +444,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // ── Clear Warning ─────────────────────────────────────
   document.getElementById("clear-warning-btn").addEventListener("click", async function () {
     this.disabled = true;
-    const res = await apiFetch("PHP/admin_action.php", {
+    const res = await apiFetch("src/Admin/PHP/admin_action.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "update_system_warning", warning: "" })
@@ -462,7 +462,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const engineVersion = document.getElementById("set-engine-version").value.trim();
     const serverMode = document.getElementById("set-server-mode").value;
     this.disabled = true; this.textContent = "Saving...";
-    const res = await apiFetch("PHP/admin_action.php", {
+    const res = await apiFetch("src/Admin/PHP/admin_action.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "update_system_settings", site_name: siteName, engine_version: engineVersion, server_mode: serverMode })
@@ -482,7 +482,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const uname = this.dataset.name;
       const confirmed = await customConfirm("Unban user @" + uname + "?");
       if (!confirmed) return;
-      const res = await apiFetch("PHP/admin_action.php", {
+      const res = await apiFetch("src/Admin/PHP/admin_action.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "unban_user", user_id: parseInt(uid) })
@@ -498,9 +498,9 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("generate-report-btn").addEventListener("click", async function () {
     this.disabled = true; this.textContent = "Generating...";
 
-    const stats = await apiFetch("PHP/admin_get_stats.php");
-    const analytics = await apiFetch("PHP/admin_get_analytics.php");
-    const settings = await apiFetch("PHP/get_system_settings.php");
+    const stats = await apiFetch("src/Admin/PHP/admin_get_stats.php");
+    const analytics = await apiFetch("src/Admin/PHP/admin_get_analytics.php");
+    const settings = await apiFetch("src/Admin/PHP/get_system_settings.php");
 
     this.disabled = false;
     this.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:6px;">description</span> Generate Report`;
@@ -560,7 +560,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const confirmed = await customConfirm("Logout from admin panel?");
       if (!confirmed) return;
       try {
-        await fetch("PHP/logout.php", { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" } });
+        await fetch("src/User/PHP/logout.php", { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" } });
       } finally {
         window.location.href = "homepage.php?loggedout=1";
       }
@@ -572,3 +572,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
+

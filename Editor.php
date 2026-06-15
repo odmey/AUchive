@@ -12,7 +12,7 @@ if (isset($_GET['story_id'])) {
 }
 $chapter_id  = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
 $new_chapter = isset($_GET['new']) && $_GET['new'] === '1';
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 $pdo  = getDB();
 
 $stmt = $pdo->prepare("
@@ -54,9 +54,9 @@ if ($chapter_id > 0) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/style_story.css?v=<?= time() ?>">
-    <link rel="stylesheet" href="CSS/readingpage.css?v=<?= time() ?>">
-    <script src="JS/custom_alert.js"></script>
+    <link rel="stylesheet" href="src/Story/CSS/style_story.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="src/Chapter/CSS/readingpage.css?v=<?= time() ?>">
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 <body>
 
@@ -140,6 +140,6 @@ if ($chapter_id > 0) {
     </div>
 </div>
 
-<script src="JS/Editor.js?v=<?= time() ?>"></script>
+<script src="src/Chapter/JS/Editor.js?v=<?= time() ?>"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 $story_id = isset($_GET['story_id']) ? (int)$_GET['story_id'] : 0;
 
@@ -109,8 +109,8 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/readingpage.css">
-    <script src="JS/custom_alert.js"></script>
+    <link rel="stylesheet" href="src/Chapter/CSS/readingpage.css">
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 <body>
     <aside class="chapter-sidebar" id="chapterSidebar">
@@ -342,6 +342,6 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
     const CURRENT_PROGRESS_PCT = <?= (float)$progress_pct ?>;
     const IS_LOGGED_IN = <?= $isLoggedIn ? 'true' : 'false' ?>;
 </script>
-<script src="JS/readingpage.js"></script>
+<script src="src/Chapter/JS/readingpage.js"></script>
 </body>
 </html>

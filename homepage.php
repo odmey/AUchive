@@ -4,7 +4,7 @@ $isLoggedIn = isset($_SESSION["user_id"]);
 $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
 
 // Include database & fetch dynamic stories
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 $pdo = getDB();
 
 // 1. Fetch Popular Stories (ordered by views & likes)
@@ -71,9 +71,9 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="stylesheet" href="CSS/style_homep.css">
-    <script src="JS/custom_alert.js"></script>
-    <script src="JS/lgsgpopmenu.js?v=2" defer></script>
+    <link rel="stylesheet" href="src/Core/CSS/style_homep.css">
+    <script src="src/Core/JS/custom_alert.js"></script>
+    <script src="src/Core/JS/lgsgpopmenu.js?v=2" defer></script>
 </head>
 
 <body>

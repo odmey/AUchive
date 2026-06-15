@@ -16,11 +16,11 @@ if (!$isLoggedIn) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUchive - Library</title>
 
-    <link rel="stylesheet" href="CSS/lib_style.css">
+    <link rel="stylesheet" href="src/Library/CSS/lib_style.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="JS/custom_alert.js"></script>
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 
 <body>
@@ -64,7 +64,8 @@ if (!$isLoggedIn) {
 
     </div>
 
-    <script src="Js/Lib.js"></script>
+    <script src="src/Library/JS/Lib.js"></script>
 </body>
 
 </html>
+

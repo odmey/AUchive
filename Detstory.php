@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 // ── 1. Ambil & validasi story_id dari URL ────────────────────
 $storyId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -142,8 +142,8 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
     <title><?= htmlspecialchars($story['title']) ?> — AUchive</title>
     <meta name="description" content="<?= htmlspecialchars(mb_substr($story['description'] ?? '', 0, 160)) ?>">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/detstory.css">
-    <script src="JS/custom_alert.js"></script>
+    <link rel="stylesheet" href="src/Story/CSS/detstory.css">
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 
 <body>
@@ -413,7 +413,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             const STORY_ID = <?= $storyId ?>;
             const AUTHOR_ID = <?= (int)$story['user_id'] ?>;
         </script>
-        <script src="JS/detstory.js"></script>
+        <script src="src/Story/JS/detstory.js"></script>
     <?php endif; ?>
 </body>
 

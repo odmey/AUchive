@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 // Redirect kalau belum login
 if (!isset($_SESSION['user_id'])) {
@@ -198,7 +198,7 @@ if ($tableExists) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications – AUchive</title>
 
-    <link rel="stylesheet" href="CSS/notif_style.css">
+    <link rel="stylesheet" href="src/Notification/CSS/notif_style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600&family=Lora&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 </head>
@@ -551,3 +551,4 @@ if ($tableExists) {
 </body>
 
 </html>
+

@@ -1,5 +1,5 @@
 <?php
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 $pdo = getDB();
 try {
     $stmt = $pdo->query("DESCRIBE library_stories");
@@ -9,3 +9,4 @@ try {
 } catch (Exception $e) {
     echo "ERROR: " . $e->getMessage() . "\n";
 }
+

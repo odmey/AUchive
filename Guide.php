@@ -9,7 +9,7 @@ session_start();
     <title>AUchive - Guides & Tutorials</title>
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/guide.css">
+    <link rel="stylesheet" href="src/Guide/CSS/guide.css">
 </head>
 <body>
 
@@ -72,6 +72,7 @@ session_start();
     AUchive Originals | ©2026
 </footer>
 
-<script src="JS/guide.js"></script>
+<script src="src/Guide/JS/guide.js"></script>
 </body>
 </html>
+

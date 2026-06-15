@@ -3,7 +3,7 @@ session_start();
 $isLoggedIn = isset($_SESSION["user_id"]);
 $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
 
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 $keyword = trim($_GET['q'] ?? '');
 $tagKeyword = ltrim($keyword, '#');
@@ -83,10 +83,10 @@ function formatNumberShorthand($num) {
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/style_homep.css">
-    <link rel="stylesheet" href="CSS/style_search.css">
-    <script src="JS/custom_alert.js"></script>
-    <script src="JS/lgsgpopmenu.js?v=3" defer></script>
+    <link rel="stylesheet" href="src/Core/CSS/style_homep.css">
+    <link rel="stylesheet" href="src/Story/CSS/style_search.css">
+    <script src="src/Core/JS/custom_alert.js"></script>
+    <script src="src/Core/JS/lgsgpopmenu.js?v=3" defer></script>
 </head>
 
 <body>
@@ -466,3 +466,4 @@ function formatNumberShorthand($num) {
     </script>
 </body>
 </html>
+
