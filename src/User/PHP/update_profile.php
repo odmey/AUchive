@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../Core/PHP/database.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Belum login.']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit;
 }
 
@@ -14,7 +14,7 @@ $username = trim($_POST['username'] ?? '');
 $bio = trim($_POST['bio'] ?? '');
 
 if (empty($name) || empty($username)) {
-    echo json_encode(['success' => false, 'message' => 'Nama dan username wajib diisi.']);
+    echo json_encode(['success' => false, 'message' => 'Name and username are required.']);
     exit;
 }
 
@@ -24,7 +24,7 @@ $pdo = getDB();
 $stmt = $pdo->prepare('SELECT user_id FROM users WHERE username = ? AND user_id != ?');
 $stmt->execute([$username, $_SESSION['user_id']]);
 if ($stmt->fetch()) {
-    echo json_encode(['success' => false, 'message' => 'Username sudah dipakai.']);
+    echo json_encode(['success' => false, 'message' => 'Username is already used.']);
     exit;
 }
 
@@ -83,7 +83,7 @@ $_SESSION['name'] = $name;
 // ── Response ───────────────────────────────────────────────────
 $response = [
     'success' => true,
-    'message' => 'Profil berhasil disimpan.',
+    'message' => 'Profile successfully saved.',
     'name' => $name,
     'username' => $username,
 ];

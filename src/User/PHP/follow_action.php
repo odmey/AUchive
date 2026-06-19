@@ -13,7 +13,7 @@ header('Content-Type: application/json');
 // 1. Session Check
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login.']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit;
 }
 
@@ -46,7 +46,7 @@ if ($following_id <= 0) {
 
 if ($following_id === $follower_id) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Anda tidak bisa mengikuti diri sendiri.']);
+    echo json_encode(['success' => false, 'message' => 'You cannot follow yourself.']);
     exit;
 }
 
@@ -59,7 +59,7 @@ $targetUser = $stmt->fetch();
 
 if (!$targetUser) {
     http_response_code(404);
-    echo json_encode(['success' => false, 'message' => 'User yang ingin diikuti tidak ditemukan.']);
+    echo json_encode(['success' => false, 'message' => 'User is not found.']);
     exit;
 }
 
@@ -111,12 +111,12 @@ try {
         'success'        => true,
         'action'         => $action,
         'follower_count' => $follower_count,
-        'message'        => $action === 'followed' ? 'Berhasil mengikuti penulis.' : 'Berhasil berhenti mengikuti.'
+        'message'        => $action === 'followed' ? 'Successfully followed the author.' : 'Successfully unfollowed.'
     ]);
 
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Gagal mengubah status ikuti: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Failed to change follow status: ' . $e->getMessage()]);
 }
 ?>
 

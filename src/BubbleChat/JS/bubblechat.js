@@ -28,7 +28,7 @@ function setTheme(t, card) {
     document.getElementById('previewStatus').textContent = cfg.status;
     document.getElementById('ibarField').placeholder = cfg.placeholder || 'Type a message';
     document.getElementById('ibarSend').innerHTML = cfg.sendSvg;
-    
+
     const side = document.querySelector('input[name="side"]:checked') ? document.querySelector('input[name="side"]:checked').value : 'left';
     document.getElementById('bubbleColor').value = side === 'left' ? cfg.receiverBg : cfg.senderBg;
 }
@@ -45,7 +45,7 @@ function updateRenderedAvatars() {
 function updateSenderNamesVisibility() {
     const contactNameInput = document.getElementById('contactName');
     const defaultContactName = contactNameInput ? contactNameInput.value.trim() : '';
-    
+
     // Check if there is any custom sender name or custom avatar to declare GC mode
     let isGroup = false;
     const bubbleRows = document.querySelectorAll('.bubble-row.left');
@@ -57,7 +57,7 @@ function updateSenderNamesVisibility() {
             break;
         }
     }
-    
+
     // Toggle the visibility of the sender name elements
     document.querySelectorAll('.bubble-row.left').forEach(row => {
         const sender = row.getAttribute('data-sender');
@@ -123,10 +123,10 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubble
     const row = document.createElement('div');
     row.className = `bubble-row ${side}`;
     row.setAttribute('data-sender', senderName || '');
-    
+
     const av = document.createElement('div');
     av.className = 'row-avatar';
-    
+
     // Use per-bubble sender avatar if provided, otherwise fall back to defaults
     if (senderAvatar) {
         av.innerHTML = `<img src="${senderAvatar}" alt="">`;
@@ -135,10 +135,10 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubble
         const avSrc = side === 'left' ? avatars.contact : avatars.me;
         av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
     }
-    
+
     const b = document.createElement('div');
     b.className = 'bubble';
-    
+
     // Check if the color is default for this theme & side. If so, don't write inline color.
     const themeCard = document.querySelector('.theme-card.active');
     let theme = 'wa';
@@ -150,7 +150,7 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubble
     if (color && color.toLowerCase() !== defaultColor.toLowerCase()) {
         b.style.background = color;
     }
-    
+
     let innerHTML = '';
     if (side === 'left' && senderName) {
         innerHTML += `<div class="bubble-sender-name">${escHtml(senderName)}</div>`;
@@ -163,7 +163,7 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubble
     }
     innerHTML += `<div class="bubble-meta"><span class="bubble-time">${ts}</span></div>`;
     b.innerHTML = innerHTML;
-    
+
     row.appendChild(av);
     row.appendChild(b);
     document.getElementById('chatArea').appendChild(row);
@@ -172,18 +172,18 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubble
 }
 
 function addBubble() {
-    const msg     = document.getElementById('message').value.trim();
-    const tv      = document.getElementById('time').value;
-    const color   = document.getElementById('bubbleColor').value;
-    const side    = document.querySelector('input[name="side"]:checked').value;
+    const msg = document.getElementById('message').value.trim();
+    const tv = document.getElementById('time').value;
+    const color = document.getElementById('bubbleColor').value;
+    const side = document.querySelector('input[name="side"]:checked').value;
     const imgFile = document.getElementById('imageUpload').files[0];
-    const sender  = document.getElementById('contactName').value.trim() || 'Unknown';
-    const ts      = formatTime(tv);
+    const sender = document.getElementById('contactName').value.trim() || 'Unknown';
+    const ts = formatTime(tv);
 
     // Custom sender fields (for group chat)
-    const customName   = document.getElementById('customSenderName').value.trim();
+    const customName = document.getElementById('customSenderName').value.trim();
     const customAvFile = document.getElementById('customSenderAvatar').files[0];
-    const finalSender  = customName || sender;
+    const finalSender = customName || sender;
 
     if (!msg && !imgFile) {
         const el = document.getElementById('message');
@@ -212,16 +212,16 @@ function addBubble() {
                 renderBubbleHtml(msg, side, color, ts, finalSender, customAvatarBase64, imgBase64);
                 bubbleSortOrder++;
                 postBubbleToAPI({
-                    chapter_id:    getChapterId(),
-                    roomchat_id:   getRoomchatId(), 
-                    message:       msg,
-                    sender_name:   finalSender,
-                    position:      side,
-                    color:         finalColor,
-                    sort_order:    bubbleSortOrder,
-                    time_label:    ts,
+                    chapter_id: getChapterId(),
+                    roomchat_id: getRoomchatId(),
+                    message: msg,
+                    sender_name: finalSender,
+                    position: side,
+                    color: finalColor,
+                    sort_order: bubbleSortOrder,
+                    time_label: ts,
                     sender_avatar: customAvatarBase64 || null,
-                    bubble_image:  imgBase64
+                    bubble_image: imgBase64
                 });
             };
             r.readAsDataURL(imgFile);
@@ -230,16 +230,16 @@ function addBubble() {
             renderBubbleHtml(msg, side, color, ts, finalSender, customAvatarBase64, null);
             bubbleSortOrder++;
             postBubbleToAPI({
-                chapter_id:    getChapterId(),
-                roomchat_id:   getRoomchatId(), 
-                message:       msg,
-                sender_name:   finalSender,
-                position:      side,
-                color:         finalColor,
-                sort_order:    bubbleSortOrder,
-                time_label:    ts,
+                chapter_id: getChapterId(),
+                roomchat_id: getRoomchatId(),
+                message: msg,
+                sender_name: finalSender,
+                position: side,
+                color: finalColor,
+                sort_order: bubbleSortOrder,
+                time_label: ts,
                 sender_avatar: customAvatarBase64 || null,
-                bubble_image:  null
+                bubble_image: null
             });
         }
 
@@ -332,7 +332,7 @@ async function saveStory() {
 async function clearChat() {
     const confirmed = await customConfirm('Delete all bubbles in this roomchat? Data in the database will also be deleted.');
     if (!confirmed) return;
-    
+
     const roomchatId = getRoomchatId();
     if (roomchatId <= 0) {
         document.getElementById('chatArea').innerHTML = '<div class="date-chip"><span>Today</span></div>';
@@ -393,13 +393,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (card) {
             setTheme(theme, card);
         }
-        
+
         // Load contact name
         if (INITIAL_ROOMCHAT.contact_name) {
             document.getElementById('contactName').value = INITIAL_ROOMCHAT.contact_name;
             document.getElementById('previewName').textContent = INITIAL_ROOMCHAT.contact_name;
         }
-        
+
         // Load avatars
         if (INITIAL_ROOMCHAT.my_avatar) {
             avatars.me = INITIAL_ROOMCHAT.my_avatar;
@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
             avatars.contact = INITIAL_ROOMCHAT.contact_avatar;
             document.getElementById('previewAvatar').innerHTML = `<img src="${INITIAL_ROOMCHAT.contact_avatar}" alt="">`;
         }
-        
+
         // Load background
         if (INITIAL_ROOMCHAT.bg_image) {
             chatBgImage = INITIAL_ROOMCHAT.bg_image;
@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
             a.style.backgroundSize = 'cover';
             a.style.backgroundPosition = 'center';
         }
-        
+
         updateRenderedAvatars();
     }
 
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (contactNameInput) {
         contactNameInput.addEventListener('input', updateSenderNamesVisibility);
     }
-    
+
     if (typeof INITIAL_BUBBLES !== 'undefined' && Array.isArray(INITIAL_BUBBLES)) {
         INITIAL_BUBBLES.forEach(b => {
             renderBubbleHtml(b.bubble_text, b.position, b.color, b.time_label, b.contact_name, b.sender_avatar || null, b.bubble_image || null);

@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../Core/PHP/database.php';
 header('Content-Type: application/json');
 
 if (isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => true, 'message' => 'Sudah login.']);
+    echo json_encode(['success' => true, 'message' => 'Already logged in.']);
     exit;
 }
 
@@ -21,22 +21,22 @@ $email = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 
 if (empty($username) || empty($name) || empty($email) || empty($password)) {
-    echo json_encode(['success' => false, 'message' => 'Semua field wajib diisi.']);
+    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
     exit;
 }
 
 if (strlen($username) < 3 || !preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
-    echo json_encode(['success' => false, 'message' => 'Username minimal 3 karakter, hanya huruf/angka/underscore.']);
+    echo json_encode(['success' => false, 'message' => 'Username must be at least 3 characters long, and contain only letters/numbers/underscores.']);
     exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Format email tidak valid.']);
+    echo json_encode(['success' => false, 'message' => 'Format email is not valid.']);
     exit;
 }
 
 if (strlen($password) < 8) {
-    echo json_encode(['success' => false, 'message' => 'Password minimal 8 karakter.']);
+    echo json_encode(['success' => false, 'message' => 'Password must be at least 8 characters long.']);
     exit;
 }
 
@@ -45,14 +45,14 @@ $pdo = getDB();
 $stmt = $pdo->prepare('SELECT user_id FROM users WHERE email = ?');
 $stmt->execute([$email]);
 if ($stmt->fetch()) {
-    echo json_encode(['success' => false, 'message' => 'Email sudah terdaftar.']);
+    echo json_encode(['success' => false, 'message' => 'Email already registered.']);
     exit;
 }
 
 $stmt = $pdo->prepare('SELECT user_id FROM users WHERE username = ?');
 $stmt->execute([$username]);
 if ($stmt->fetch()) {
-    echo json_encode(['success' => false, 'message' => 'Username sudah dipakai.']);
+    echo json_encode(['success' => false, 'message' => 'Username is already used.']);
     exit;
 }
 

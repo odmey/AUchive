@@ -19,7 +19,7 @@ if (!isset($_SESSION['user_id'])) {
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Admin tidak dapat memfavoritkan cerita.']);
+    echo json_encode(['success' => false, 'message' => 'Admin cannot add favorite stories.']);
     exit;
 }
 
@@ -57,7 +57,7 @@ $stmt = $pdo->prepare("SELECT story_id FROM stories WHERE story_id = ?");
 $stmt->execute([$story_id]);
 if (!$stmt->fetch()) {
     http_response_code(404);
-    echo json_encode(['success' => false, 'message' => 'Cerita tidak ditemukan.']);
+    echo json_encode(['success' => false, 'message' => 'Story is not found.']);
     exit;
 }
 
