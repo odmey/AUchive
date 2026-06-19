@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 // 1. Ambil & validasi ID target author dari URL
 $authorId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -97,9 +97,9 @@ $joinDate = date('F Y', strtotime($author['created_at']));
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-    <link rel="stylesheet" href="CSS/style_profile.css">
-    <script src="JS/profile_person.js" defer></script>
-    <script src="JS/custom_alert.js"></script>
+    <link rel="stylesheet" href="src/User/CSS/style_profile.css">
+    <script src="src/User/JS/profile_person.js" defer></script>
+    <script src="src/Core/JS/custom_alert.js"></script>
 
     <title>Profile – @<?= htmlspecialchars($author['username']) ?></title>
 </head>
@@ -262,3 +262,4 @@ $joinDate = date('F Y', strtotime($author['created_at']));
 </body>
 
 </html>
+

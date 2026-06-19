@@ -5,7 +5,7 @@
 // DELETE this file after use for security!
 // ============================================================
 
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 $pdo = getDB();
 $logs = [];
 $errors = [];
@@ -273,3 +273,4 @@ try {
 
 </body>
 </html>
+

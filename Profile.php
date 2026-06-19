@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 // Redirect kalau belum login
 if (!isset($_SESSION['user_id'])) {
@@ -72,7 +72,7 @@ $followingList = $stmtFollowingList->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/style_profile.css">
+    <link rel="stylesheet" href="src/User/CSS/style_profile.css">
 
     <!-- Cropper.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -80,7 +80,7 @@ $followingList = $stmtFollowingList->fetchAll();
 
     <!-- Harus SETELAH cropper.min.js -->
     <title>Profile – <?= htmlspecialchars($user['username']) ?></title>
-    <script src="JS/custom_alert.js"></script>
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 
 <body class="own-profile">
@@ -205,7 +205,7 @@ $followingList = $stmtFollowingList->fetchAll();
     </script>
 
     <!-- Logic JS-nya di file terpisah -->
-    <script src="JS/profileuser.js" defer></script>   
+    <script src="src/User/JS/profileuser.js" defer></script>   
     <!-- STORIES dari DB -->
     <div class="story-section">
         <?php if (empty($stories)): ?>
@@ -291,7 +291,7 @@ $followingList = $stmtFollowingList->fetchAll();
                 <h1>Create Your Story</h1>
                 <p>Start your writing journey and share your universe with readers.</p>
             </section>
-            <form action="PHP/story_prep.php" method="POST" enctype="multipart/form-data">
+            <form action="src/Story/PHP/story_prep.php" method="POST" enctype="multipart/form-data">
                 <div class="container-upload">
                     <div class="cover-box">
                         <span class="material-symbols-outlined cover-icon">image</span>
@@ -334,7 +334,7 @@ $followingList = $stmtFollowingList->fetchAll();
                 <h1>Edit Your Story</h1>
                 <p>Modify your story's details and settings.</p>
             </section>
-            <form action="PHP/edit_story_prep.php" method="POST" enctype="multipart/form-data">
+            <form action="src/Story/PHP/edit_story_prep.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="story_id" id="editStoryId">
                 <div class="container-upload">
                     <div class="cover-box">
@@ -396,3 +396,4 @@ $followingList = $stmtFollowingList->fetchAll();
 </body>
 
 </html>
+

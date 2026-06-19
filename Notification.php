@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 // Redirect kalau belum login
 if (!isset($_SESSION['user_id'])) {
@@ -95,99 +95,40 @@ function formatNotifTitle($n) {
     }
 }
 
-// ── Cek apakah tabel notifications sudah ada ──────────────
-$tableExists = false;
-try {
-    $pdo->query("SELECT 1 FROM notifications LIMIT 1");
-    $tableExists = true;
-} catch (PDOException $e) {
-    $tableExists = false;
-}
-
 $notifications = [];
 
-// ════════════════════════════════════════════════════════════
-// MODE A: Tabel notifications SUDAH ADA
-// ════════════════════════════════════════════════════════════
-if ($tableExists) {
-    $sql = "
-        SELECT
-            n.notif_id,
-            n.type,
-            n.title,
-            n.body,
-            n.is_read,
-            n.created_at,
-            n.link_url,
-            s.title     AS story_title,
-            s.cover     AS story_cover,
-            u.username  AS actor_username
-        FROM notifications n
-        LEFT JOIN stories s ON s.story_id  = n.ref_story_id
-        LEFT JOIN users   u ON u.user_id   = n.actor_user_id
-        WHERE n.user_id = ?
-        ORDER BY n.created_at DESC
-        LIMIT 50
-    ";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$user_id]);
-    $notifications = $stmt->fetchAll();
+$sql = "
+    SELECT
+        n.notif_id,
+        n.type,
+        n.title,
+        n.body,
+        n.is_read,
+        n.created_at,
+        n.link_url,
+        s.title     AS story_title,
+        s.cover     AS story_cover,
+        u.username  AS actor_username
+    FROM notifications n
+    LEFT JOIN stories s ON s.story_id  = n.ref_story_id
+    LEFT JOIN users   u ON u.user_id   = n.actor_user_id
+    WHERE n.user_id = ?
+    ORDER BY n.created_at DESC
+    LIMIT 50
+";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user_id]);
+$notifications = $stmt->fetchAll();
 
-    // Mark as read
-    $unreadIds = array_column(
-        array_filter($notifications, fn($n) => !$n['is_read']),
-        'notif_id'
-    );
-    if (!empty($unreadIds)) {
-        $ph = implode(',', array_fill(0, count($unreadIds), '?'));
-        $mStmt = $pdo->prepare("UPDATE notifications SET is_read = 1 WHERE notif_id IN ($ph)");
-        $mStmt->execute($unreadIds);
-    }
-
-// ════════════════════════════════════════════════════════════
-// MODE B: Tabel belum ada → derive dari library
-// ════════════════════════════════════════════════════════════
-} else {
-    $stmt = $pdo->prepare("SELECT library_id FROM library WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $lib = $stmt->fetch();
-
-    if ($lib) {
-        $stmt = $pdo->prepare("
-            SELECT
-                c.chapter_id,
-                c.chapter_title,
-                c.created_at,
-                s.story_id,
-                s.title     AS story_title,
-                s.cover     AS story_cover
-            FROM library_stories ls
-            JOIN stories  s ON s.story_id  = ls.story_id
-            JOIN chapters c ON c.story_id  = s.story_id
-                           AND c.status    = 'published'
-            WHERE ls.library_id = ? AND ls.is_saved = 1
-              AND c.chapter_id > COALESCE(ls.last_read_chapter_id, 0)
-            ORDER BY c.created_at DESC
-            LIMIT 50
-        ");
-        $stmt->execute([$lib['library_id']]);
-        $newChapters = $stmt->fetchAll();
-
-        foreach ($newChapters as $ch) {
-            $notifications[] = [
-                'notif_id'       => null,
-                'type'           => 'story',
-                'title'          => 'Chapter baru: ' . $ch['story_title'],
-                'body'           => '"' . $ch['chapter_title'] . '" sudah tersedia.',
-                'is_read'        => 0,
-                'created_at'     => $ch['created_at'],
-                'link_url'       => 'Readingpage.php?story_id=' . $ch['story_id'] . '&chapter_id=' . $ch['chapter_id'],
-                'story_title'    => $ch['story_title'],
-                'story_cover'    => $ch['story_cover'],
-                'actor_username' => null,
-            ];
-        }
-    }
+// Mark as read
+$unreadIds = array_column(
+    array_filter($notifications, fn($n) => !$n['is_read']),
+    'notif_id'
+);
+if (!empty($unreadIds)) {
+    $ph = implode(',', array_fill(0, count($unreadIds), '?'));
+    $mStmt = $pdo->prepare("UPDATE notifications SET is_read = 1 WHERE notif_id IN ($ph)");
+    $mStmt->execute($unreadIds);
 }
 ?>
 <!DOCTYPE html>
@@ -198,7 +139,7 @@ if ($tableExists) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications – AUchive</title>
 
-    <link rel="stylesheet" href="CSS/notif_style.css">
+    <link rel="stylesheet" href="src/Notification/CSS/notif_style.css">
     <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600&family=Lora&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 </head>
@@ -252,7 +193,7 @@ if ($tableExists) {
                 $isLike = ($type === 'like' || stripos($n['title'] ?? '', 'like') !== false || stripos($n['title'] ?? '', 'menyukai') !== false);
 
                 // Dynamically map to appropriate category for filter tabs
-                if ($isComment || $isFollow || $isLike) {
+                if ($isFollow) {
                     $displayType = 'social';
                 } else {
                     $displayType = 'story';
@@ -503,7 +444,7 @@ if ($tableExists) {
             });
 
             if (emptyFiltered) {
-                emptyFiltered.style.display = visibleCount === 0 ? 'block' : 'none';
+                emptyFiltered.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
             }
         }
 
@@ -551,3 +492,4 @@ if ($tableExists) {
 </body>
 
 </html>
+
