@@ -265,7 +265,8 @@ body {
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 16px;
-  border: 0.5px solid #2a2a2a;
+  border: 1.5px solid #2e2e2e;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.4);
 }
 
 .reader-roomchat.theme-wa .reader-chat-header {
@@ -398,6 +399,7 @@ body {
 }
 
 .reader-roomchat.theme-wa .reader-bubble.right {
+  background: #005c4b;
   color: #e9edef !important;
   border-radius: 8px 8px 0 8px;
 }
@@ -410,6 +412,7 @@ body {
 }
 
 .reader-roomchat.theme-im .reader-bubble.right {
+  background: #007aff;
   color: #fff !important;
   border-radius: 18px 18px 4px 18px;
 }
@@ -452,7 +455,7 @@ body {
   color: #555;
 }
 
-.theme-im .reader-chat-inputbar {
+.reader-roomchat.theme-im .reader-chat-inputbar {
   background: #f2f2f7;
   border-top: 0.5px solid #ddd;
 }

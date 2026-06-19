@@ -24,7 +24,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Role di DB adalah enum('user','admin').
 // Admin tidak memiliki library personal.
-if ($_SESSION['role'] === 'admin') {
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Admin tidak memiliki library.']);
     exit;

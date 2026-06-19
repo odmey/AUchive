@@ -159,7 +159,7 @@ if ($roomchat_id > 0) {
         </div>
         <div class="field-group">
           <label class="field-label">Bubble Color</label>
-          <input type="color" id="bubbleColor" value="#005c4b">
+          <input type="color" id="bubbleColor" value="#00a884">
         </div>
       </div>
       

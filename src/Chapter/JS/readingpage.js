@@ -38,35 +38,10 @@ function showLoginToast() {
 
 window.addEventListener("DOMContentLoaded", function () {
 
-    const storyData = JSON.parse(localStorage.getItem("storyData"));
-    const chapterData = JSON.parse(localStorage.getItem("chapterData"));
-    const bubbleChatData = localStorage.getItem("bubbleChatData");
-
-    const storyTitleEl = document.getElementById("storyTitle");
-    const storyParagraphEl = document.getElementById("storyParagraph");
-    const chatStoryEl = document.getElementById("chatStory");
-
-    if (storyTitleEl && storyData) {
-        storyTitleEl.textContent = storyData.title;
-    }
-
-    if (storyParagraphEl && chapterData) {
-        storyParagraphEl.innerHTML =
-            "<h2>" + chapterData.chapterTitle + "</h2><p>" +
-            chapterData.paragraph + "</p>";
-    }
-
-    if (chatStoryEl && bubbleChatData) {
-        chatStoryEl.innerHTML = bubbleChatData;
-    }
-
     // AUTO SAVE PROGRESS DARI DATABASE JIKA VARIABEL GLOBAL TERSEDIA
     if (typeof CURRENT_STORY_ID !== 'undefined' && CURRENT_STORY_ID > 0 &&
         typeof CURRENT_CHAPTER_ID !== 'undefined' && CURRENT_CHAPTER_ID > 0) {
         saveProgress(CURRENT_STORY_ID, CURRENT_CHAPTER_ID, CURRENT_PROGRESS_PCT || 0);
-    } else if (chapterData) {
-        // Fallback untuk localStorage editor/draft
-        saveProgress(storyData?.id || 1, chapterData.chapterId || 1, 0);
     }
 
     loadComments();
@@ -156,26 +131,6 @@ window.addEventListener("DOMContentLoaded", function () {
 });
 
 
-window.onload = function () {
-
-    const savedParagraph = localStorage.getItem("storyParagraph");
-    const savedBubble = localStorage.getItem("bubbleChatData");
-
-    const paragraphBox = document.getElementById("storyParagraph");
-    const bubbleBox = document.getElementById("bubbleContainer");
-
-    if (savedParagraph && paragraphBox) {
-        paragraphBox.innerHTML = `
-            <div class="story-narration">
-                ${savedParagraph}
-            </div>
-        `;
-    }
-
-    if (savedBubble && bubbleBox) {
-        bubbleBox.innerHTML = savedBubble;
-    }
-};
 
 
 // SAVE PROGRESS
@@ -203,33 +158,6 @@ async function saveProgress(storyId, chapterId, progressPct) {
 }
 
 
-// ADD TO LIBRARY
-async function addToLibrary(storyId) {
-
-    try {
-        const response = await fetch("src/Library/PHP/add_to_library.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                story_id: storyId,
-                action: 'add'
-            })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert(result.message || "Successfully added to library");
-        } else {
-            alert(result.message || "Failed to add to library");
-        }
-
-    } catch (error) {
-        console.error("Error add library:", error);
-    }
-}
 
 
 // POST COMMENT

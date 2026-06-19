@@ -76,13 +76,19 @@ async function saveNarration(localId, showFeedback = true) {
     recalculateSortOrders();
     const div = document.getElementById(localId);
     const content = div.querySelector('.narration-textarea').value.trim();
-    const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
 
     // Auto-save chapter sebagai draft terlebih dahulu jika belum disimpan
     if (CHAPTER_ID <= 0) {
         const saved = await saveChapter('draft', false);
         if (!saved) return;
+        // saveChapter sudah memanggil saveAllBlocks() yang menyimpan semua block
+        // termasuk block ini — tidak perlu save lagi agar tidak duplikat
+        if (showFeedback) showToast('Naration saved!');
+        return;
     }
+
+    // Baca blockId SETELAH pengecekan CHAPTER_ID agar dapat nilai terbaru dari DOM
+    const blockId = div.dataset.blockId ? parseInt(div.dataset.blockId) : 0;
 
     const res = await fetch('src/Chapter/PHP/save_block.php', {
         method: 'POST',
@@ -236,6 +242,9 @@ async function saveRoomchat(localId, showFeedback = true) {
     if (CHAPTER_ID <= 0) {
         const saved = await saveChapter('draft', false);
         if (!saved) return;
+        // saveChapter sudah memanggil saveAllBlocks() — tidak perlu save lagi
+        if (showFeedback) showToast('Roomchat tersimpan!');
+        return;
     }
 
     // Kalau block belum ada, buat dulu

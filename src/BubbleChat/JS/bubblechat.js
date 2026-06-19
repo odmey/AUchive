@@ -244,8 +244,8 @@ function addBubble() {
         }
 
         document.getElementById('message').value = '';
-        document.getElementById('customSenderName').value = '';
-        document.getElementById('customSenderAvatar').value = '';
+        // customSenderName & customSenderAvatar TIDAK di-clear
+        // agar sender yang sama bisa langsung dipakai untuk bubble berikutnya
     }
 
     // If custom avatar file is selected, convert to base64 first

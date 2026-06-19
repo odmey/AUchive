@@ -212,7 +212,7 @@ footer{
     align-items: flex-start;
 }
 
-.chapter-sidebar {
+.editor-sidebar {
     width: 200px;
     flex-shrink: 0;
     background: #1B1B1B;
@@ -442,6 +442,7 @@ footer{
     border-radius: 8px 8px 8px 0;
 }
 .roomchat-preview.theme-wa .rc-bubble-row.right .rc-bubble {
+    background: #005c4b;
     border-radius: 8px 8px 0 8px;
     color: #e9edef !important;
 }
@@ -453,6 +454,7 @@ footer{
     border-radius: 18px 18px 18px 4px;
 }
 .roomchat-preview.theme-im .rc-bubble-row.right .rc-bubble {
+    background: #007aff;
     border-radius: 18px 18px 4px 18px;
     color: #fff !important;
 }

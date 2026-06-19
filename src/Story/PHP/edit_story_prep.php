@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../Core/PHP/database.php';
 
 // Cek user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../homepage.php?auth=login');
+    header('Location: ../../../homepage.php?auth=login');
     exit;
 }
 
@@ -21,15 +21,15 @@ if (!in_array($progress_status, ['ongoing', 'complete', 'hiatus'])) {
 
 // Validasi input minimal
 if ($story_id <= 0) {
-    header('Location: ../Profile.php?error=invalid_story');
+    header('Location: ../../../Profile.php?error=invalid_story');
     exit;
 }
 if (empty($title)) {
-    header('Location: ../Profile.php?error=title_kosong');
+    header('Location: ../../../Profile.php?error=title_kosong');
     exit;
 }
 if (empty($genre_name)) {
-    header('Location: ../Profile.php?error=genre_kosong');
+    header('Location: ../../../Profile.php?error=genre_kosong');
     exit;
 }
 
@@ -41,7 +41,7 @@ $stmt->execute([$story_id]);
 $story = $stmt->fetch();
 
 if (!$story || (int)$story['user_id'] !== (int)$user_id) {
-    header('Location: ../Profile.php?error=unauthorized');
+    header('Location: ../../../Profile.php?error=unauthorized');
     exit;
 }
 
@@ -120,7 +120,7 @@ try {
 }
 
 // Redirect kembali ke halaman profil dengan parameter sukses
-header('Location: ../Profile.php?success=story_updated');
+header('Location: ../../../Profile.php?success=story_updated');
 exit;
 ?>
 

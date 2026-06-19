@@ -1,10 +1,11 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../Core/PHP/database.php';
+header('Content-Type: application/json');
 
 // Cek user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../Login.html');
+    echo json_encode(['success' => false, 'redirect_url' => 'homepage.php?auth=login']);
     exit;
 }
 
@@ -16,11 +17,11 @@ $tags        = trim($_POST['tags'] ?? '');
 
 // Validasi
 if (empty($title)) {
-    header('Location: ../Profile.php?error=title_kosong');
+    echo json_encode(['success' => false, 'message' => 'Judul tidak boleh kosong']);
     exit;
 }
 if (empty($genre_name)) {
-    header('Location: ../Profile.php?error=genre_kosong');
+    echo json_encode(['success' => false, 'message' => 'Genre tidak boleh kosong']);
     exit;
 }
 
@@ -61,15 +62,9 @@ try {
     $stmt->execute([$user_id, $title, $description, $genre_id, $cover_path]);
     $story_id = $pdo->lastInsertId();
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
-    die();
+    echo json_encode(['success' => false, 'message' => 'DB error: ' . $e->getMessage()]);
+    exit;
 }
-// $stmt = $pdo->prepare("
-//     INSERT INTO stories (user_id, title, description, genre_id, cover)
-//     VALUES (?, ?, ?, ?, ?)
-// ");
-// $stmt->execute([$user_id, $title, $description, $genre_id, $cover_path]);
-// $story_id = $pdo->lastInsertId();
 
 // Insert tags
 if (!empty($tags)) {
@@ -95,8 +90,11 @@ if (!empty($tags)) {
     }
 }
 
-// Simpan story_id ke session lalu redirect ke editor
+// Simpan story_id ke session lalu return JSON dengan URL redirect
 $_SESSION['story_id'] = $story_id;
-header('Location: ../Editor.php');
+echo json_encode([
+    'success'      => true,
+    'redirect_url' => 'Editor.php?story_id=' . $story_id . '&new=1'
+]);
 exit;
 ?>

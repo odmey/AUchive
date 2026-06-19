@@ -49,8 +49,8 @@ try {
 
     if ($chapter_id > 0) {
         // UPDATE chapter yang sudah ada
-        $stmtCheck = $pdo->prepare("SELECT status, published_at FROM chapters WHERE chapter_id = ?");
-        $stmtCheck->execute([$chapter_id]);
+        $stmtCheck = $pdo->prepare("SELECT status, published_at FROM chapters WHERE chapter_id = ? AND story_id = ?");
+        $stmtCheck->execute([$chapter_id, $story_id]);
         $oldChapter = $stmtCheck->fetch();
         $isBrandNewPublish = false;
         if ($oldChapter && $status === 'published' && $oldChapter['status'] !== 'published') {
@@ -73,7 +73,9 @@ try {
             ':story_id'   => $story_id,
         ]);
 
-        if ($stmt->rowCount() === 0) {
+        // Cek pakai $oldChapter (sudah diambil di atas), bukan rowCount()
+        // karena rowCount() = 0 juga saat UPDATE berhasil tapi nilai tidak berubah
+        if (!$oldChapter) {
             echo json_encode(['success' => false, 'message' => 'Chapter tidak ditemukan atau story_id tidak cocok']);
             exit;
         }

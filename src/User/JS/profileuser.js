@@ -698,22 +698,29 @@ if (editStoryForm) {
 const createStoryForm = document.querySelector("#storyprep form");
 if (createStoryForm) {
     createStoryForm.addEventListener("submit", async function (e) {
-        if (!pendingCreateCoverFile) return; // let normal POST handle it
-
         e.preventDefault();
 
         const submitBtn = createStoryForm.querySelector("button[type='submit']");
         if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving..."; }
 
         const fd = new FormData(createStoryForm);
-        fd.delete("cover");
-        fd.append("cover", pendingCreateCoverFile, "cover.jpg");
+        if (pendingCreateCoverFile) {
+            fd.delete("cover");
+            fd.append("cover", pendingCreateCoverFile, "cover.jpg");
+        }
 
         try {
             const res  = await fetch("src/Story/PHP/story_prep.php", { method: "POST", body: fd });
-            const finalUrl = res.url;
+            const data = await res.json();
             pendingCreateCoverFile = null;
-            window.location.href = finalUrl;
+            if (data.success) {
+                window.location.href = data.redirect_url;
+            } else if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert('Gagal membuat cerita: ' + (data.message || 'Unknown error'));
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Next"; }
+            }
         } catch (err) {
             alert("Failed to save story. Please try again.");
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Next"; }
@@ -743,7 +750,7 @@ document.querySelectorAll('.story-card').forEach(card => {
         const cleanUrl = window.location.pathname;
         history.replaceState(null, "", cleanUrl);
         setTimeout(() => {
-            showToastProfile("✓ Detail cerita berhasil diperbarui!");
+            showToastProfile("✓ Story Detail Updated Successfully");
         }, 200);
     }
 })();

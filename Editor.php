@@ -74,7 +74,7 @@ if ($chapter_id > 0) {
 
     <div class="editor-layout">
         <!-- SIDEBAR CHAPTER LIST -->
-        <aside class="chapter-sidebar">
+        <aside class="editor-sidebar">
             <div class="sidebar-header">
                 <span>Chapters</span>
                 <button class="add-chapter-btn" onclick="addNewChapter()">+ New</button>
