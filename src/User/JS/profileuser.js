@@ -145,10 +145,10 @@ if (applyCropBtn) {
 
         // Dimensions based on target type
         const dims = {
-            profile:      { width: 800,  height: 800  },
-            banner:       { width: 1600, height: 900  },
-            cover:        { width: 520,  height: 780  },  // 2:3 portrait book cover
-            create_cover: { width: 520,  height: 780  }
+            profile: { width: 800, height: 800 },
+            banner: { width: 1600, height: 900 },
+            cover: { width: 520, height: 780 },  // 2:3 portrait book cover
+            create_cover: { width: 520, height: 780 }
         };
         const { width, height } = dims[currentTarget] || dims.banner;
 
@@ -173,20 +173,20 @@ if (applyCropBtn) {
                 tempEditCoverImage = previewUrl;
                 pendingEditCoverFile = croppedFile;
                 const prev = document.getElementById("editPreviewCover");
-                const box  = prev ? prev.closest(".cover-box") : null;
-                const lbl  = box  ? box.querySelector(".upload-btn-label") : null;
+                const box = prev ? prev.closest(".cover-box") : null;
+                const lbl = box ? box.querySelector(".upload-btn-label") : null;
                 if (prev) { prev.src = previewUrl; prev.style.display = "block"; }
-                if (box)  box.classList.add("has-image");
-                if (lbl)  lbl.textContent = "Change Cover";
+                if (box) box.classList.add("has-image");
+                if (lbl) lbl.textContent = "Change Cover";
             } else if (currentTarget === "create_cover") {
                 // Update story cover preview in the create modal
                 pendingCreateCoverFile = croppedFile;
                 const prev = document.getElementById("previewCover");
-                const box  = prev ? prev.closest(".cover-box") : null;
-                const lbl  = box  ? box.querySelector(".upload-btn-label") : null;
+                const box = prev ? prev.closest(".cover-box") : null;
+                const lbl = box ? box.querySelector(".upload-btn-label") : null;
                 if (prev) { prev.src = previewUrl; prev.style.display = "block"; }
-                if (box)  box.classList.add("has-image");
-                if (lbl)  lbl.textContent = "Change Cover";
+                if (box) box.classList.add("has-image");
+                if (lbl) lbl.textContent = "Change Cover";
             } else {
                 tempBannerImage = previewUrl;
                 pendingBannerFile = croppedFile;
@@ -599,18 +599,18 @@ function openEditStoryPrep(storyId) {
     const card = document.getElementById(`story-${storyId}`);
     if (!card) return;
 
-    const title       = card.getAttribute('data-title')       || '';
+    const title = card.getAttribute('data-title') || '';
     const description = card.getAttribute('data-description') || '';
-    const genre       = card.getAttribute('data-genre')       || '';
-    const tags        = card.getAttribute('data-tags')        || '';
-    const cover       = card.getAttribute('data-cover')       || '';
+    const genre = card.getAttribute('data-genre') || '';
+    const tags = card.getAttribute('data-tags') || '';
+    const cover = card.getAttribute('data-cover') || '';
 
     // Populate fields
-    document.getElementById('editStoryId').value      = storyId;
-    document.getElementById('editStoryTitle').value   = title;
-    document.getElementById('editStoryDesc').value    = description;
-    document.getElementById('editStoryGenre').value   = genre;
-    document.getElementById('editStoryTags').value    = tags;
+    document.getElementById('editStoryId').value = storyId;
+    document.getElementById('editStoryTitle').value = title;
+    document.getElementById('editStoryDesc').value = description;
+    document.getElementById('editStoryGenre').value = genre;
+    document.getElementById('editStoryTags').value = tags;
 
     // Populate progress status dropdown
     const progressStatus = card.getAttribute('data-progress-status') || 'ongoing';
@@ -619,22 +619,22 @@ function openEditStoryPrep(storyId) {
 
     // Reset pending cover state each time the modal opens
     pendingEditCoverFile = null;
-    tempEditCoverImage   = cover;
+    tempEditCoverImage = cover;
 
-    const prev  = document.getElementById('editPreviewCover');
-    const box   = prev ? prev.closest(".cover-box") : null;
-    const label = box  ? box.querySelector(".upload-btn-label") : null;
+    const prev = document.getElementById('editPreviewCover');
+    const box = prev ? prev.closest(".cover-box") : null;
+    const label = box ? box.querySelector(".upload-btn-label") : null;
 
     if (prev) {
         if (cover) {
             prev.src = cover;
             prev.style.display = 'block';
-            if (box)   box.classList.add("has-image");
+            if (box) box.classList.add("has-image");
             if (label) label.textContent = "Change Cover";
         } else {
             prev.src = '';
             prev.style.display = 'none';
-            if (box)   box.classList.remove("has-image");
+            if (box) box.classList.remove("has-image");
             if (label) label.textContent = "Upload Cover";
         }
     }
@@ -681,11 +681,11 @@ if (editStoryForm) {
         fd.append("cover", pendingEditCoverFile, "cover.jpg");
 
         try {
-            const res  = await fetch("src/Story/PHP/edit_story_prep.php", { method: "POST", body: fd });
+            const res = await fetch("src/Story/PHP/edit_story_prep.php", { method: "POST", body: fd });
             // edit_story_prep.php redirects → follow redirect URL
             const finalUrl = res.url;
             pendingEditCoverFile = null;
-            tempEditCoverImage   = '';
+            tempEditCoverImage = '';
             window.location.href = finalUrl;
         } catch (err) {
             alert("Failed to save cover. Please try again.");
@@ -710,7 +710,7 @@ if (createStoryForm) {
         }
 
         try {
-            const res  = await fetch("src/Story/PHP/story_prep.php", { method: "POST", body: fd });
+            const res = await fetch("src/Story/PHP/story_prep.php", { method: "POST", body: fd });
             const data = await res.json();
             pendingCreateCoverFile = null;
             if (data.success) {
