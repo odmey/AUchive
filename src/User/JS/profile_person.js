@@ -47,57 +47,57 @@ if (followBtn) {
 
 const followersBtn = document.getElementById("followersBtn");
 const followingBtn = document.getElementById("followingBtn");
-
 const followModal = document.getElementById("followModal");
-const closeModal = document.getElementById("closeModal");
-
+const closeFollowModal = document.getElementById("closeFollowModal");
 const modalTitle = document.getElementById("modalTitle");
 const userList = document.getElementById("userList");
 
 /* OPEN MODAL */
 
-function openModal(title, users) {
+function openFollowModal(title, users) {
+    if (!followModal || !modalTitle || !userList) return;
     modalTitle.textContent = title;
     userList.innerHTML = "";
 
-    if (users.length === 0) {
-        userList.innerHTML = `<div style="text-align:center; color:#888; padding:30px;">Belum ada data.</div>`;
+    if (!users || users.length === 0) {
+        userList.innerHTML = `<div style="text-align:center; color:#888; padding:30px; font-size:13px;">No data available.</div>`;
     } else {
         users.forEach(user => {
+            const redirectUrl = `profile_person.php?id=${user.user_id}`;
             userList.innerHTML += `
-                <div class="user-item">
-                    <img src="${user.image}" onerror="this.src='Pic/profileicon.jpg'">
-                    <div class="user-info">
-                        <h4>${user.name}</h4>
-                        <p>${user.username}</p>
+                <div class="user-item" onclick="window.location.href='${redirectUrl}'" style="display:flex; align-items:center; gap:14px; padding:10px 20px; cursor:pointer; transition:background 0.2s;">
+                    <img src="${user.image}" onerror="this.src='Pic/profileicon.jpg'" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div class="user-info" style="display:flex; flex-direction:column; gap:2px;">
+                        <h4 style="margin:0; font-size:14px; color:#fff; font-weight:600;">${user.name}</h4>
+                        <p style="margin:0; font-size:12px; color:#aaa;">${user.username}</p>
                     </div>
                 </div>
             `;
         });
     }
 
-    followModal.classList.add("show");
+    followModal.style.display = "flex";
 }
 
 /* BUTTON EVENTS */
 
 if (followersBtn) {
     followersBtn.addEventListener("click", () => {
-        openModal("Followers", followersData);
+        openFollowModal("Followers", followersData);
     });
 }
 
 if (followingBtn) {
     followingBtn.addEventListener("click", () => {
-        openModal("Following", followingData);
+        openFollowModal("Following", followingData);
     });
 }
 
 /* CLOSE MODAL */
 
-if (closeModal) {
-    closeModal.addEventListener("click", () => {
-        followModal.classList.remove("show");
+if (closeFollowModal) {
+    closeFollowModal.addEventListener("click", () => {
+        followModal.style.display = "none";
     });
 }
 
@@ -106,7 +106,7 @@ if (closeModal) {
 if (followModal) {
     followModal.addEventListener("click", (e) => {
         if (e.target === followModal) {
-            followModal.classList.remove("show");
+            followModal.style.display = "none";
         }
     });
 }

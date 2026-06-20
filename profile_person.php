@@ -168,7 +168,7 @@ $joinDate = date('F Y', strtotime($author['created_at']));
 
     <div class="story-section">
         <?php if (empty($stories)): ?>
-            <p style="text-align:center; color:#888; padding:30px;">Belum ada cerita yang dipublikasikan oleh penulis ini.</p>
+            <p style="text-align:center; color:#888; padding:30px;">This author hasn't published any stories yet.</p>
         <?php else: ?>
             <?php foreach ($stories as $s): 
                 $coverSrc = !empty($s['cover']) ? htmlspecialchars($s['cover']) : 'Pic/cover-placeholder.png';

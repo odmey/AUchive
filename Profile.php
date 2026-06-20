@@ -209,7 +209,7 @@ $followingList = $stmtFollowingList->fetchAll();
     <!-- STORIES dari DB -->
     <div class="story-section">
         <?php if (empty($stories)): ?>
-            <p style="text-align:center; color:#888; padding:30px;"></p>
+            <p style="text-align:center; color:#888; padding:30px;">No stories yet. Let's write the first one!</p>
         <?php else: ?>
            <?php foreach ($stories as $s):
                 $prog = $s['progress_status'] ?? 'ongoing';
