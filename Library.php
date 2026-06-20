@@ -44,11 +44,11 @@ if (!$isLoggedIn) {
 
         <div class="filter">
             <a href="#" class="filter-btn active" data-filter="all">
-                <span class="material-icons">menu_book</span>Semua cerita
+                <span class="material-icons">menu_book</span>All Stories
             </a>
 
             <a href="#" class="filter-btn" data-filter="favorite">
-                <span class="material-icons">favorite</span>Favorit
+                <span class="material-icons">favorite</span>Favorites
             </a>
 
             <a href="#" class="filter-btn" data-filter="latest">
@@ -56,10 +56,13 @@ if (!$isLoggedIn) {
             </a>
         </div>
 
-        <!-- <h2>Lanjutkan Membaca</h2>
-        <div class="card-container" id="continue-reading"></div> -->
+        <!-- Lanjutkan Membaca Section (Only shown when in Latest tab) -->
+        <div id="continue-section" style="display: none;">
+            <h2>Continue Reading</h2>
+            <div class="card-container" id="continue-reading"></div>
+        </div>
 
-        <h2>Semua Cerita</h2>
+        <h2 id="main-title">All Stories</h2>
         <div class="card-container" id="all-story"></div>
 
     </div>

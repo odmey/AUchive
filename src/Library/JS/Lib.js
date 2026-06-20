@@ -124,7 +124,7 @@ function createCard(s) {
         </div>
 
         <button class="library-btn" style="background:#e74c3c; color:white; border:none; border-top:1px solid rgba(255,255,255,0.1); width:100%; padding:8px 0; font-weight:600; cursor:pointer;" onclick="removeFromLibrary(${s.id})">
-            ✕ Hapus
+            ✕ Remove
         </button>
     </div>`;
 }
@@ -133,17 +133,23 @@ function createCard(s) {
 function render(allData, continueData) {
     const allStory = document.getElementById("all-story");
     const continueReading = document.getElementById("continue-reading");
+    const continueSection = document.getElementById("continue-section");
 
     if (allStory) {
         allStory.innerHTML = allData.length > 0 
             ? allData.map(s => createCard(s)).join("") 
-            : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada cerita yang disimpan.</div>`;
+            : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">No stories saved yet.</div>`;
     }
 
-    if (continueReading) {
-        continueReading.innerHTML = continueData.length > 0 
-            ? continueData.map(s => createCard(s)).join("") 
-            : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada bacaan aktif saat ini.</div>`;
+    if (continueReading && continueSection) {
+        if (continueData.length > 0) {
+            continueSection.style.display = "block";
+            continueReading.style.display = "grid";
+            continueReading.innerHTML = continueData.map(s => createCard(s)).join("");
+        } else {
+            continueSection.style.display = "none";
+            continueReading.style.display = "none";
+        }
     }
 }
 
@@ -179,19 +185,24 @@ filterBtns.forEach(btn => {
         let filteredContinue = [...continueReadingStories];
 
         // Ambil elemen pembungkus utama di halaman library kamu
-        const sectionTitle = document.querySelector(".main h2:nth-of-type(1)"); // Judul utama yang terlihat
+        const sectionTitle = document.getElementById("main-title"); // Judul utama yang terlihat
         const continueContainer = document.getElementById("continue-reading");  // Tempat kartu lanjutkan membaca
+        const continueSection = document.getElementById("continue-section");    // Container pembungkus bagian Lanjutkan Membaca
 
         if (type === "latest") {
             // 1. Ubah judul menjadi informasi terakhir dibaca
-            if (sectionTitle) sectionTitle.innerText = "Terakhir Dibaca";
+            if (sectionTitle) sectionTitle.innerText = "Recently Read";
 
-            // 2. ISI DAN MUNCULKAN konten Lanjutkan Membaca hanya di tab Latest
-            if (continueContainer) {
-                continueContainer.style.display = "grid";
-                continueContainer.innerHTML = filteredContinue.length > 0
-                    ? filteredContinue.map(s => createCard(s)).join("")
-                    : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada bacaan aktif saat ini.</div>`;
+            // 2. ISI DAN MUNCULKAN konten Lanjutkan Membaca
+            if (continueSection && continueContainer) {
+                if (filteredContinue.length > 0) {
+                    continueSection.style.display = "block";
+                    continueContainer.style.display = "grid";
+                    continueContainer.innerHTML = filteredContinue.map(s => createCard(s)).join("");
+                } else {
+                    continueSection.style.display = "none";
+                    continueContainer.style.display = "none";
+                }
             }
 
             // 3. Urutkan daftar konten berdasarkan waktu baca terbaru
@@ -199,9 +210,12 @@ filterBtns.forEach(btn => {
         }
         else if (type === "favorite") {
             // 1. Ubah judul utama
-            if (sectionTitle) sectionTitle.innerText = "Cerita Favorit";
+            if (sectionTitle) sectionTitle.innerText = "Favorite Stories";
 
             // 2. HAPUS KONTEN Lanjutkan Membaca dari layar (Kosongkan)
+            if (continueSection) {
+                continueSection.style.display = "none";
+            }
             if (continueContainer) {
                 continueContainer.innerHTML = "";
                 continueContainer.style.display = "none";
@@ -213,12 +227,18 @@ filterBtns.forEach(btn => {
         else {
             // DEFAULT: TAB "SEMUA"
             // 1. Kembalikan judul utama menjadi Semua Cerita
-            if (sectionTitle) sectionTitle.innerText = "Semua Cerita";
+            if (sectionTitle) sectionTitle.innerText = "All Stories";
 
-            // 2. HAPUS KONTEN Lanjutkan Membaca dari layar (Kosongkan)
-            if (continueContainer) {
-                continueContainer.innerHTML = "";
-                continueContainer.style.display = "none";
+            // 2. TAMPILKAN konten Lanjutkan Membaca jika ada
+            if (continueSection && continueContainer) {
+                if (filteredContinue.length > 0) {
+                    continueSection.style.display = "block";
+                    continueContainer.style.display = "grid";
+                    continueContainer.innerHTML = filteredContinue.map(s => createCard(s)).join("");
+                } else {
+                    continueSection.style.display = "none";
+                    continueContainer.style.display = "none";
+                }
             }
 
             // 3. Tampilkan semua cerita tanpa filter sorting
@@ -230,17 +250,10 @@ filterBtns.forEach(btn => {
         if (allStory) {
             allStory.innerHTML = filteredStories.length > 0
                 ? filteredStories.map(s => createCard(s)).join("")
-                : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Belum ada cerita dalam daftar ini.</div>`;
+                : `<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">No stories in this list.</div>`;
         }
     });
 });
 
-// Pastikan saat pertama kali halaman dimuat (Default tab 'Semua'), wadah atas langsung kosong total
-document.addEventListener("DOMContentLoaded", function () {
-    const continueContainer = document.getElementById("continue-reading");
-    if (continueContainer) {
-        continueContainer.innerHTML = "";
-        continueContainer.style.display = "none";
-    }
-});
+
 

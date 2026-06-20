@@ -326,7 +326,7 @@ async function deleteBlock(localId) {
         });
     }
     div.remove();
-    showToast('Blok dihapus.');
+    showToast('Block deleted.');
 }
 
 // ── SAVE CHAPTER ─────────────────────────────

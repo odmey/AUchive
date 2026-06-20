@@ -186,8 +186,10 @@ try {
             <div class="navbar-brand">
                 <img src="Pic/TextLogo.png" alt="AUchive" class="nav-logo">
                 <span class="navbar-divider"></span>
-                <span class="material-symbols-outlined nav-lib-icon" id="libBtn" title="Library">library_books</span>
-                <span class="nav-lib-label">Library</span>
+                <div class="nav-library-link" id="libBtn" title="Library">
+                    <span class="material-symbols-outlined nav-lib-icon">library_books</span>
+                    <span class="nav-lib-label">Library</span>
+                </div>
             </div>
 
             <!-- Center: Search -->

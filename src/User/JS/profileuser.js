@@ -718,7 +718,7 @@ if (createStoryForm) {
             } else if (data.redirect_url) {
                 window.location.href = data.redirect_url;
             } else {
-                alert('Gagal membuat cerita: ' + (data.message || 'Unknown error'));
+                alert('Failed to create story: ' + (data.message || 'Unknown error'));
                 if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Next"; }
             }
         } catch (err) {
