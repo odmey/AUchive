@@ -209,7 +209,7 @@ $followingList = $stmtFollowingList->fetchAll();
     <!-- STORIES dari DB -->
     <div class="story-section">
         <?php if (empty($stories)): ?>
-            <p style="text-align:center; color:#888; padding:30px;">Belum ada cerita. Yuk buat yang pertama!</p>
+            <p style="text-align:center; color:#888; padding:30px;"></p>
         <?php else: ?>
            <?php foreach ($stories as $s):
                 $prog = $s['progress_status'] ?? 'ongoing';
@@ -275,11 +275,11 @@ $followingList = $stmtFollowingList->fetchAll();
             <div class="popup-icon">
                 <span class="material-symbols-outlined">delete_forever</span>
             </div>
-            <h3 class="popup-title">Hapus Cerita?</h3>
-            <p class="popup-subtitle">Tindakan ini <strong>tidak bisa dibatalkan</strong>.<br>Semua chapter dan data cerita akan terhapus permanen.</p>
+            <h3 class="popup-title">Delete Story?</h3>
+            <p class="popup-subtitle">This action <strong>cannot be undone</strong>.<br>All chapters and story data will be permanently deleted.</p>
             <div class="popup-actions-row">
-                <button onclick="closePopup()" type="button" class="popup-cancel-btn">Batal</button>
-                <button onclick="yesAction()" type="button" class="popup-confirm-delete-btn">Ya, Hapus!</button>
+                <button onclick="closePopup()" type="button" class="popup-cancel-btn">Cancel</button>
+                <button onclick="yesAction()" type="button" class="popup-confirm-delete-btn">Yes, Delete!</button>
             </div>
         </div>
     </div>

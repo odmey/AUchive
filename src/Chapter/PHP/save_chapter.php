@@ -32,12 +32,12 @@ $status        = isset($body['status'])        ? trim($body['status'])        : 
 
 if ($story_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'story_id tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Story ID is invalid']);
     exit;
 }
 if ($chapter_title === '') {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Judul bab tidak boleh kosong']);
+    echo json_encode(['success' => false, 'message' => 'Chapter title cannot be empty']);
     exit;
 }
 if (!in_array($status, ['draft', 'published'])) {
@@ -76,7 +76,7 @@ try {
         // Cek pakai $oldChapter (sudah diambil di atas), bukan rowCount()
         // karena rowCount() = 0 juga saat UPDATE berhasil tapi nilai tidak berubah
         if (!$oldChapter) {
-            echo json_encode(['success' => false, 'message' => 'Chapter tidak ditemukan atau story_id tidak cocok']);
+            echo json_encode(['success' => false, 'message' => 'Chapter not found']);
             exit;
         }
 

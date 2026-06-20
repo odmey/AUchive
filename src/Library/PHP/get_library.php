@@ -18,7 +18,7 @@ header('Content-Type: application/json');
 // ── Session Check ────────────────────────────────────────────
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login.']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit;
 }
 
@@ -26,7 +26,7 @@ if (!isset($_SESSION['user_id'])) {
 // Admin tidak memiliki library personal.
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Admin tidak memiliki library.']);
+    echo json_encode(['success' => false, 'message' => 'Admin does not have a library.']);
     exit;
 }
 

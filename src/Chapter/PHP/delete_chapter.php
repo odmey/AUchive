@@ -27,7 +27,7 @@ try {
     $pdo->prepare("DELETE FROM bubbles WHERE chapter_id = ?")->execute([$chapter_id]);
     $pdo->prepare("DELETE FROM chapters WHERE chapter_id = ? AND story_id = ?")->execute([$chapter_id, $story_id]);
 
-    echo json_encode(['success' => true, 'message' => 'Chapter berhasil dihapus']);
+    echo json_encode(['success' => true, 'message' => 'Chapter deleted successfully']);
 
 } catch (PDOException $e) {
     http_response_code(500);

@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function setLoading(btn, loading) {
         btn.disabled = loading;
-        btn.textContent = loading ? "Mohon tunggu..." : btn.dataset.label;
+        btn.textContent = loading ? "Please wait...." : btn.dataset.label;
     }
 
     // ── Global fungsi dipanggil dari HTML onclick ─────────────────
@@ -369,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!Array.isArray(items) || items.length === 0) {
             searchResult.innerHTML =
-                `<div class="search-item search-empty">Tidak ditemukan</div>`;
+                `<div class="search-item search-empty">No Results</div>`;
         } else {
             items.forEach(result => {
                 const item = document.createElement("div");
@@ -474,13 +474,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function escapeHtml(str) {
         return str.replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")
-                  .replace(/"/g, "&quot;")
-                  .replace(/'/g, "&#039;");
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
-    window.deleteSingleHistoryItem = function(query, e) {
+    window.deleteSingleHistoryItem = function (query, e) {
         e.stopPropagation();
         deleteHistoryItem(query);
         const keyword = searchInput ? searchInput.value.trim() : "";
@@ -488,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (searchInput) searchInput.focus();
     };
 
-    window.clearAllSearchHistory = function(e) {
+    window.clearAllSearchHistory = function (e) {
         e.stopPropagation();
         clearAllHistory();
         renderSearchHistory();
@@ -633,4 +633,5 @@ document.addEventListener("DOMContentLoaded", function () {
     // ── Cek session saat halaman load ─────────────────────────────
     checkSession();
 });
-
+
+

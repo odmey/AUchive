@@ -51,17 +51,17 @@ if (stripos($contentType, 'application/json') !== false) {
 }
 
 if ($chapter_id <= 0) {
-    echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid chapter_id.']);
     exit;
 }
 
 if (empty($comment_text)) {
-    echo json_encode(['success' => false, 'message' => 'Komentar tidak boleh kosong.']);
+    echo json_encode(['success' => false, 'message' => 'Comment cannot be empty.']);
     exit;
 }
 
 if (mb_strlen($comment_text) > 2000) {
-    echo json_encode(['success' => false, 'message' => 'Komentar maksimal 2000 karakter.']);
+    echo json_encode(['success' => false, 'message' => 'Comment is too long.']);
     exit;
 }
 
@@ -72,7 +72,7 @@ $pdo     = getDB();
 $stmt = $pdo->prepare("SELECT chapter_id FROM chapters WHERE chapter_id = ?");
 $stmt->execute([$chapter_id]);
 if (!$stmt->fetch()) {
-    echo json_encode(['success' => false, 'message' => 'Chapter tidak ditemukan.']);
+    echo json_encode(['success' => false, 'message' => 'Chapter not found.']);
     exit;
 }
 
@@ -127,7 +127,7 @@ try {
 // JS bisa langsung render tanpa reload halaman
 echo json_encode([
     'success' => true,
-    'message' => 'Komentar berhasil diposting.',
+    'message' => 'Comment posted successfully.',
     'comment' => [
         'comment_id'   => $comment_id,
         'user_id'      => $user_id,

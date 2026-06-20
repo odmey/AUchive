@@ -360,7 +360,7 @@ try {
                 <p class="form-message" id="loginMessage" aria-live="polite"></p>
 
                 <form class="auth-form" id="loginForm" novalidate>
-                    <input type="email" name="email" placeholder="Email" autocomplete="email" required>
+                    <input type="text" name="login_input" placeholder="Username/Email" autocomplete="username" required>
                     <input type="password" name="password" placeholder="Password" autocomplete="current-password"
                         required>
                     <button type="submit">Login</button>

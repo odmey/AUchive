@@ -81,7 +81,7 @@ if ($chapter_id > 0) {
             </div>
             <div class="chapter-list">
                 <?php if (empty($all_chapters) && !$new_chapter): ?>
-                    <p class="no-chapter">Belum ada chapter.</p>
+                    <p class="no-chapter">No Chapters Yet.</p>
                 <?php else: ?>
                     <?php foreach ($all_chapters as $ch): ?>
                         <div class="chapter-item <?= ($ch['chapter_id'] == $chapter_id && !$new_chapter) ? 'active' : '' ?>" id="sidebar-ch-<?= $ch['chapter_id'] ?>">
@@ -91,7 +91,7 @@ if ($chapter_id > 0) {
                             </a>
                             <button class="delete-chapter-btn"
                                 onclick="deleteChapter(<?= $ch['chapter_id'] ?>)"
-                                title="Hapus chapter">✕</button>
+                                title="Delete Chapter">✕</button>
                         </div>
                     <?php endforeach; ?>
                     <?php if ($new_chapter || $chapter_id == 0): ?>

@@ -18,7 +18,7 @@ $sort_order = isset($body['sort_order']) ? (int)$body['sort_order'] : 0;
 
 if ($chapter_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid chapter_id']);
     exit;
 }
 

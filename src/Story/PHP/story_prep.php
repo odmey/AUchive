@@ -17,11 +17,11 @@ $tags        = trim($_POST['tags'] ?? '');
 
 // Validasi
 if (empty($title)) {
-    echo json_encode(['success' => false, 'message' => 'Judul tidak boleh kosong']);
+    echo json_encode(['success' => false, 'message' => 'Title cannot be empty']);
     exit;
 }
 if (empty($genre_name)) {
-    echo json_encode(['success' => false, 'message' => 'Genre tidak boleh kosong']);
+    echo json_encode(['success' => false, 'message' => 'Genre cannot be empty']);
     exit;
 }
 

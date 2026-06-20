@@ -16,29 +16,24 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$email = trim($_POST['email'] ?? '');
+$loginInput = trim($_POST['login_input'] ?? $_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 
 // ── Validasi ────────────────────────────────────────────────────
-if (empty($email) || empty($password)) {
-    echo json_encode(['success' => false, 'message' => 'Email and password are required.']);
-    exit;
-}
-
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
+if (empty($loginInput) || empty($password)) {
+    echo json_encode(['success' => false, 'message' => 'Username/Email and password are required.']);
     exit;
 }
 
 // ── Cek ke database ─────────────────────────────────────────────
 $pdo = getDB();
-$stmt = $pdo->prepare('SELECT user_id, username, name, email, password, profile_pic, role FROM users WHERE email = ?');
-$stmt->execute([$email]);
+$stmt = $pdo->prepare('SELECT user_id, username, name, email, password, profile_pic, role FROM users WHERE email = ? OR username = ?');
+$stmt->execute([$loginInput, $loginInput]);
 $user = $stmt->fetch();
 
 // ── password_verify() ────────────────────────────────────────────
 if (!$user || !password_verify($password, $user['password'])) {
-    echo json_encode(['success' => false, 'message' => 'Incorrect email or password.']);
+    echo json_encode(['success' => false, 'message' => 'Incorrect username/email or password.']);
     exit;
 }
 

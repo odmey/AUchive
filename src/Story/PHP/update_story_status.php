@@ -22,7 +22,7 @@ $status   = isset($body['status'])   ? trim($body['status'])   : '';
 
 if ($story_id <= 0 || !in_array($status, ['published', 'draft'])) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Data tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid data']);
     exit;
 }
 

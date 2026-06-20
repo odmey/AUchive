@@ -38,12 +38,12 @@ $bubble_image  = uploadToCloud($bubble_image);
 
 if ($chapter_id <= 0 || $roomchat_id<=0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid roomchat_id tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid chapter_id or roomchat_id']);
     exit;
 }
 if ($message === '' && empty($bubble_image)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'message atau foto tidak boleh kosong']);
+    echo json_encode(['success' => false, 'message' => 'Message or image cannot be empty']);
     exit;
 }
 if (!in_array($position, ['left', 'right', 'center'])) {
@@ -74,7 +74,7 @@ try {
     echo json_encode([
         'success'   => true,
         'bubble_id' => (int)$pdo->lastInsertId(),
-        'message'   => 'Bubble berhasil disimpan'
+        'message'   => 'Bubble saved successfully'
     ]);
 
 } catch (PDOException $e) {
