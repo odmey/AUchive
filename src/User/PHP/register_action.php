@@ -73,7 +73,7 @@ $_SESSION['login_at'] = date('Y-m-d H:i:s');
 
 echo json_encode([
     'success' => true,
-    'message' => 'Akun berhasil dibuat!',
+    'message' => 'Account created successfully!',
     'username' => $username,
     'name' => $name,
 ]);

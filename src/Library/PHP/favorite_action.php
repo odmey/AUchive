@@ -13,7 +13,7 @@ header('Content-Type: application/json');
 // 1. Session Check
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login.']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit;
 }
 
@@ -46,7 +46,7 @@ $user_id = $_SESSION['user_id'];
 
 if ($story_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'story_id tidak valid.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid story_id.']);
     exit;
 }
 
@@ -113,7 +113,7 @@ try {
     echo json_encode([
         'success'     => true,
         'is_favorite' => $new_favorite === 1,
-        'message'     => $new_favorite === 1 ? 'Cerita ditambahkan ke favorit.' : 'Cerita dihapus dari favorit.'
+        'message'     => $new_favorite === 1 ? 'Story added to favorites.' : 'Story removed from favorites.'
     ]);
 
 } catch (PDOException $e) {
@@ -121,7 +121,7 @@ try {
         $pdo->rollBack();
     }
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Gagal mengubah status favorit: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Failed to change favorite status: ' . $e->getMessage()]);
 }
 ?>
 

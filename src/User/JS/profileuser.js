@@ -262,7 +262,7 @@ async function updateProgressStatus(storyId, progressStatus, elemId, selectEl) {
                 card.setAttribute('data-progress-status', progressStatus);
             }
             const toasts = { ongoing: '\u2713 Ongoing', complete: '\u2713 Complete', hiatus: '\u2713 Hiatus' };
-            showToastProfile(toasts[progressStatus] || 'Progress diperbarui.');
+            showToastProfile(toasts[progressStatus] || 'Progress updated.');
         } else {
             alert('Failed to update progress: ' + (data.message || ''));
             // Revert
@@ -309,7 +309,7 @@ async function updateStoryStatus(storyId, status, elemId, selectEl) {
                 badge.textContent = status === 'published' ? 'Published' : 'Draft';
                 badge.className = `status-badge publish-badge ${status}`;
             }
-            showToastProfile(status === 'published' ? '\u2713 Cerita dipublikasikan!' : 'Cerita dijadikan draft.');
+            showToastProfile(status === 'published' ? '\u2713 Story published!' : 'Story set as draft.');
         } else {
             alert('Failed to update status: ' + data.message);
             // Revert
@@ -372,7 +372,7 @@ async function yesAction() {
                     el.style.transform = 'scale(0.9)';
                     setTimeout(() => el.remove(), 300);
                 }
-                showToastProfile('Cerita berhasil dihapus.');
+                showToastProfile('Story deleted successfully.');
             } else {
                 alert('Failed to delete: ' + data.message);
             }

@@ -13,7 +13,7 @@ header('Content-Type: application/json; charset=utf-8');
 // 1. Session Check
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Silakan login terlebih dahulu untuk mengirimkan laporan.']);
+    echo json_encode(['success' => false, 'message' => 'Please login first to submit a report.']);
     exit;
 }
 
@@ -49,7 +49,7 @@ $reporter_id = $_SESSION['user_id'];
 
 if (!$reported_user_id && !$reported_story_id) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Target laporan tidak valid.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid report target.']);
     exit;
 }
 
@@ -69,11 +69,11 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Laporan berhasil dikirim dan akan segera diproses oleh administrator.'
+        'message' => 'Report submitted successfully and will be processed soon by the administrator.'
     ]);
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Gagal mengirimkan laporan: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Failed to submit report: ' . $e->getMessage()]);
 }
 ?>
 

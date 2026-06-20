@@ -91,8 +91,8 @@ try {
 
         // 7. Trigger Notification
         $actor_name = $_SESSION['name'] ?? $_SESSION['username'] ?? 'Seseorang';
-        $title = 'Pengikut Baru';
-        $body = "{$actor_name} (@{$_SESSION['username']}) mulai mengikuti Anda.";
+        $title = 'New Follower';
+        $body = "{$actor_name} (@{$_SESSION['username']}) started following you.";
         $link_url = "profile_person.php?id=" . $follower_id;
 
         $stmtNotif = $pdo->prepare("

@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 
 // Kalau sudah login
 if (isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => true, 'message' => 'Sudah login.']);
+    echo json_encode(['success' => true, 'message' => 'Already logged in.']);
     exit;
 }
 
@@ -21,12 +21,12 @@ $password = $_POST['password'] ?? '';
 
 // ── Validasi ────────────────────────────────────────────────────
 if (empty($email) || empty($password)) {
-    echo json_encode(['success' => false, 'message' => 'Email dan password wajib diisi.']);
+    echo json_encode(['success' => false, 'message' => 'Email and password are required.']);
     exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Format email tidak valid.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
     exit;
 }
 
@@ -38,13 +38,13 @@ $user = $stmt->fetch();
 
 // ── password_verify() ────────────────────────────────────────────
 if (!$user || !password_verify($password, $user['password'])) {
-    echo json_encode(['success' => false, 'message' => 'Email atau password salah.']);
+    echo json_encode(['success' => false, 'message' => 'Incorrect email or password.']);
     exit;
 }
 
 // ── Cek banned ───────────────────────────────────────────────────
 if (($user['role'] ?? '') === 'banned') {
-    echo json_encode(['success' => false, 'message' => 'Akun kamu telah dinonaktifkan oleh admin. Hubungi dukungan jika ada pertanyaan.']);
+    echo json_encode(['success' => false, 'message' => 'Your account has been deactivated by the admin. Contact support if you have any questions.']);
     exit;
 }
 
@@ -63,7 +63,7 @@ $profilePic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'Pic/profile
 
 echo json_encode([
     'success'    => true,
-    'message'    => 'Login berhasil!',
+    'message'    => 'Login successful!',
     'username'   => $user['username'],
     'name'       => $user['name'],
     'profilePic' => $profilePic,

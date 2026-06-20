@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
 
@@ -21,7 +21,7 @@ $story_id = isset($body['story_id']) ? (int)$body['story_id'] : 0;
 
 if ($story_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'story_id tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid story_id']);
     exit;
 }
 
@@ -32,7 +32,7 @@ try {
     $stmt = $pdo->prepare("SELECT story_id FROM stories WHERE story_id = ? AND user_id = ?");
     $stmt->execute([$story_id, $_SESSION['user_id']]);
     if (!$stmt->fetch()) {
-        echo json_encode(['success' => false, 'message' => 'Story tidak ditemukan']);
+        echo json_encode(['success' => false, 'message' => 'Story is not found']);
         exit;
     }
 

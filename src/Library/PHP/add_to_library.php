@@ -16,7 +16,7 @@ header('Content-Type: application/json');
 // ── Session Check ────────────────────────────────────────────
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login.']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit;
 }
 
@@ -50,7 +50,7 @@ if (stripos($contentType, 'application/json') !== false) {
 }
 
 if ($story_id <= 0) {
-    echo json_encode(['success' => false, 'message' => 'story_id tidak valid.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid story_id.']);
     exit;
 }
 
@@ -61,7 +61,7 @@ $pdo     = getDB();
 $stmt = $pdo->prepare("SELECT story_id FROM stories WHERE story_id = ?");
 $stmt->execute([$story_id]);
 if (!$stmt->fetch()) {
-    echo json_encode(['success' => false, 'message' => 'Cerita tidak ditemukan.']);
+    echo json_encode(['success' => false, 'message' => 'Story is not found.']);
     exit;
 }
 
@@ -96,7 +96,7 @@ switch ($action) {
             if ((int)$existing['is_saved'] === 1) {
                 echo json_encode([
                     'success'    => true,
-                    'message'    => 'Cerita sudah ada di library.',
+                    'message'    => 'Story is already in the library.',
                     'in_library' => true,
                 ]);
                 exit;
@@ -120,7 +120,7 @@ switch ($action) {
 
         echo json_encode([
             'success'    => true,
-            'message'    => 'Cerita berhasil ditambahkan ke library.',
+            'message'    => 'Story successfully added to the library.',
             'in_library' => true,
         ]);
         break;
@@ -131,7 +131,7 @@ switch ($action) {
         if (!$existing || (int)$existing['is_saved'] === 0) {
             echo json_encode([
                 'success'    => false,
-                'message'    => 'Cerita tidak ada di library.',
+                'message'    => 'Story is not in the library.',
                 'in_library' => false,
             ]);
             exit;
@@ -156,13 +156,13 @@ switch ($action) {
 
         echo json_encode([
             'success'    => true,
-            'message'    => 'Cerita dihapus dari library.',
+            'message'    => 'Story removed from the library.',
             'in_library' => false,
         ]);
         break;
 
     default:
-        echo json_encode(['success' => false, 'message' => 'Action tidak dikenal. Gunakan: add | remove']);
+        echo json_encode(['success' => false, 'message' => 'Unknown action. Use: add | remove']);
         break;
 }
 
