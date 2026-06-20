@@ -12,7 +12,7 @@ if (isset($_GET['story_id'])) {
 }
 $chapter_id  = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
 $new_chapter = isset($_GET['new']) && $_GET['new'] === '1';
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 $pdo  = getDB();
 
 $stmt = $pdo->prepare("
@@ -54,8 +54,9 @@ if ($chapter_id > 0) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/style_story.css?v=<?= time() ?>">
-    <link rel="stylesheet" href="CSS/readingpage.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="src/Story/CSS/style_story.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="src/Chapter/CSS/readingpage.css?v=<?= time() ?>">
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 <body>
 
@@ -73,14 +74,14 @@ if ($chapter_id > 0) {
 
     <div class="editor-layout">
         <!-- SIDEBAR CHAPTER LIST -->
-        <aside class="chapter-sidebar">
+        <aside class="editor-sidebar">
             <div class="sidebar-header">
                 <span>Chapters</span>
                 <button class="add-chapter-btn" onclick="addNewChapter()">+ New</button>
             </div>
             <div class="chapter-list">
                 <?php if (empty($all_chapters) && !$new_chapter): ?>
-                    <p class="no-chapter">Belum ada chapter.</p>
+                    <p class="no-chapter">No Chapters Yet.</p>
                 <?php else: ?>
                     <?php foreach ($all_chapters as $ch): ?>
                         <div class="chapter-item <?= ($ch['chapter_id'] == $chapter_id && !$new_chapter) ? 'active' : '' ?>" id="sidebar-ch-<?= $ch['chapter_id'] ?>">
@@ -90,7 +91,7 @@ if ($chapter_id > 0) {
                             </a>
                             <button class="delete-chapter-btn"
                                 onclick="deleteChapter(<?= $ch['chapter_id'] ?>)"
-                                title="Hapus chapter">✕</button>
+                                title="Delete Chapter">✕</button>
                         </div>
                     <?php endforeach; ?>
                     <?php if ($new_chapter || $chapter_id == 0): ?>
@@ -139,6 +140,6 @@ if ($chapter_id > 0) {
     </div>
 </div>
 
-<script src="JS/Editor.js?v=<?= time() ?>"></script>
+<script src="src/Chapter/JS/Editor.js?v=<?= time() ?>"></script>
 </body>
 </html>

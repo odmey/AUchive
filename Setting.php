@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 $name = 'Guest';
 $email = '';
@@ -31,8 +31,9 @@ if (isset($_SESSION['user_id'])) {
     <link href="https://fonts.googleapis.com/css2?family=Bitter&family=Lora&family=Poppins&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/style_setting.css">
+    <link rel="stylesheet" href="src/User/CSS/style_setting.css">
     <title>Setting</title>
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 
 <body>
@@ -140,7 +141,7 @@ if (isset($_SESSION['user_id'])) {
         AUchive Originals | ©2026
     </footer>
 
-    <script src="JS/setting.js"></script>
+    <script src="src/User/JS/setting.js"></script>
 </body>
 
 </html>

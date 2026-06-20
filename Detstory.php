@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 // ── 1. Ambil & validasi story_id dari URL ────────────────────
 $storyId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -25,6 +25,7 @@ $stmt = $pdo->prepare("
         s.description,
         s.cover,
         s.status,
+        s.progress_status,
         s.total_views,
         s.total_likes,
         s.published_at,
@@ -34,7 +35,7 @@ $stmt = $pdo->prepare("
         u.profile_pic,
         u.bio,
         (SELECT COUNT(*) FROM chapters c WHERE c.story_id = s.story_id AND c.status = 'published') AS chapter_count,
-        (SELECT COUNT(*) FROM chapters c JOIN stories st ON c.story_id = st.story_id WHERE st.user_id = s.user_id AND c.status = 'published') AS author_chapter_count
+        (SELECT COUNT(*) FROM stories st WHERE st.user_id = s.user_id AND st.status != 'draft') AS author_story_count
     FROM stories s
     LEFT JOIN genres g ON g.genre_id   = s.genre_id
     LEFT JOIN users  u ON u.user_id    = s.user_id
@@ -76,7 +77,7 @@ if ($isLoggedIn) {
     $stmtLib = $pdo->prepare("
         SELECT 1 FROM library_stories ls
         JOIN library l ON l.library_id = ls.library_id
-        WHERE l.user_id = ? AND ls.story_id = ?
+        WHERE l.user_id = ? AND ls.story_id = ? AND ls.is_saved = 1
     ");
     $stmtLib->execute([$currentUserId, $storyId]);
     $isSaved = (bool)$stmtLib->fetch();
@@ -117,10 +118,11 @@ $authorAvatar = !empty($story['profile_pic'])
     ? htmlspecialchars($story['profile_pic'])
     : 'Pic/profileicon.jpg';
 
-$statusLabel  = match($story['status']) {
-    'published' => 'Terbit',
-    'ongoing'   => 'Ongoing',
-    default     => 'Draft',
+$prog = $story['progress_status'] ?? 'ongoing';
+$statusLabel  = match($prog) {
+    'complete' => 'Complete',
+    'hiatus'   => 'Hiatus',
+    default     => 'Ongoing',
 };
 
 $tagList = !empty($tags)
@@ -140,14 +142,32 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
     <title><?= htmlspecialchars($story['title']) ?> — AUchive</title>
     <meta name="description" content="<?= htmlspecialchars(mb_substr($story['description'] ?? '', 0, 160)) ?>">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/detstory.css">
+    <link rel="stylesheet" href="src/Story/CSS/detstory.css">
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 
 <body>
 
     <div class="back-button">
-        <a href="javascript:void(0);" onclick="if(document.referrer && document.referrer.includes(window.location.hostname)) { history.back(); } else { window.location.href='homepage.php'; }">✕</a>
+        <a href="javascript:void(0);" id="backButtonLink">✕</a>
     </div>
+    <script>
+        (function() {
+            // Catat asal halaman sebelum masuk ke halaman baca
+            if (document.referrer && !document.referrer.includes('Readingpage.php') && document.referrer.includes(window.location.hostname)) {
+                sessionStorage.setItem('story_back_url', document.referrer);
+            }
+            document.getElementById('backButtonLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                const backUrl = sessionStorage.getItem('story_back_url');
+                if (backUrl) {
+                    window.location.href = backUrl;
+                } else {
+                    window.location.href = 'homepage.php';
+                }
+            });
+        })();
+    </script>
 
     <section class="story-detail-page">
 
@@ -177,8 +197,8 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <h1 class="story-title"><?= htmlspecialchars($story['title']) ?></h1>
 
             <div class="story-meta-row">
-                <span class="status">
-                    Status: <?= $statusLabel ?>
+                <span class="status <?= htmlspecialchars($prog) ?>">
+                    <?= $statusLabel ?>
                 </span>
 
                 <?php if (!empty($story['genre_name'])): ?>
@@ -248,7 +268,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <div class="story-tags-container">
                 <div class="tags-wrapper" id="tagsWrapper">
                     <?php foreach ($tags as $tag): ?>
-                        <span class="story-tag">#<?= htmlspecialchars($tag) ?></span>
+                        <a href="search_result.php?q=<?= urlencode('#' . $tag) ?>" class="story-tag" style="text-decoration: none; display: inline-block;">#<?= htmlspecialchars($tag) ?></a>
                     <?php endforeach; ?>
                 </div>
                 <button class="toggle-tags-btn" id="toggleTagsBtn" style="display: none;" onclick="toggleTags()">lebih banyak</button>
@@ -294,11 +314,19 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                 <?php if ($isLoggedIn): ?>
                     <button class="fav-btn<?= $isFavorite ? ' active' : '' ?>"   id="favBtn"><?= $isFavorite ? 'Favorited' : 'Favorite' ?></button>
                     <button class="save-btn<?= $isSaved ? ' active' : '' ?>"   id="saveBtn"><?= $isSaved ? 'Saved' : 'Save' ?></button>
-                    <button class="follow-btn<?= $isFollowing ? ' active' : '' ?>" id="followBtn"><?= $isFollowing ? 'Following' : 'Follow' ?></button>
                 <?php endif; ?>
                 <a href="Readingpage.php?story_id=<?= $storyId ?>">
                     <button class="read-btn" id="readBtn">Start Reading</button>
                 </a>
+                <?php if ($isLoggedIn): ?>
+                    <button class="report-btn" id="reportStoryBtn" title="Report Story">
+                        <span class="material-symbols-outlined">flag</span>
+                    </button>
+                <?php else: ?>
+                    <button class="report-btn" onclick="window.location.href='homepage.php?auth=login'" title="Report Story">
+                        <span class="material-symbols-outlined">flag</span>
+                    </button>
+                <?php endif; ?>
             </div>
 
             <!-- Chapters list for Mobile / Windowed (hidden on desktop) -->
@@ -318,27 +346,74 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
         </div>
 
         <!-- Writer Info -->
-        <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: block; width: 100%;">
-            <div class="writer-card" style="cursor:pointer; transition:0.2s;">
+        <div class="writer-card" style="cursor:pointer; transition:0.2s;">
+            <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: flex; align-items: center; gap: 20px;">
                 <img src="<?= $authorAvatar ?>"
                      alt="<?= htmlspecialchars($story['author_name'] ?? $story['username']) ?>"
                      onerror="this.src='Pic/profileicon.jpg'">
 
                 <div class="writer-info">
-                    <h3>@<?= htmlspecialchars($story['username'] ?? '') ?></h3>
-                    <p><?= htmlspecialchars($story['bio'] ?? 'Penulis AUchive') ?></p>
-                    <small><?= (int)$story['author_chapter_count'] ?> Chapter<?= $story['author_chapter_count'] != 1 ? 's' : '' ?> ditulis</small>
+                    <h3 style="margin: 0; color: #fff4a3; font-size: 18px; font-weight: 700;">@<?= htmlspecialchars($story['username'] ?? '') ?></h3>
                 </div>
-            </div>
-        </a>
+            </a>
+
+            <?php if ($isLoggedIn && $currentUserId != $story['user_id']): ?>
+                <div class="writer-actions" onclick="event.stopPropagation()">
+                    <button class="follow-btn<?= $isFollowing ? ' active' : '' ?>" id="followBtn">
+                        <?= $isFollowing ? 'Following' : 'Follow' ?>
+                    </button>
+                </div>
+            <?php elseif (!$isLoggedIn): ?>
+                <div class="writer-actions" onclick="event.stopPropagation()">
+                    <button class="follow-btn" onclick="window.location.href='homepage.php?auth=login'">
+                        Follow
+                    </button>
+                </div>
+            <?php endif; ?>
+        </div>
     </section>
+
+    <!-- Modal Report Story -->
+    <div id="reportModalContainer" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center; backdrop-filter: blur(5px);">
+        <div style="background:#1e1e1e; border: 1px solid rgba(255, 244, 79, 0.2); border-radius:18px; width:90%; max-width:400px; padding: 24px; display:flex; flex-direction:column; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); font-family: 'Poppins', sans-serif;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom: 10px;">
+                <h3 style="margin:0; font-size:18px; color:#FFF44F; font-weight:700; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined">flag</span> Report Story
+                </h3>
+                <span id="closeReportModal" style="cursor:pointer; font-size:22px; color:#aaa; font-weight:bold;">&times;</span>
+            </div>
+            
+            <form id="reportForm" style="display:flex; flex-direction:column; gap:12px;">
+                <div>
+                    <label style="color:#ccc; font-size:13px; display:block; margin-bottom:6px;">Reason for Report</label>
+                    <select id="reportReason" required style="width:100%; padding:10px; border-radius:8px; border:1px solid #333; background:#2a2a2a; color:white; outline:none; font-family:inherit;">
+                        <option value="spam">Spam / Advertising</option>
+                        <option value="harassment">Harassment / Bullying</option>
+                        <option value="inappropriate">Inappropriate / Adult Content</option>
+                        <option value="violence">Violence / Gore</option>
+                        <option value="plagiarism">Plagiarism / Copyright Violation</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="color:#ccc; font-size:13px; display:block; margin-bottom:6px;">Details / Description (Optional)</label>
+                    <textarea id="reportDescription" placeholder="Provide additional details..." style="width:100%; min-height:80px; padding:10px; border-radius:8px; border:1px solid #333; background:#2a2a2a; color:white; outline:none; resize:vertical; font-family:inherit;"></textarea>
+                </div>
+                
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+                    <button type="button" id="cancelReportBtn" style="background:#444; color:white; border:none; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; font-family:inherit;">Cancel</button>
+                    <button type="submit" id="submitReportBtn" style="background:#FFF44F; color:black; border:none; padding:8px 16px; border-radius:20px; font-weight:600; cursor:pointer; font-family:inherit;">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <?php if ($isLoggedIn): ?>
         <script>
             const STORY_ID = <?= $storyId ?>;
             const AUTHOR_ID = <?= (int)$story['user_id'] ?>;
         </script>
-        <script src="JS/detstory.js"></script>
+        <script src="src/Story/JS/detstory.js"></script>
     <?php endif; ?>
 </body>
 

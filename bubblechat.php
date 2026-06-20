@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 $pdo = getDB();
 
 $chapter_id = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
@@ -32,7 +32,8 @@ if ($roomchat_id > 0) {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap" rel="stylesheet">
      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-     <link rel="stylesheet" href="CSS/style_bblchat.css?v=<?= time() ?>">
+     <link rel="stylesheet" href="src/BubbleChat/CSS/style_bblchat.css?v=<?= time() ?>">
+     <script src="src/Core/JS/custom_alert.js"></script>
     </head>
     <body class="theme-wa">
       <div class="topnav">
@@ -97,9 +98,9 @@ if ($roomchat_id > 0) {
             <div class="sep"></div>
             
       <div class="field-group">
-        <label class="field-label">Contact Name</label>
-        <input type="text" id="contactName" placeholder="Enter contact name…"
-        oninput="document.getElementById('previewName').textContent=this.value||'Contact Name'">
+        <label class="field-label">Contact / Roomchat name</label>
+        <input type="text" id="contactName" placeholder="Enter contact/roomchat name…"
+        oninput="document.getElementById('previewName').textContent=this.value||'Contact / Roomchat name'">
       </div>
       
       <div class="field-group">
@@ -110,7 +111,7 @@ if ($roomchat_id > 0) {
             <input type="file" id="profileUploadme" accept="image/*" onchange="loadAvatar(this,'me')">
           </div>
           <div class="field-group">
-            <label class="field-label">Contact Profile</label>
+            <label class="field-label">Contact/Roomchat profile</label>
             <input type="file" id="profileUpload" accept="image/*" onchange="loadAvatar(this,'contact')">
           </div>
         </div>
@@ -158,7 +159,7 @@ if ($roomchat_id > 0) {
         </div>
         <div class="field-group">
           <label class="field-label">Bubble Color</label>
-          <input type="color" id="bubbleColor" value="#005c4b">
+          <input type="color" id="bubbleColor" value="#00a884">
         </div>
       </div>
       
@@ -185,6 +186,6 @@ if ($roomchat_id > 0) {
     const INITIAL_ROOMCHAT = <?= json_encode($roomchat) ?>;
     const INITIAL_BUBBLES = <?= json_encode($bubbles) ?>;
 </script>
-<script src="JS/bubblechat.js?v=<?= time() ?>"></script>
+<script src="src/BubbleChat/JS/bubblechat.js?v=<?= time() ?>"></script>
 </body>
 </html>

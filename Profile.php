@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 // Redirect kalau belum login
 if (!isset($_SESSION['user_id'])) {
@@ -21,7 +21,7 @@ if (!$user) {
 
 // Ambil stories milik user ini
 $stmtStories = $pdo->prepare('
-    SELECT s.story_id, s.title, s.description, s.cover, s.status,
+    SELECT s.story_id, s.title, s.description, s.cover, s.status, s.progress_status,
            g.genre_name,
            (SELECT GROUP_CONCAT(t.tag_name SEPARATOR \' \') 
             FROM story_tags st 
@@ -72,7 +72,7 @@ $followingList = $stmtFollowingList->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-    <link rel="stylesheet" href="CSS/style_profile.css">
+    <link rel="stylesheet" href="src/User/CSS/style_profile.css">
 
     <!-- Cropper.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
@@ -80,6 +80,7 @@ $followingList = $stmtFollowingList->fetchAll();
 
     <!-- Harus SETELAH cropper.min.js -->
     <title>Profile – <?= htmlspecialchars($user['username']) ?></title>
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 
 <body class="own-profile">
@@ -204,19 +205,23 @@ $followingList = $stmtFollowingList->fetchAll();
     </script>
 
     <!-- Logic JS-nya di file terpisah -->
-    <script src="JS/profileuser.js" defer></script>   
+    <script src="src/User/JS/profileuser.js" defer></script>   
     <!-- STORIES dari DB -->
     <div class="story-section">
         <?php if (empty($stories)): ?>
-            <p style="text-align:center; color:#888; padding:30px;">Belum ada cerita. Yuk buat yang pertama!</p>
+            <p style="text-align:center; color:#888; padding:30px;">No stories yet. Let's write the first one!</p>
         <?php else: ?>
-           <?php foreach ($stories as $s): ?>
+           <?php foreach ($stories as $s):
+                $prog = $s['progress_status'] ?? 'ongoing';
+                $progLabel = match($prog) { 'complete' => 'Complete', 'hiatus' => 'Hiatus', default => 'Ongoing' };
+           ?>
                 <div class="story-card" id="story-<?= $s['story_id'] ?>"
                     data-title="<?= htmlspecialchars($s['title']) ?>"
                     data-description="<?= htmlspecialchars($s['description'] ?? '') ?>"
                     data-genre="<?= htmlspecialchars($s['genre_name'] ?? '') ?>"
                     data-tags="<?= htmlspecialchars($s['tags_str'] ?? '') ?>"
                     data-cover="<?= htmlspecialchars($s['cover'] ?? '') ?>"
+                    data-progress-status="<?= htmlspecialchars($prog) ?>"
                     style="cursor:pointer;">
                     <div class="story-cover">
                         <img src="<?= htmlspecialchars($s['cover'] ?? 'Pic/karya1.jpg') ?>"
@@ -229,7 +234,10 @@ $followingList = $stmtFollowingList->fetchAll();
                             <?php if ($s['genre_name']): ?>
                                 <span class="story-tag"><?= htmlspecialchars($s['genre_name']) ?></span>
                             <?php endif; ?>
-                            <span class="status-badge <?= $s['status'] ?>">
+                            <span class="status-badge progress-badge <?= $prog ?>" id="progress-badge-<?= $s['story_id'] ?>">
+                                <?= $progLabel ?>
+                            </span>
+                            <span class="status-badge publish-badge <?= $s['status'] ?>" id="publish-badge-<?= $s['story_id'] ?>">
                                 <?= $s['status'] === 'published' ? 'Published' : 'Draft' ?>
                             </span>
                         </div>
@@ -239,11 +247,17 @@ $followingList = $stmtFollowingList->fetchAll();
                             <span class="material-symbols-outlined">edit</span>
                         </button>
                         <div class="story-status">
+                            <select onchange="handleProgress(this.value, 'story-<?= $s['story_id'] ?>', this)">
+                                <option value="ongoing" <?= $prog === 'ongoing' ? 'selected' : '' ?>>Ongoing</option>
+                                <option value="complete" <?= $prog === 'complete' ? 'selected' : '' ?>>Complete</option>
+                                <option value="hiatus" <?= $prog === 'hiatus' ? 'selected' : '' ?>>Hiatus</option>
+                            </select>
+                        </div>
+                        <div class="story-status">
                             <select onchange="handleAction(this.value, 'story-<?= $s['story_id'] ?>', this)">
-                                <option value="">Story Status</option>
-                                <option value="publish">Publish</option>
-                                <option value="draft">Draft</option>
-                                <option value="hapus">Delete</option>
+                                <option value="publish" <?= $s['status'] === 'published' ? 'selected' : '' ?>>Publish</option>
+                                <option value="draft" <?= $s['status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
+                                <option value="hapus">&#9888; Delete</option>
                             </select>
                         </div>
                     </div>
@@ -257,10 +271,16 @@ $followingList = $stmtFollowingList->fetchAll();
     </div>
 
     <div id="confirmBox" class="popup">
-        <div class="popup-content">
-            <p>Yakin mau hapus cerita ini?</p>
-            <button onclick="yesAction()" type="button">Yes</button>
-            <button onclick="closePopup()" type="button">No</button>
+        <div class="popup-content popup-danger">
+            <div class="popup-icon">
+                <span class="material-symbols-outlined">delete_forever</span>
+            </div>
+            <h3 class="popup-title">Delete Story?</h3>
+            <p class="popup-subtitle">This action <strong>cannot be undone</strong>.<br>All chapters and story data will be permanently deleted.</p>
+            <div class="popup-actions-row">
+                <button onclick="closePopup()" type="button" class="popup-cancel-btn">Cancel</button>
+                <button onclick="yesAction()" type="button" class="popup-confirm-delete-btn">Yes, Delete!</button>
+            </div>
         </div>
     </div>
 
@@ -271,7 +291,7 @@ $followingList = $stmtFollowingList->fetchAll();
                 <h1>Create Your Story</h1>
                 <p>Start your writing journey and share your universe with readers.</p>
             </section>
-            <form action="PHP/story_prep.php" method="POST" enctype="multipart/form-data">
+            <form action="src/Story/PHP/story_prep.php" method="POST" enctype="multipart/form-data">
                 <div class="container-upload">
                     <div class="cover-box">
                         <span class="material-symbols-outlined cover-icon">image</span>
@@ -314,7 +334,7 @@ $followingList = $stmtFollowingList->fetchAll();
                 <h1>Edit Your Story</h1>
                 <p>Modify your story's details and settings.</p>
             </section>
-            <form action="PHP/edit_story_prep.php" method="POST" enctype="multipart/form-data">
+            <form action="src/Story/PHP/edit_story_prep.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="story_id" id="editStoryId">
                 <div class="container-upload">
                     <div class="cover-box">
@@ -343,6 +363,12 @@ $followingList = $stmtFollowingList->fetchAll();
                         </select>
                         <label for="editStoryTags">Tags</label>
                         <input type="text" id="editStoryTags" name="tags" placeholder="space to divide the tags...">
+                        <label for="editStoryProgress">Story Progress</label>
+                        <select id="editStoryProgress" name="progress_status" style="width:100%;margin-top:8px;margin-bottom:15px;padding:10px 12px;border-radius:10px;border:1px solid #333;background:#2a2a2a;color:white;outline:none;font-family:inherit;cursor:pointer;">
+                            <option value="ongoing">Ongoing</option>
+                            <option value="complete">Complete</option>
+                            <option value="hiatus">Hiatus</option>
+                        </select>
                         <button type="submit" class="next-btn">Save Changes</button>
                     </div>
                 </div>
@@ -370,3 +396,4 @@ $followingList = $stmtFollowingList->fetchAll();
 </body>
 
 </html>
+

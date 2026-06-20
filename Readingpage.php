@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'PHP/database.php';
+require_once 'src/Core/PHP/database.php';
 
 $story_id = isset($_GET['story_id']) ? (int)$_GET['story_id'] : 0;
 
@@ -109,8 +109,8 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-    <link rel="stylesheet" href="CSS/readingpage.css">
-    
+    <link rel="stylesheet" href="src/Chapter/CSS/readingpage.css">
+    <script src="src/Core/JS/custom_alert.js"></script>
 </head>
 <body>
     <aside class="chapter-sidebar" id="chapterSidebar">
@@ -142,11 +142,11 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                     ← Back to Editor
                 </a>
             <?php elseif ($from_library): ?>
-                <a href="Library.html">
+                <a href="Library.php">
                     ← Back to Library
                 </a>
             <?php else: ?>
-                <a href="Detstory.php?story_id=<?= $story_id ?>">
+                <a href="Detstory.php?id=<?= $story_id ?>">
                     ← Back to Story
                 </a>
             <?php endif; ?>
@@ -164,7 +164,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                     FROM chapter_blocks cb
                     LEFT JOIN roomchats r ON cb.block_id = r.block_id
                     WHERE cb.chapter_id = ?
-                    ORDER BY cb.sort_order ASC
+                    ORDER BY cb.block_id ASC
                 ");
                 $stmt_blocks->execute([$chapter_id]);
                 $blocks = $stmt_blocks->fetchAll();
@@ -222,9 +222,24 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
-                                     <div class="reader-bubble <?= $b['position'] ?>"
-                                         style="background:<?= htmlspecialchars($b['color']) ?>">
-                                         <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
+                                      <?php
+                                      $isDefault = false;
+                                      if (!empty($b['color'])) {
+                                          $c = strtolower(trim($b['color']));
+                                          if ($block['theme'] === 'wa') {
+                                              if (($b['position'] === 'left' && $c === '#202c33') || ($b['position'] === 'right' && $c === '#005c4b')) {
+                                                  $isDefault = true;
+                                              }
+                                          } else {
+                                              if (($b['position'] === 'left' && $c === '#e5e5ea') || ($b['position'] === 'right' && $c === '#007aff')) {
+                                                  $isDefault = true;
+                                              }
+                                          }
+                                      }
+                                      $bgStyle = (!empty($b['color']) && !$isDefault) ? 'style="background:' . htmlspecialchars($b['color']) . '"' : '';
+                                      ?>
+                                      <div class="reader-bubble <?= $b['position'] ?>" <?= $bgStyle ?>>
+                                          <?php if ($b['position'] === 'left' && $isGroupChat && !empty($b['contact_name'])): ?>
                                              <div class="bubble-sender-name"><?= htmlspecialchars($b['contact_name']) ?></div>
                                          <?php endif; ?>
                                          <?php if (!empty($b['bubble_image'])): ?>
@@ -327,6 +342,6 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
     const CURRENT_PROGRESS_PCT = <?= (float)$progress_pct ?>;
     const IS_LOGGED_IN = <?= $isLoggedIn ? 'true' : 'false' ?>;
 </script>
-<script src="JS/readingpage.js"></script>
+<script src="src/Chapter/JS/readingpage.js"></script>
 </body>
 </html>
