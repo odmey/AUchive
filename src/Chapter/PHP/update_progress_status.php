@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit;
 }
 
@@ -27,7 +27,7 @@ $progress_status = isset($body['progress_status']) ? trim($body['progress_status
 
 if ($story_id <= 0 || !in_array($progress_status, ['ongoing', 'complete', 'hiatus'])) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Data tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid data']);
     exit;
 }
 

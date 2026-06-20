@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $body = json_decode(file_get_contents('php://input'), true);
 if (!$body) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Body tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid body']);
     exit;
 }
 $chapter_id  = isset($body['chapter_id'])  ? (int)$body['chapter_id']    : 0;

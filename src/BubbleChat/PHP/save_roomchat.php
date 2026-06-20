@@ -27,7 +27,7 @@ $bg_image       = uploadToCloud($bg_image);
 
 if ($block_id <= 0 || $chapter_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'ID tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid ID']);
     exit;
 }
 

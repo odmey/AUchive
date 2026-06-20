@@ -14,7 +14,7 @@ $block_id = isset($body['block_id']) ? (int)$body['block_id'] : 0;
 
 if ($block_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'block_id tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid block_id']);
     exit;
 }
 

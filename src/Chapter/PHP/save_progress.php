@@ -17,13 +17,13 @@ header('Content-Type: application/json');
 // ── Session Check ────────────────────────────────────────────
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Belum login.']);
+    echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit;
 }
 
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Admin tidak memiliki reading progress.']);
+    echo json_encode(['success' => false, 'message' => 'Admin does not have reading progress.']);
     exit;
 }
 
@@ -53,7 +53,7 @@ if (stripos($contentType, 'application/json') !== false) {
 }
 
 if ($story_id <= 0 || $chapter_id <= 0) {
-    echo json_encode(['success' => false, 'message' => 'story_id dan chapter_id wajib diisi.']);
+    echo json_encode(['success' => false, 'message' => 'story_id and chapter_id are required.']);
     exit;
 }
 
@@ -71,7 +71,7 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$chapter_id, $story_id]);
 if (!$stmt->fetch()) {
-    echo json_encode(['success' => false, 'message' => 'Chapter tidak valid untuk cerita ini.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid chapter for this story.']);
     exit;
 }
 
@@ -120,7 +120,7 @@ if ($existing) {
 
 echo json_encode([
     'success'         => true,
-    'message'         => 'Progress tersimpan.',
+    'message'         => 'Progress saved.',
     'progress_percent'=> $progress_pct,
     'is_complete'     => (bool)$is_complete,
 ]);

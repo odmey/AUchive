@@ -17,7 +17,7 @@ $chapter_id = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : 0;
 
 if ($chapter_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'chapter_id tidak valid.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid chapter_id.']);
     exit;
 }
 
@@ -36,7 +36,7 @@ try {
     echo json_encode($comments);
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Gagal mengambil komentar: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Failed to load comments: ' . $e->getMessage()]);
 }
 ?>
 

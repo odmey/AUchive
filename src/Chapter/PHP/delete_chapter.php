@@ -16,7 +16,7 @@ $story_id   = isset($body['story_id'])   ? (int)$body['story_id']   : 0;
 
 if ($chapter_id <= 0 || $story_id <= 0) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'ID tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid ID']);
     exit;
 }
 

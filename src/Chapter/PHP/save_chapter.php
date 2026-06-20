@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $body = json_decode(file_get_contents('php://input'), true);
 if (!$body) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Body tidak valid']);
+    echo json_encode(['success' => false, 'message' => 'Invalid body']);
     exit;
 }
 
@@ -139,8 +139,8 @@ try {
                                 VALUES (?, 'story', ?, ?, ?, ?, ?, NOW())
                             ");
                             foreach ($subscribers as $sub_id) {
-                                $notifTitle = 'Chapter baru: ' . $story_title;
-                                $notifBody = '"' . $chapter_title . '" sudah tersedia.';
+                                $notifTitle = 'New chapter: ' . $story_title;
+                                $notifBody = '"' . $chapter_title . '" is now available.';
                                 $link_url = "Readingpage.php?story_id=" . $story_id . "&chapter_id=" . $chapter_id;
 
                                 $stmtNotif->execute([
@@ -165,7 +165,7 @@ try {
         'success'    => true,
         'chapter_id' => $chapter_id,
         'status'     => $status,
-        'message'    => $status === 'published' ? 'Chapter berhasil dipublish' : 'Chapter berhasil disimpan'
+        'message'    => $status === 'published' ? 'Chapter published successfully' : 'Chapter saved successfully'
     ]);
 
 } catch (PDOException $e) {
