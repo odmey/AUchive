@@ -197,6 +197,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const anyOpen = loginModal.style.display === "flex" ||
             signupModal.style.display === "flex";
         if (!anyOpen) document.body.classList.remove("modal-open");
+
+        // Clear query parameters from URL when modal is closed
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("auth")) {
+            params.delete("auth");
+            params.delete("redirect");
+            const newUrl = window.location.pathname + (params.toString() ? "?" + params.toString() : "");
+            history.replaceState(null, "", newUrl);
+        }
     }
 
     function clearMessages() {
@@ -222,8 +231,15 @@ document.addEventListener("DOMContentLoaded", function () {
     window.closeSignup = () => closeModal(signupModal);
 
     window.goToLibrary = function () {
-        if (currentUser) window.location.href = "Library.php";
-        else window.openLogin();
+        if (currentUser) {
+            window.location.href = "Library.php";
+        } else {
+            customConfirm("You must log in to view your Library. Would you like to log in now?").then((confirmed) => {
+                if (confirmed) {
+                    window.openLogin();
+                }
+            });
+        }
     };
 
     window.scrollSlider = function (button, direction = "right") {
@@ -257,7 +273,15 @@ document.addEventListener("DOMContentLoaded", function () {
         currentUser ? window.location.href = "Notification.php" : window.openLogin();
     });
     libraryBtn.addEventListener("click", () => {
-        currentUser ? window.location.href = "Library.php" : window.openLogin();
+        if (currentUser) {
+            window.location.href = "Library.php";
+        } else {
+            customConfirm("You must log in to view your Library. Would you like to log in now?").then((confirmed) => {
+                if (confirmed) {
+                    window.openLogin();
+                }
+            });
+        }
     });
 
     // ── LOGIN form submit → fetch src/User/PHP/login_action.php ────────────
