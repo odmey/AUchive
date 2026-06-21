@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once __DIR__ . '/../../Core/PHP/database.php';
 
@@ -54,7 +54,7 @@ $_SESSION['email']    = $user['email'];
 $_SESSION['role']     = $user['role'];
 $_SESSION['login_at'] = date('Y-m-d H:i:s');
 
-$profilePic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'Pic/profileicon.jpg';
+$profilePic = !empty($user['profile_pic']) ? $user['profile_pic'] : 'Pic/PP kosongan.jpg';
 
 echo json_encode([
     'success'    => true,

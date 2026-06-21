@@ -1,4 +1,4 @@
-// ==========================
+﻿// ==========================
 // GLOBAL
 // ==========================
 let selectedStory = null;
@@ -777,7 +777,7 @@ function openFollowModal(title, users) {
             const redirectUrl = `profile_person.php?id=${user.user_id}`;
             userList.innerHTML += `
                 <div class="user-item" onclick="window.location.href='${redirectUrl}'" style="display:flex; align-items:center; gap:14px; padding:10px 20px; cursor:pointer; transition:background 0.2s;">
-                    <img src="${user.image}" onerror="this.src='Pic/profileicon.jpg'" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <img src="${user.image}" onerror="this.src='Pic/PP kosongan.jpg'" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
                     <div class="user-info" style="display:flex; flex-direction:column; gap:2px;">
                         <h4 style="margin:0; font-size:14px; color:#fff; font-weight:600;">${user.name}</h4>
                         <p style="margin:0; font-size:12px; color:#aaa;">${user.username}</p>

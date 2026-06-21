@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'src/Core/PHP/database.php';
 
@@ -83,8 +83,8 @@ $stmtFollowingList->execute([$authorId]);
 $followingList = $stmtFollowingList->fetchAll();
 
 // Formatting paths
-$profilePicSrc = !empty($author['profile_pic']) ? htmlspecialchars($author['profile_pic']) : 'Pic/profileicon.jpg';
-$profileBanSrc = !empty($author['profile_ban']) ? htmlspecialchars($author['profile_ban']) : 'Pic/profilebanner.jpg';
+$profilePicSrc = !empty($author['profile_pic']) ? htmlspecialchars($author['profile_pic']) : 'Pic/PP kosongan.jpg';
+$profileBanSrc = !empty($author['profile_ban']) ? htmlspecialchars($author['profile_ban']) : 'Pic/PP kosongan.jpg';
 $joinDate = date('F Y', strtotime($author['created_at']));
 ?>
 <!DOCTYPE html>
@@ -247,14 +247,14 @@ $joinDate = date('F Y', strtotime($author['created_at']));
             'user_id'  => $x['user_id'],
             'name' => htmlspecialchars($x['name']),
             'username' => '@' . htmlspecialchars($x['username']),
-            'image' => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
+            'image' => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/PP kosongan.jpg'
         ], $followersList)) ?>;
         
         const followingData = <?= json_encode(array_map(fn($x) => [
             'user_id'  => $x['user_id'],
             'name' => htmlspecialchars($x['name']),
             'username' => '@' . htmlspecialchars($x['username']),
-            'image' => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
+            'image' => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/PP kosongan.jpg'
         ], $followingList)) ?>;
         
         const AUTHOR_ID = <?= $authorId ?>;

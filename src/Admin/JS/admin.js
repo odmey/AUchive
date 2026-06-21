@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================
  * admin.js – Core Controller for AUchive Admin Portal
  * ============================================================
@@ -296,13 +296,13 @@ document.addEventListener("DOMContentLoaded", function () {
       const isBanned = user.role === "banned";
       const statusClass = isBanned ? "banned" : "published";
       const statusLabel = isBanned ? "Banned" : "Active";
-      const avatarSrc = user.profile_pic ? user.profile_pic : "Pic/profileicon.jpg";
+      const avatarSrc = user.profile_pic ? user.profile_pic : "Pic/PP kosongan.jpg";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>
           <div class="user-cell">
-            <img class="user-avatar" src="${avatarSrc}" onerror="this.src='Pic/profileicon.jpg'">
+            <img class="user-avatar" src="${avatarSrc}" onerror="this.src='Pic/PP kosongan.jpg'">
             <div class="cell-info">
               <span class="cell-title">${escapeHtml(user.name)}</span>
               <span class="cell-subtitle">@${escapeHtml(user.username)}</span>
@@ -509,14 +509,14 @@ document.addEventListener("DOMContentLoaded", function () {
       el.topAuthorsContainer.innerHTML = `<div class="empty-state"><p>No writer activity data registered yet.</p></div>`;
     } else {
       data.top_authors.forEach((author, i) => {
-        const avatar = author.profile_pic ? author.profile_pic : "Pic/profileicon.jpg";
+        const avatar = author.profile_pic ? author.profile_pic : "Pic/PP kosongan.jpg";
         
         const div = document.createElement("div");
         div.className = "author-item";
         div.innerHTML = `
           <div class="author-meta">
             <span class="author-rank">#${i + 1}</span>
-            <img class="user-avatar" src="${avatar}" onerror="this.src='Pic/profileicon.jpg'">
+            <img class="user-avatar" src="${avatar}" onerror="this.src='Pic/PP kosongan.jpg'">
             <div class="cell-info">
               <span class="cell-title">${escapeHtml(author.username)}</span>
               <span class="author-stats">📚 <strong>${author.story_count}</strong> stories | 👁️ <strong>${author.total_views}</strong> views</span>
