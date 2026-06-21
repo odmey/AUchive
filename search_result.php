@@ -38,11 +38,15 @@ $sqlStories = "
     LEFT JOIN story_tags st ON st.story_id = s.story_id
     LEFT JOIN tags t ON t.tag_id = st.tag_id
     LEFT JOIN users u ON u.user_id = s.user_id
-    WHERE (s.title LIKE ? OR t.tag_name LIKE ?)
+    WHERE (
+        s.title LIKE ? 
+        OR t.tag_name LIKE ? 
+        OR s.genre_id IN (SELECT genre_id FROM genres WHERE genre_name LIKE ?)
+    )
       AND s.status = 'published'
 ";
 $stmtStories = $pdo->prepare($sqlStories);
-$stmtStories->execute([$pattern, $tagPattern]);
+$stmtStories->execute([$pattern, $tagPattern, $tagPattern]);
 $stories = $stmtStories->fetchAll(PDO::FETCH_ASSOC);
 
 
