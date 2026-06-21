@@ -35,10 +35,10 @@ function setTheme(t, card) {
 
 function updateRenderedAvatars() {
     document.querySelectorAll('.bubble-row.left .row-avatar:not([data-custom])').forEach(av => {
-        av.innerHTML = avatars.contact ? `<img src="${avatars.contact}" alt="">` : '👤';
+        av.innerHTML = avatars.contact ? `<img src="${avatars.contact}" alt="">` : '<img src="Pic/PP kosongan.jpg" alt="">';
     });
     document.querySelectorAll('.bubble-row.right .row-avatar:not([data-custom])').forEach(av => {
-        av.innerHTML = avatars.me ? `<img src="${avatars.me}" alt="">` : '🙂';
+        av.innerHTML = avatars.me ? `<img src="${avatars.me}" alt="">` : '<img src="Pic/PP kosongan.jpg" alt="">';
     });
 }
 
@@ -133,7 +133,7 @@ function renderBubbleHtml(msg, side, color, ts, senderName, senderAvatar, bubble
         av.setAttribute('data-custom', 'true');
     } else {
         const avSrc = side === 'left' ? avatars.contact : avatars.me;
-        av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : (side === 'left' ? '👤' : '🙂');
+        av.innerHTML = avSrc ? `<img src="${avSrc}" alt="">` : '<img src="Pic/PP kosongan.jpg" alt="">';
     }
 
     const b = document.createElement('div');
@@ -419,6 +419,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateRenderedAvatars();
+    } else {
+        const card = document.querySelector('.tc-wa');
+        if (card) {
+            setTheme('wa', card);
+        }
     }
 
     const contactNameInput = document.getElementById('contactName');

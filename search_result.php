@@ -5,7 +5,7 @@ $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
 
 require_once 'src/Core/PHP/database.php';
 
-$keyword = trim($_GET['q'] ?? '');
+$keyword = trim($_GET['q'] ?? '');//catch the user keyword
 $tagKeyword = ltrim($keyword, '#');
 $pattern = '%' . $keyword . '%';
 $tagPattern = '%' . $tagKeyword . '%';
@@ -45,17 +45,7 @@ $stmtStories = $pdo->prepare($sqlStories);
 $stmtStories->execute([$pattern, $tagPattern]);
 $stories = $stmtStories->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch system warning
-$systemWarning = '';
-try {
-    $warnStmt = $pdo->query("SELECT setting_value FROM system_settings WHERE setting_key = 'system_warning' LIMIT 1");
-    $warnRow = $warnStmt ? $warnStmt->fetch() : false;
-    if ($warnRow && !empty(trim($warnRow['setting_value'] ?? ''))) {
-        $systemWarning = htmlspecialchars(trim($warnRow['setting_value']));
-    }
-} catch (Exception $e) {
-    // Table may not exist yet, ignore
-}
+
 
 function formatNumberShorthand($num) {
     $num = (float)$num;
@@ -91,106 +81,7 @@ function formatNumberShorthand($num) {
 
 <body>
 
-    <?php if (!empty($systemWarning)): ?>
-    <!-- SYSTEM WARNING BANNER -->
-    <style>
-    .warning-banner-marquee {
-        background: linear-gradient(90deg, #d32f2f, #f57c00);
-        color: #fff;
-        padding: 10px 0;
-        font-family: 'Poppins', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        position: relative;
-        z-index: 9998;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        border-bottom: 1.5px solid rgba(255, 244, 79, 0.25);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    .marquee-container {
-        width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        position: relative;
-        padding-right: 50px;
-    }
-    .marquee-content {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        padding-left: 100%;
-        animation: marquee-scroll 25s linear infinite;
-        cursor: default;
-    }
-    .marquee-content:hover {
-        animation-play-state: paused;
-    }
-    .marquee-icon {
-        font-size: 18px;
-        color: #fff44f;
-        animation: pulse-warn 1.5s infinite ease-in-out;
-        vertical-align: middle;
-    }
-    .marquee-close-btn {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: #fff;
-        font-size: 18px;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .marquee-close-btn:hover {
-        background: #e74c3c;
-        border-color: #e74c3c;
-        transform: translateY(-50%) scale(1.1);
-        box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
-    }
-    @keyframes marquee-scroll {
-        0% { transform: translate3d(0, 0, 0); }
-        100% { transform: translate3d(-100%, 0, 0); }
-    }
-    @keyframes pulse-warn {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.15); filter: drop-shadow(0 0 4px #fff44f); }
-    }
-    </style>
-    <div id="systemWarningBanner" class="warning-banner-marquee">
-        <div class="marquee-container">
-            <div class="marquee-content">
-                <span class="material-symbols-outlined marquee-icon">warning</span>
-                <span><?= $systemWarning ?></span>
-            </div>
-        </div>
-        <button onclick="dismissWarningBanner(this)" class="marquee-close-btn">&times;</button>
-    </div>
-    <script>
-    function dismissWarningBanner(btn) {
-        const banner = document.getElementById('systemWarningBanner');
-        if (banner) {
-            banner.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            banner.style.opacity = '0';
-            banner.style.transform = 'translateY(-100%)';
-            setTimeout(() => {
-                banner.style.display = 'none';
-            }, 400);
-        }
-    }
-    </script>
-    <?php endif; ?>
+
 
     <!-- NAVBAR -->
     <div class="header-wrapper" style="position: sticky; top: 0; z-index: 100;">
@@ -226,7 +117,7 @@ function formatNumberShorthand($num) {
                     <div class="settingacc" id="settingBtn" title="Settings">
                         <span class="material-symbols-outlined">settings</span>
                     </div>
-                    <img src="Pic/profileicon.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
+                    <img src="Pic/PP kosongan.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
                 </div>
             </div>
         </nav>
@@ -257,9 +148,9 @@ function formatNumberShorthand($num) {
                         
                         $prog = $story['progress_status'] ?? 'ongoing';
                         $statusLabel = match($prog) {
-                            'complete' => 'Lengkap',
+                            'complete' => 'Complete',
                             'hiatus'   => 'Hiatus',
-                            default    => 'Bersambung',
+                            default    => 'Ongoing',
                         };
                         $statusClass = match($prog) {
                             'complete' => 'status-published',
@@ -280,7 +171,7 @@ function formatNumberShorthand($num) {
                                     <div class="meta-col">
                                         <div class="meta-label">
                                             <span class="material-symbols-outlined">visibility</span>
-                                            <span>Dibaca</span>
+                                            <span>Views</span>
                                         </div>
                                         <div class="meta-val"><?= formatNumberShorthand($story['total_views'] ?? 0) ?></div>
                                     </div>
@@ -288,7 +179,7 @@ function formatNumberShorthand($num) {
                                     <div class="meta-col">
                                         <div class="meta-label">
                                             <span class="material-symbols-outlined">favorite</span>
-                                            <span>Vote</span>
+                                            <span>Votes</span>
                                         </div>
                                         <div class="meta-val"><?= formatNumberShorthand($story['total_likes'] ?? 0) ?></div>
                                     </div>
@@ -296,7 +187,7 @@ function formatNumberShorthand($num) {
                                     <div class="meta-col">
                                         <div class="meta-label">
                                             <span class="material-symbols-outlined">format_list_bulleted</span>
-                                            <span>Bab</span>
+                                            <span>Chapters</span>
                                         </div>
                                         <div class="meta-val"><?= $story['chapter_count'] ?? 0 ?></div>
                                     </div>
@@ -317,10 +208,10 @@ function formatNumberShorthand($num) {
             <?php if (count($users) > 0): ?>
                 <div class="user-grid">
                     <?php foreach ($users as $user): 
-                        $avatar = $user['profile_pic'] ?: 'Pic/profileicon.jpg';
+                        $avatar = $user['profile_pic'] ?: 'Pic/PP kosongan.jpg';
                     ?>
                         <a href="profile_person.php?id=<?= $user['user_id'] ?>" class="user-card">
-                            <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" onerror="this.src='Pic/profileicon.jpg'">
+                            <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" onerror="this.src='Pic/PP kosongan.jpg'">
                             <div class="user-name"><?= htmlspecialchars($user['name']) ?></div>
                             <div class="user-username">@<?= htmlspecialchars($user['username']) ?></div>
                         </a>
@@ -359,7 +250,7 @@ function formatNumberShorthand($num) {
                 </h2>
                 <p class="form-message" id="loginMessage" aria-live="polite"></p>
                 <form class="auth-form" id="loginForm" novalidate>
-                    <input type="text" name="login_input" placeholder="Username atau Email" autocomplete="username" required>
+                    <input type="text" name="login_input" placeholder="Username or Email" autocomplete="username" required>
                     <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
                     <button type="submit">Login</button>
                 </form>
@@ -379,9 +270,9 @@ function formatNumberShorthand($num) {
                 <p class="form-message" id="signupMessage" aria-live="polite"></p>
                 <form class="auth-form" id="signupForm" novalidate>
                     <input type="text" name="username" placeholder="Username" autocomplete="nickname" required>
-                    <input type="text" name="name" placeholder="Nama Lengkap" autocomplete="name" required>
+                    <input type="text" name="name" placeholder="Full Name" autocomplete="name" required>
                     <input type="email" name="email" placeholder="Email" autocomplete="email" required>
-                    <input type="password" name="password" placeholder="Password (min 8 karakter)" autocomplete="new-password" required>
+                    <input type="password" name="password" placeholder="Password (min 8 characters)" autocomplete="new-password" required>
                     <button type="submit">Sign Up</button>
                 </form>
             </div>

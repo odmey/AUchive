@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 session_start();
 require_once 'src/Core/PHP/database.php';
 
 $name = 'Guest';
 $email = '';
-$pic = 'Pic/profileicon.jpg';
+$pic = 'Pic/PP kosongan.jpg';
 $isLoggedIn = false;
 
 if (isset($_SESSION['user_id'])) {
@@ -67,7 +67,7 @@ if (isset($_SESSION['user_id'])) {
         <!-- GUEST VIEW: PHP langsung hide/show — tidak perlu tunggu JS -->
         <div class="guest-view" style="display:<?= $isLoggedIn ? 'none' : 'block' ?>;">
             <div class="profile-card">
-                <img src="Pic/profileicon.jpg" alt="Profile icon">
+                <img src="Pic/PP kosongan.jpg" alt="Profile icon">
                 <div class="profile-desc">
                     <h3>Welcome</h3>
                     <p>Please login first</p>

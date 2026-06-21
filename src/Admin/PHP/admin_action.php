@@ -22,29 +22,6 @@ $body   = json_decode(file_get_contents('php://input'), true) ?? [];
 $action = trim($body['action'] ?? '');
 $pdo    = getDB();
 
-// Auto-create system_settings table if it doesn't exist
-$pdo->exec("
-    CREATE TABLE IF NOT EXISTS `system_settings` (
-        `setting_key`   varchar(100) NOT NULL,
-        `setting_value` text         DEFAULT NULL,
-        PRIMARY KEY (`setting_key`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-");
-
-// Insert defaults if not present
-$defaults = [
-    'site_name'      => 'AUchive Fanfiction Platform',
-    'system_warning' => '',
-    'server_mode'    => 'online',
-    'engine_version' => 'v1.4.0-production'
-];
-foreach ($defaults as $k => $v) {
-    $check = $pdo->prepare("SELECT COUNT(*) FROM system_settings WHERE setting_key = ?");
-    $check->execute([$k]);
-    if ((int)$check->fetchColumn() === 0) {
-        $pdo->prepare("INSERT INTO system_settings (setting_key, setting_value) VALUES (?, ?)")->execute([$k, $v]);
-    }
-}
 
 try {
     switch ($action) {
@@ -114,12 +91,7 @@ try {
             break;
 
         // ── STORY ACTIONS ────────────────────────────────
-        case 'approve_story':
-            $sid = (int)($body['story_id'] ?? 0);
-            if ($sid <= 0) throw new Exception('Invalid story ID');
-            $pdo->prepare("UPDATE stories SET status = 'published', published_at = NOW() WHERE story_id = ?")->execute([$sid]);
-            echo json_encode(['success' => true, 'message' => 'Story has been published successfully']);
-            break;
+
 
         case 'reject_story':
             $sid = (int)($body['story_id'] ?? 0);

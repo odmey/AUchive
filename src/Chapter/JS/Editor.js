@@ -128,7 +128,7 @@ function renderRoomchatBlock(blockId, roomchatId, contactName, theme, bubbles, m
     div.dataset.sortOrder = sortOrder !== null && sortOrder !== undefined ? sortOrder : blockCount;
 
     const isWa = theme === 'wa';
-    const avatarHtml = contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤';
+    const avatarHtml = contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '<img src="Pic/PP kosongan.jpg" alt="avatar">';
     const bgStyle = bgImage ? `style="background-image: url(${bgImage}); background-size: cover; background-position: center;"` : '';
 
     div.innerHTML = `
@@ -185,8 +185,8 @@ function renderBubblesPreview(bubbles, myAvatar = '', contactAvatar = '', contac
             avHtml = `<img src="${b.sender_avatar}" alt="avatar">`;
         } else {
             avHtml = isLeft
-                ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '')
-                : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '');
+                ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '<img src="Pic/PP kosongan.jpg" alt="avatar">')
+                : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '<img src="Pic/PP kosongan.jpg" alt="avatar">');
         }
 
         let nameHtml = '';
@@ -550,8 +550,8 @@ function generatePreviewHtml() {
                         avHtml = `<img src="${senderAvatar}" alt="avatar">`;
                     } else {
                         avHtml = position === 'left'
-                            ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤')
-                            : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '🙂');
+                            ? (contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '<img src="Pic/PP kosongan.jpg" alt="avatar">')
+                            : (myAvatar ? `<img src="${myAvatar}" alt="avatar">` : '<img src="Pic/PP kosongan.jpg" alt="avatar">');
                     }
 
                     let nameHtml = '';
@@ -574,7 +574,7 @@ function generatePreviewHtml() {
                 });
             }
 
-            const headerAvatarHtml = contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '👤';
+            const headerAvatarHtml = contactAvatar ? `<img src="${contactAvatar}" alt="avatar">` : '<img src="Pic/PP kosongan.jpg" alt="avatar">';
             const chatAreaStyle = bgImage ? `style="background-image: url(${bgImage}); background-size: cover; background-position: center;"` : '';
 
             html += `

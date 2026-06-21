@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'src/Core/PHP/database.php';
 
@@ -116,7 +116,7 @@ $coverSrc     = !empty($story['cover'])
 
 $authorAvatar = !empty($story['profile_pic'])
     ? htmlspecialchars($story['profile_pic'])
-    : 'Pic/profileicon.jpg';
+    : 'Pic/PP kosongan.jpg';
 
 $prog = $story['progress_status'] ?? 'ongoing';
 $statusLabel  = match($prog) {
@@ -353,7 +353,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             <a href="profile_person.php?id=<?= $story['user_id'] ?>" style="text-decoration:none; color:inherit; display: flex; align-items: center; gap: 20px;">
                 <img src="<?= $authorAvatar ?>"
                      alt="<?= htmlspecialchars($story['author_name'] ?? $story['username']) ?>"
-                     onerror="this.src='Pic/profileicon.jpg'">
+                     onerror="this.src='Pic/PP kosongan.jpg'">
 
                 <div class="writer-info">
                     <h3 style="margin: 0; color: #fff4a3; font-size: 18px; font-weight: 700;">@<?= htmlspecialchars($story['username'] ?? '') ?></h3>

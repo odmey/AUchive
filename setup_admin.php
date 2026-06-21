@@ -36,19 +36,6 @@ try {
     $errors[] = "❌ Role column fix failed: " . $e->getMessage();
 }
 
-// ── 2. Ensure system_settings table exists ────────────────────
-try {
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS `system_settings` (
-            `setting_key`   varchar(100) NOT NULL,
-            `setting_value` text DEFAULT NULL,
-            PRIMARY KEY (`setting_key`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ");
-    $logs[] = "✅ Table <code>system_settings</code> ready.";
-} catch (PDOException $e) {
-    $errors[] = "❌ system_settings table: " . $e->getMessage();
-}
 
 // ── 3. Show existing admin accounts ──────────────────────────
 try {
