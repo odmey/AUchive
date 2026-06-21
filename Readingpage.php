@@ -191,7 +191,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                     <?php if (!empty($block['contact_avatar'])): ?>
                                         <img src="<?= $block['contact_avatar'] ?>" alt="avatar">
                                     <?php else: ?>
-                                        👤
+                                        <img src="Pic/PP kosongan.jpg" alt="avatar">
                                     <?php endif; ?>
                                 </div>
                                 <div>
@@ -218,7 +218,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                             <?php elseif (!empty($block['contact_avatar'])): ?>
                                                 <img src="<?= $block['contact_avatar'] ?>" alt="avatar">
                                             <?php else: ?>
-                                                👤
+                                                <img src="Pic/PP kosongan.jpg" alt="avatar">
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
@@ -259,7 +259,7 @@ $progress_pct = $total_chapters > 0 ? round(($current_index / $total_chapters) *
                                             <?php elseif (!empty($block['my_avatar'])): ?>
                                                 <img src="<?= $block['my_avatar'] ?>" alt="avatar">
                                             <?php else: ?>
-                                                🙂
+                                                <img src="Pic/PP kosongan.jpg" alt="avatar">
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
