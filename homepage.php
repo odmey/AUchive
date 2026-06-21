@@ -1,7 +1,6 @@
 <?php
 session_start();
 $isLoggedIn = isset($_SESSION["user_id"]);
-$name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
 
 // Include database & fetch dynamic stories
 require_once 'src/Core/PHP/database.php';
@@ -30,21 +29,6 @@ $stmtNewest = $pdo->prepare("
 ");
 $stmtNewest->execute();
 $newestStories = $stmtNewest->fetchAll();
-
-// Static fallback stories in case DB has few elements (to maintain rich visual aesthetics)
-$staticFallbackPopular = [
-    ['story_id' => null, 'title' => 'Unseen',  'cover' => 'Pic/Unseen.png',  'total_views' => 1500, 'author_username' => 'odmey_'],
-    ['story_id' => null, 'title' => 'Karya 2', 'cover' => 'Pic/karya2.jpg', 'total_views' => 920,  'author_username' => 'user_'],
-    ['story_id' => null, 'title' => 'Karya 3', 'cover' => 'Pic/karya3.jpg', 'total_views' => 450,  'author_username' => 'user_'],
-    ['story_id' => null, 'title' => 'Karya 4', 'cover' => 'Pic/karya4.jpg', 'total_views' => 310,  'author_username' => 'user_'],
-];
-
-$staticFallbackNewest = [
-    ['story_id' => null, 'title' => 'Karya 5', 'cover' => 'Pic/karya5.jpg', 'total_views' => 200, 'author_username' => 'user_'],
-    ['story_id' => null, 'title' => 'Karya 6', 'cover' => 'Pic/karya6.jpg', 'total_views' => 180, 'author_username' => 'user_'],
-    ['story_id' => null, 'title' => 'Karya 7', 'cover' => 'Pic/karya7.jpg', 'total_views' => 120, 'author_username' => 'user_'],
-    ['story_id' => null, 'title' => 'Karya 8', 'cover' => 'Pic/karya8.jpg', 'total_views' => 90,  'author_username' => 'user_'],
-];
 
 // Fetch system warning
 $systemWarning = '';
@@ -242,8 +226,10 @@ try {
             }
         }
     }
+    // make an url for detail story if id is 0 then set #
     $readUrl = $popularStoryId > 0 ? "Detstory.php?id=" . $popularStoryId : "#";
     ?>
+    <!-- default if there is no database -->
     <section class="hero">
         <img src="<?= $heroCover ?>" alt="Cover">
 
@@ -268,8 +254,10 @@ try {
 
             <div class="slider">
                 <?php 
-                $displayPopular = count($popularStories) >= 1 ? $popularStories : $staticFallbackPopular;
-                foreach ($displayPopular as $s): 
+                if (empty($popularStories)):
+                    echo "<div style='padding:20px; color:rgba(255,255,255,0.5);'>Belum ada cerita yang dipublikasikan.</div>";
+                else:
+                    foreach ($popularStories as $s): 
                     $coverSrc = !empty($s['cover']) ? htmlspecialchars($s['cover']) : 'Pic/cover-placeholder.png';
                     $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
                 ?>
@@ -286,7 +274,8 @@ try {
                         </div>
                     </div>
                 <?php 
-                endforeach; 
+                    endforeach; 
+                endif;
                 ?>
             </div>
         </div>
@@ -302,8 +291,10 @@ try {
 
             <div class="slider">
                 <?php 
-                $displayNewest = count($newestStories) >= 1 ? $newestStories : $staticFallbackNewest;
-                foreach ($displayNewest as $s): 
+                if (empty($newestStories)):
+                    echo "<div style='padding:20px; color:rgba(255,255,255,0.5);'>Belum ada cerita terbaru.</div>";
+                else:
+                    foreach ($newestStories as $s): 
                     $coverSrc = !empty($s['cover']) ? htmlspecialchars($s['cover']) : 'Pic/cover-placeholder.png';
                     $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
                 ?>
@@ -319,7 +310,10 @@ try {
                             <span class="card-author">by <?= htmlspecialchars($s['author_username'] ?? 'unknown') ?></span>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                <?php 
+                    endforeach; 
+                endif;
+                ?>
             </div>
         </div>
     </section>
