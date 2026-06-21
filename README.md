@@ -40,15 +40,7 @@ AUchive combines all AU writing needs in one website so writers do not need to u
 | **Writer / Author** | Manages stories (drafts, published, archived), creates chapters, uses the bubble chat builder to construct visual chats, manages narrative/chat blocks, sets themes, and previews stories. |
 | **Admin / System** | Accesses the administrator dashboard, monitors system stats, handles user reports, moderates malicious contents, warns or bans users, and maintains database settings. |
 
-## DFD and System Flow
-
-<div align="center">
-  <img src="Pic/DFD.png" alt="AUchive Level 1 Data Flow Diagram" width="100%">
-</div>
-
-*(Note: The DFD diagram above shows the conceptual Level 1 Data Flow for AUchive.)*
-
-The Level 1 DFD shows how the four external actors—**Guest**, **Reader**, **Writer**, and **Admin**—interact with the main processes and system data stores:
+## System Flow
 
 1. **Manage Authentication (1.0)**  
    Users submit registration or login credentials. The system validates them against the **User Data Store (D1)** and returns session tokens and states.
