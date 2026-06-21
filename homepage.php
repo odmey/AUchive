@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 $isLoggedIn = isset($_SESSION["user_id"]);
 
@@ -375,9 +375,9 @@ try {
 
                 <form class="auth-form" id="signupForm" novalidate>
                     <input type="text" name="username" placeholder="Username" autocomplete="nickname" required>
-                    <input type="text" name="name" placeholder="Nama Lengkap" autocomplete="name" required>
+                    <input type="text" name="name" placeholder="Full Name" autocomplete="name" required>
                     <input type="email" name="email" placeholder="Email" autocomplete="email" required>
-                    <input type="password" name="password" placeholder="Password (min 8 karakter)"
+                    <input type="password" name="password" placeholder="Password (min 8 characters)"
                         autocomplete="new-password" required>
                     <button type="submit">Sign Up</button>
                 </form>

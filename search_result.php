@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 $isLoggedIn = isset($_SESSION["user_id"]);
 $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
@@ -257,9 +257,9 @@ function formatNumberShorthand($num) {
                         
                         $prog = $story['progress_status'] ?? 'ongoing';
                         $statusLabel = match($prog) {
-                            'complete' => 'Lengkap',
+                            'complete' => 'Complete',
                             'hiatus'   => 'Hiatus',
-                            default    => 'Bersambung',
+                            default    => 'Ongoing',
                         };
                         $statusClass = match($prog) {
                             'complete' => 'status-published',
@@ -280,7 +280,7 @@ function formatNumberShorthand($num) {
                                     <div class="meta-col">
                                         <div class="meta-label">
                                             <span class="material-symbols-outlined">visibility</span>
-                                            <span>Dibaca</span>
+                                            <span>Reads</span>
                                         </div>
                                         <div class="meta-val"><?= formatNumberShorthand($story['total_views'] ?? 0) ?></div>
                                     </div>
@@ -288,7 +288,7 @@ function formatNumberShorthand($num) {
                                     <div class="meta-col">
                                         <div class="meta-label">
                                             <span class="material-symbols-outlined">favorite</span>
-                                            <span>Vote</span>
+                                            <span>Votes</span>
                                         </div>
                                         <div class="meta-val"><?= formatNumberShorthand($story['total_likes'] ?? 0) ?></div>
                                     </div>
@@ -296,7 +296,7 @@ function formatNumberShorthand($num) {
                                     <div class="meta-col">
                                         <div class="meta-label">
                                             <span class="material-symbols-outlined">format_list_bulleted</span>
-                                            <span>Bab</span>
+                                            <span>Chapters</span>
                                         </div>
                                         <div class="meta-val"><?= $story['chapter_count'] ?? 0 ?></div>
                                     </div>
@@ -359,7 +359,7 @@ function formatNumberShorthand($num) {
                 </h2>
                 <p class="form-message" id="loginMessage" aria-live="polite"></p>
                 <form class="auth-form" id="loginForm" novalidate>
-                    <input type="text" name="login_input" placeholder="Username atau Email" autocomplete="username" required>
+                    <input type="text" name="login_input" placeholder="Username or Email" autocomplete="username" required>
                     <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
                     <button type="submit">Login</button>
                 </form>
@@ -379,9 +379,9 @@ function formatNumberShorthand($num) {
                 <p class="form-message" id="signupMessage" aria-live="polite"></p>
                 <form class="auth-form" id="signupForm" novalidate>
                     <input type="text" name="username" placeholder="Username" autocomplete="nickname" required>
-                    <input type="text" name="name" placeholder="Nama Lengkap" autocomplete="name" required>
+                    <input type="text" name="name" placeholder="Full Name" autocomplete="name" required>
                     <input type="email" name="email" placeholder="Email" autocomplete="email" required>
-                    <input type="password" name="password" placeholder="Password (min 8 karakter)" autocomplete="new-password" required>
+                    <input type="password" name="password" placeholder="Password (min 8 characters)" autocomplete="new-password" required>
                     <button type="submit">Sign Up</button>
                 </form>
             </div>
