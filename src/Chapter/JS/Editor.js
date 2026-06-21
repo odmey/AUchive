@@ -243,7 +243,7 @@ async function saveRoomchat(localId, showFeedback = true) {
         const saved = await saveChapter('draft', false);
         if (!saved) return;
         // saveChapter sudah memanggil saveAllBlocks() — tidak perlu save lagi
-        if (showFeedback) showToast('Roomchat tersimpan!');
+        if (showFeedback) showToast('Roomchat saved!');
         return;
     }
 
@@ -288,7 +288,7 @@ async function saveRoomchat(localId, showFeedback = true) {
     const result = await res.json();
     if (result.success) {
         div.dataset.roomchatId = result.roomchat_id;
-        if (showFeedback) showToast('Roomchat tersimpan!');
+        if (showFeedback) showToast('Roomchat saved!');
     } else {
         if (showFeedback) alert('Failed to save: ' + result.message);
     }
@@ -368,7 +368,7 @@ async function saveChapter(status = 'draft', showFeedback = true) {
             }
 
             if (showFeedback) {
-                showToast(status === 'published' ? 'Chapter dipublikasikan!' : 'Draft tersimpan!');
+                showToast(status === 'published' ? 'Chapter published!' : 'Draft saved!');
                 // Update badge di sidebar (tanpa reload)
                 updateSidebarStatus(CHAPTER_ID, status);
             }
