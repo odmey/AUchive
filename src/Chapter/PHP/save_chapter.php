@@ -128,7 +128,7 @@ try {
                             SELECT l.user_id 
                             FROM library_stories ls
                             JOIN library l ON ls.library_id = l.library_id
-                            WHERE ls.story_id = ? AND l.user_id != ?
+                            WHERE ls.story_id = ? AND l.user_id != ? AND ls.is_saved = 1
                         ");
                         $stmtSubscribers->execute([$story_id, $author_id]);
                         $subscribers = $stmtSubscribers->fetchAll(PDO::FETCH_COLUMN);

@@ -69,7 +69,6 @@ if ($chapter_id > 0) {
             <span class="material-symbols-outlined">arrow_back</span>
             Back Edit
         </a>
-        <div class="header-logo"><img src="Pic/TextLogo.png" alt="AUchive Logo" style="width: 100px; height: auto; display: block;"></div>
     </header>
 
     <div class="editor-layout">

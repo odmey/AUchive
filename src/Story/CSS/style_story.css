@@ -15,17 +15,13 @@ a {
 }
 
 header {
-    background: #fff34fae;
-    padding: 20px 40px;
+    background: #FFF44F;
+    height: 64px;
+    padding: 0 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.header-logo img {
-    width: 100px;
-    height: auto;
-    display: block;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 /* Editor */
