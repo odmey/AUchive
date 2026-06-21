@@ -480,26 +480,8 @@ INSERT INTO `story_tags` (`story_id`, `tag_id`) VALUES
 (6, 21),
 (6, 22);
 
--- --------------------------------------------------------
 
---
--- Table structure for table `system_settings`
---
 
-CREATE TABLE `system_settings` (
-  `setting_key` varchar(100) NOT NULL,
-  `setting_value` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `system_settings`
---
-
-INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
-('engine_version', 'v1.4.0-production'),
-('server_mode', 'online'),
-('site_name', 'AUchive Fanfiction Platform'),
-('system_warning', '');
 
 -- --------------------------------------------------------
 

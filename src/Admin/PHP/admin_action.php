@@ -161,22 +161,6 @@ try {
             echo json_encode(['success' => true, 'message' => 'Report has been dismissed']);
             break;
 
-        // ── SYSTEM SETTINGS ACTIONS ──────────────────────
-        case 'update_system_warning':
-            $warning = trim($body['warning'] ?? '');
-            $pdo->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = 'system_warning'")->execute([$warning]);
-            echo json_encode(['success' => true, 'message' => $warning ? 'System warning published successfully!' : 'System warning cleared.']);
-            break;
-
-        case 'update_system_settings':
-            $allowed = ['site_name', 'engine_version', 'server_mode'];
-            foreach ($allowed as $key) {
-                if (isset($body[$key])) {
-                    $pdo->prepare("UPDATE system_settings SET setting_value = ? WHERE setting_key = ?")->execute([trim($body[$key]), $key]);
-                }
-            }
-            echo json_encode(['success' => true, 'message' => 'System settings updated successfully!']);
-            break;
 
         default:
             http_response_code(400);
