@@ -15,20 +15,7 @@ if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
 try {
     $pdo = getDB();
 
-    // Auto-create reports table if it doesn't exist yet
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS `reports` (
-            `report_id`         int(11)      NOT NULL AUTO_INCREMENT,
-            `reporter_id`       int(11)      NOT NULL,
-            `reported_user_id`  int(11)      DEFAULT NULL,
-            `reported_story_id` int(11)      DEFAULT NULL,
-            `reason`            varchar(255) NOT NULL DEFAULT 'violation',
-            `description`       text         DEFAULT NULL,
-            `status`            enum('pending','resolved','dismissed') DEFAULT 'pending',
-            `created_at`        timestamp    NOT NULL DEFAULT current_timestamp(),
-            PRIMARY KEY (`report_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-    ");
+
 
     $status = in_array($_GET['status'] ?? '', ['pending', 'resolved', 'dismissed'])
                 ? $_GET['status'] : 'pending';

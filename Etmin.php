@@ -26,13 +26,9 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
-  <!-- Admin Portal CSS Styling -->
+
   <link rel="stylesheet" href="src/Admin/CSS/style_Etmin.css">
-
-  <!-- Chart.js CDN for Analytics rendering -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Main admin controller -->
   <script src="src/Core/JS/custom_alert.js"></script>
   <script src="src/Admin/JS/admin.js" defer></script>
 </head>
@@ -169,7 +165,7 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
               <th>Email Address</th>
               <th>Story Count</th>
               <th>Role</th>
-              <th style="width: 150px; text-align: right;">Administrative Actions</th>
+              <th style="width: 150px; text-align: center;">Administrative Actions</th>
             </tr>
           </thead>
           <tbody id="users-table-body">

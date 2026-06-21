@@ -556,7 +556,7 @@ CREATE TABLE `users` (
   `profile_ban` varchar(255) DEFAULT NULL,
   `bio` text DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
-  `role` enum('user','admin') DEFAULT 'user',
+  `role` enum('user','admin','banned') DEFAULT 'user',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
