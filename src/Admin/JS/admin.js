@@ -184,8 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       users: "Manage Users",
       stories: "Manage Stories",
       reports: "Reports Management",
-      analytics: "Platform Analytics",
-      settings: "Administrative Settings"
+      analytics: "Platform Analytics"
     };
     el.pageTitle.textContent = titleMap[tabId] || "Admin Portal";
 
@@ -878,8 +877,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // ── System Initializer ──────────────────────────────────────
-  // Trigger standard empty view immediately
-  switchTab("empty");
+  // Check if a specific tab parameter is present in the URL query string
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get("tab");
+  const validTabs = ["dashboard", "users", "stories", "reports", "analytics"];
+  
+  if (tabParam && validTabs.includes(tabParam)) {
+    switchTab(tabParam);
+  } else {
+    switchTab("empty");
+  }
 
 });
 

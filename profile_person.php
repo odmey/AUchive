@@ -135,10 +135,10 @@ $joinDate = date('F Y', strtotime($author['created_at']));
                         <span class="material-symbols-outlined">flag</span>
                     </button>
                 <?php else: ?>
-                    <button class="follow-btn" onclick="window.location.href='homepage.php?auth=login'">
+                    <button class="follow-btn" onclick="handleFollowGuest(event)">
                         Follow
                     </button>
-                    <button class="report-btn" onclick="window.location.href='homepage.php?auth=login'" title="Report User">
+                    <button class="report-btn" onclick="handleReportGuest(event)" title="Report User">
                         <span class="material-symbols-outlined">flag</span>
                     </button>
                 <?php endif; ?>
@@ -259,6 +259,26 @@ $joinDate = date('F Y', strtotime($author['created_at']));
         
         const AUTHOR_ID = <?= $authorId ?>;
     </script>
+    <?php if (!$isLoggedIn): ?>
+        <script>
+            function handleFollowGuest(e) {
+                if (e) e.preventDefault();
+                customConfirm("You must log in to follow this author. Would you like to log in now?").then((confirmed) => {
+                    if (confirmed) {
+                        window.location.href = 'homepage.php?auth=login&redirect=' + encodeURIComponent(window.location.href);
+                    }
+                });
+            }
+            function handleReportGuest(e) {
+                if (e) e.preventDefault();
+                customConfirm("You must log in to report this user. Would you like to log in now?").then((confirmed) => {
+                    if (confirmed) {
+                        window.location.href = 'homepage.php?auth=login&redirect=' + encodeURIComponent(window.location.href);
+                    }
+                });
+            }
+        </script>
+    <?php endif; ?>
 </body>
 
 </html>
