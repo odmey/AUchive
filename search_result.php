@@ -5,7 +5,7 @@ $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
 
 require_once 'src/Core/PHP/database.php';
 
-$keyword = trim($_GET['q'] ?? '');
+$keyword = trim($_GET['q'] ?? '');//catch the user keyword
 $tagKeyword = ltrim($keyword, '#');
 $pattern = '%' . $keyword . '%';
 $tagPattern = '%' . $tagKeyword . '%';
