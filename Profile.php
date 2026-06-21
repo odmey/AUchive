@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'src/Core/PHP/database.php';
 
@@ -35,8 +35,8 @@ $stmtStories = $pdo->prepare('
 $stmtStories->execute([$_SESSION['user_id']]);
 $stories = $stmtStories->fetchAll();
 
-$profilePic = $user['profile_pic'] ?: 'Pic/profileicon.jpg';
-$profileBan = $user['profile_ban'] ?: 'Pic/profilebanner.jpg';
+$profilePic = $user['profile_pic'] ?: 'Pic/PP kosongan.jpg';
+$profileBan = $user['profile_ban'] ?: 'Pic/PP kosongan.jpg';
 $bio        = $user['bio'] ?: 'Your bio goes here...';
 $joinDate   = date('F Y', strtotime($user['created_at']));
 
@@ -193,14 +193,14 @@ $followingList = $stmtFollowingList->fetchAll();
             'user_id'  => $x['user_id'],
             'name'     => htmlspecialchars($x['name']),
             'username' => '@' . htmlspecialchars($x['username']),
-            'image'    => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
+            'image'    => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/PP kosongan.jpg'
         ], $followersList)) ?>;
 
         const followingData = <?= json_encode(array_map(fn($x) => [
             'user_id'  => $x['user_id'],
             'name'     => htmlspecialchars($x['name']),
             'username' => '@' . htmlspecialchars($x['username']),
-            'image'    => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/profileicon.jpg'
+            'image'    => !empty($x['profile_pic']) ? htmlspecialchars($x['profile_pic']) : 'Pic/PP kosongan.jpg'
         ], $followingList)) ?>;
     </script>
 

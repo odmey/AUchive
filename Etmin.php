@@ -68,13 +68,6 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
       Analytics
     </a>
 
-
-    <!-- SYSTEM DEBUGGING LINK -->
-    <a href="admin_debug.php">
-      <span class="material-symbols-outlined">bug_report</span>
-      System Debugging
-    </a>
-
     <!-- LOGOUT ACTIONS -->
     <a href="#" id="sidebarLogoutBtn" class="menu-logout">
       <span class="material-symbols-outlined">logout</span>
@@ -89,9 +82,28 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
   <!-- TOP STATUS BAR -->
   <div class="topbar">
     <h1 id="pageTitle">Admin Dashboard</h1>
-    <div class="admin-box">
-      <span class="material-symbols-outlined" style="font-size:16px;">admin_panel_settings</span>
-      <span><?= $adminName ?> (@<?= $adminUsername ?>)</span>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <a href="homepage.php" title="Back to Homepage" style="display: flex; align-items: center; cursor: pointer; text-decoration: none; transition: 0.2s;">
+        <span class="material-symbols-outlined" style="font-size: 24px; color: rgba(255, 255, 255, 0.7); transition: color 0.2s;">home</span>
+      </a>
+      <script>
+        // Hover effect for PHP output home button
+        document.addEventListener("DOMContentLoaded", () => {
+          const btn = document.querySelector('.topbar a[title="Back to Homepage"]');
+          if (btn) {
+            btn.addEventListener("mouseenter", () => {
+              btn.querySelector('.material-symbols-outlined').style.color = "rgb(255, 244, 79)";
+            });
+            btn.addEventListener("mouseleave", () => {
+              btn.querySelector('.material-symbols-outlined').style.color = "rgba(255, 255, 255, 0.7)";
+            });
+          }
+        });
+      </script>
+      <div class="admin-box">
+        <span class="material-symbols-outlined" style="font-size:16px;">admin_panel_settings</span>
+        <span><?= $adminName ?> (@<?= $adminUsername ?>)</span>
+      </div>
     </div>
   </div>
 

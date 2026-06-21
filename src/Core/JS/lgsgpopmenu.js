@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 currentUser = {
                     username: data.username,
                     name: data.name,
-                    profilePic: data.profilePic ?? "Pic/profileicon.jpg",
+                    profilePic: data.profilePic ?? "Pic/PP kosongan.jpg",
                     role: data.role ?? "user"
                 };
             } else {
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (profileBtn) {
                 profileBtn.src = currentUser.profilePic;
                 profileBtn.onerror = function () {
-                    this.src = "Pic/profileicon.jpg";
+                    this.src = "Pic/PP kosongan.jpg";
                 };
             }
 
@@ -73,41 +73,34 @@ document.addEventListener("DOMContentLoaded", function () {
                     adminBtn.id = "adminPanelBtn";
                     adminBtn.title = "Admin Panel";
                     adminBtn.style.cssText = `
-                        width: 40px;
-                        height: 40px;
-                        border-radius: 50%;
-                        background: rgba(255, 244, 79, 0.12);
-                        border: 1.5px solid rgba(255, 244, 79, 0.3);
-                        color: #fff44f;
-                        cursor: pointer;
                         display: flex;
                         align-items: center;
-                        justify-content: center;
-                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                        margin-left: 20px;
-                        margin-top: 8px;
-                        flex-shrink: 0;
+                        cursor: pointer;
+                        transition: 0.2s;
                     `;
 
-                    // Hover effects using JS event listeners
+                    adminBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 24px; color: rgba(255, 255, 255, 0.7); transition: color 0.2s;">shield</span>`;
+                    
                     adminBtn.addEventListener("mouseenter", () => {
-                        adminBtn.style.background = "rgba(255, 244, 79, 0.25)";
-                        adminBtn.style.transform = "scale(1.08)";
-                        adminBtn.style.boxShadow = "0 0 12px rgba(255, 244, 79, 0.4)";
-                        adminBtn.style.borderColor = "#fff44f";
+                        const icon = adminBtn.querySelector(".material-symbols-outlined");
+                        if (icon) icon.style.color = "rgb(255, 244, 79)";
                     });
                     adminBtn.addEventListener("mouseleave", () => {
-                        adminBtn.style.background = "rgba(255, 244, 79, 0.12)";
-                        adminBtn.style.transform = "scale(1)";
-                        adminBtn.style.boxShadow = "none";
-                        adminBtn.style.borderColor = "rgba(255, 244, 79, 0.3)";
+                        const icon = adminBtn.querySelector(".material-symbols-outlined");
+                        if (icon) icon.style.color = "rgba(255, 255, 255, 0.7)";
                     });
 
-                    adminBtn.innerHTML = `<span class="material-symbols-outlined" style="color: #fff44f; font-size: 20px;">shield</span>`;
                     adminBtn.addEventListener("click", () => {
                         window.location.href = "Etmin.php";
                     });
-                    userNav.appendChild(adminBtn);
+                    
+                    // Insert before notification button to place it on the left
+                    const notifBtn = document.getElementById("notifBtn");
+                    if (notifBtn) {
+                        userNav.insertBefore(adminBtn, notifBtn);
+                    } else {
+                        userNav.appendChild(adminBtn);
+                    }
                 } else {
                     adminBtn.style.display = "flex";
                 }
@@ -352,18 +345,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ── LOGOUT (dipanggil dari navbar jika ada tombol logout di homepage) ──
-    window.doLogout = async function () {
-        try {
-            await fetch("src/User/PHP/logout.php", {
-                method: "POST",
-                headers: { "X-Requested-With": "XMLHttpRequest" }
-            });
-        } finally {
-            window.location.href = "homepage.php?loggedout=1";
-        }
-    };
-
     // ── Search (live, debounced, dari database) ──────────────────
     let searchTimer = null;
 
@@ -403,11 +384,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     // ── Tampilan hasil USER ──
                     const avatar = result.profile_pic
                         ? result.profile_pic
-                        : "Pic/profileicon.jpg";
+                        : "Pic/PP kosongan.jpg";
 
                     item.innerHTML = `
                         <img class="search-cover" src="${avatar}"
-                             onerror="this.src='Pic/profileicon.jpg'"
+                             onerror="this.src='Pic/PP kosongan.jpg'"
                              style="border-radius:50%;">
                         <div class="search-info">
                             <span class="search-title">${result.name}</span>

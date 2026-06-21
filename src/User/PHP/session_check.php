@@ -15,7 +15,7 @@ if (isset($_SESSION['user_id'])) {
     // Kalau belum ada foto, pakai default
     $profilePic = (!empty($row['profile_pic']))
         ? $row['profile_pic']
-        : 'Pic/profileicon.jpg';
+        : 'Pic/PP kosongan.jpg';
 
     echo json_encode([
         'loggedIn'   => true,
@@ -29,4 +29,5 @@ if (isset($_SESSION['user_id'])) {
 } else {
     echo json_encode(['loggedIn' => false]);
 }
-exit;
+exit;
+

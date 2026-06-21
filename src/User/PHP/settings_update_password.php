@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../Core/PHP/database.php';
+require_once __DIR__ . '/../../Core/PHP/user_helpers.php';
 
 header('Content-Type: application/json');
 
@@ -30,11 +31,8 @@ if ($new_password !== $confirm_password) {
 
 try {
     $pdo = getDB();
-    $stmt = $pdo->prepare('SELECT password FROM users WHERE user_id = ?');
-    $stmt->execute([$_SESSION['user_id']]);
-    $user = $stmt->fetch();
 
-    if (!$user || !password_verify($current_password, $user['password'])) {
+    if (!verifyCurrentPassword($pdo, (int)$_SESSION['user_id'], $current_password)) {
         echo json_encode(['success' => false, 'message' => 'Incorrect current password']);
         exit;
     }

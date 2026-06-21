@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 $isLoggedIn = isset($_SESSION["user_id"]);
 $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
@@ -213,7 +213,7 @@ try {
                     <div class="settingacc" id="settingBtn" title="Settings">
                         <span class="material-symbols-outlined">settings</span>
                     </div>
-                    <img src="Pic/profileicon.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
+                    <img src="Pic/PP kosongan.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
                 </div>
             </div>
         </nav>

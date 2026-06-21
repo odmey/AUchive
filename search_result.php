@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 $isLoggedIn = isset($_SESSION["user_id"]);
 $name = $isLoggedIn ? htmlspecialchars($_SESSION["name"] ?? "User") : "";
@@ -226,7 +226,7 @@ function formatNumberShorthand($num) {
                     <div class="settingacc" id="settingBtn" title="Settings">
                         <span class="material-symbols-outlined">settings</span>
                     </div>
-                    <img src="Pic/profileicon.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
+                    <img src="Pic/PP kosongan.jpg" alt="Profile" class="nav-profile" id="profileBtn" title="Profile">
                 </div>
             </div>
         </nav>
@@ -317,10 +317,10 @@ function formatNumberShorthand($num) {
             <?php if (count($users) > 0): ?>
                 <div class="user-grid">
                     <?php foreach ($users as $user): 
-                        $avatar = $user['profile_pic'] ?: 'Pic/profileicon.jpg';
+                        $avatar = $user['profile_pic'] ?: 'Pic/PP kosongan.jpg';
                     ?>
                         <a href="profile_person.php?id=<?= $user['user_id'] ?>" class="user-card">
-                            <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" onerror="this.src='Pic/profileicon.jpg'">
+                            <img src="<?= htmlspecialchars($avatar) ?>" alt="Avatar" onerror="this.src='Pic/PP kosongan.jpg'">
                             <div class="user-name"><?= htmlspecialchars($user['name']) ?></div>
                             <div class="user-username">@<?= htmlspecialchars($user['username']) ?></div>
                         </a>
