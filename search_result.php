@@ -280,7 +280,7 @@ function formatNumberShorthand($num) {
                                     <div class="meta-col">
                                         <div class="meta-label">
                                             <span class="material-symbols-outlined">visibility</span>
-                                            <span>Reads</span>
+                                            <span>Views</span>
                                         </div>
                                         <div class="meta-val"><?= formatNumberShorthand($story['total_views'] ?? 0) ?></div>
                                     </div>
