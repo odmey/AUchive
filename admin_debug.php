@@ -88,30 +88,27 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
   </div>
 
   <nav class="menu">
-    <a href="Etmin.php">
+    <a href="Etmin.php?tab=dashboard">
       <span class="material-symbols-outlined">dashboard</span>
       Dashboard
     </a>
-    <a href="Etmin.php">
+    <a href="Etmin.php?tab=users">
       <span class="material-symbols-outlined">group</span>
       Manage Users
     </a>
-    <a href="Etmin.php">
+    <a href="Etmin.php?tab=stories">
       <span class="material-symbols-outlined">auto_stories</span>
       Manage Stories
     </a>
-    <a href="Etmin.php">
+    <a href="Etmin.php?tab=reports">
       <span class="material-symbols-outlined">report</span>
       Reports
     </a>
-    <a href="Etmin.php">
+    <a href="Etmin.php?tab=analytics">
       <span class="material-symbols-outlined">monitoring</span>
       Analytics
     </a>
-    <a href="Etmin.php">
-      <span class="material-symbols-outlined">settings</span>
-      Settings
-    </a>
+
 
     <!-- SYSTEM DEBUGGING LINK (ACTIVE) -->
     <a href="admin_debug.php" class="active">
@@ -327,7 +324,7 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
         </div>
         <div class="settings-item">
           <label for="set-server-mode">Server Mode</label>
-          <select id="set-server-mode" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--surface-color);color:var(--text-primary);font-family:Poppins,sans-serif;font-size:14px;">
+          <select id="set-server-mode" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-primary);font-family:Poppins,sans-serif;font-size:14px;">
             <option value="online" <?= ($settings['server_mode'] ?? '') === 'online' ? 'selected' : '' ?>>Online (Active)</option>
             <option value="maintenance" <?= ($settings['server_mode'] ?? '') === 'maintenance' ? 'selected' : '' ?>>Maintenance Mode</option>
             <option value="offline" <?= ($settings['server_mode'] ?? '') === 'offline' ? 'selected' : '' ?>>Offline</option>

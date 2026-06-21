@@ -67,10 +67,7 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
       <span class="material-symbols-outlined">monitoring</span>
       Analytics
     </a>
-    <a href="#" data-tab="settings">
-      <span class="material-symbols-outlined">settings</span>
-      Settings
-    </a>
+
 
     <!-- SYSTEM DEBUGGING LINK -->
     <a href="admin_debug.php">
@@ -375,34 +372,7 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
   <!-- ────────────────────────────────────────────────────────
          SECTION 6: SETTINGS TAB
          ──────────────────────────────────────────────────────── -->
-  <section id="settings" class="tab-content">
-    <div class="data-box">
-      <div class="data-box-header">
-        <h2>Administrative Settings</h2>
-      </div>
-      <div class="settings-group">
-        <div class="settings-item">
-          <label for="sys-name">Site Name</label>
-          <input type="text" id="sys-name" value="AUchive Fanfiction Platform" readonly>
-        </div>
-        <div class="settings-item">
-          <label for="sys-role">Your Role</label>
-          <input type="text" id="sys-role" value="Super Administrator" readonly>
-        </div>
-        <div class="settings-item">
-          <label for="sys-version">Engine Version</label>
-          <input type="text" id="sys-version" value="v1.4.0-production" readonly>
-        </div>
-        <div class="settings-item">
-          <label>Server Mode Status</label>
-          <div class="status approved" style="align-self: flex-start; padding: 10px 18px; border-radius: 8px;">
-            <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span>
-            Online (Active)
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+
 
 </main>
 

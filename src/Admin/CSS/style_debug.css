@@ -212,3 +212,15 @@
 }
 
 /* Responsive adjustments handled universally in style_Etmin.css */
+
+/* Styling for select and options to match dark theme */
+.settings-item select {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.settings-item select option {
+  background-color: var(--bg-sidebar);
+  color: var(--text-primary);
+}

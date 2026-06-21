@@ -314,6 +314,9 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                 <?php if ($isLoggedIn): ?>
                     <button class="fav-btn<?= $isFavorite ? ' active' : '' ?>"   id="favBtn"><?= $isFavorite ? 'Favorited' : 'Favorite' ?></button>
                     <button class="save-btn<?= $isSaved ? ' active' : '' ?>"   id="saveBtn"><?= $isSaved ? 'Saved' : 'Save' ?></button>
+                <?php else: ?>
+                    <button class="fav-btn" onclick="handleFavoriteGuest(event)">Favorite</button>
+                    <button class="save-btn" onclick="handleSaveGuest(event)">Save</button>
                 <?php endif; ?>
                 <a href="Readingpage.php?story_id=<?= $storyId ?>">
                     <button class="read-btn" id="readBtn">Start Reading</button>
@@ -323,7 +326,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                         <span class="material-symbols-outlined">flag</span>
                     </button>
                 <?php else: ?>
-                    <button class="report-btn" onclick="window.location.href='homepage.php?auth=login'" title="Report Story">
+                    <button class="report-btn" onclick="handleReportGuest(event)" title="Report Story">
                         <span class="material-symbols-outlined">flag</span>
                     </button>
                 <?php endif; ?>
@@ -365,7 +368,7 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
                 </div>
             <?php elseif (!$isLoggedIn): ?>
                 <div class="writer-actions" onclick="event.stopPropagation()">
-                    <button class="follow-btn" onclick="window.location.href='homepage.php?auth=login'">
+                    <button class="follow-btn" onclick="handleFollowGuest(event)">
                         Follow
                     </button>
                 </div>
@@ -414,6 +417,41 @@ $genrePart = $genreTag ? $genreTag . ($tagList ? ' • ' : '') : '';
             const AUTHOR_ID = <?= (int)$story['user_id'] ?>;
         </script>
         <script src="src/Story/JS/detstory.js"></script>
+    <?php else: ?>
+        <script>
+            function handleFollowGuest(e) {
+                if (e) e.preventDefault();
+                customConfirm("You must log in to follow this author. Would you like to log in now?").then((confirmed) => {
+                    if (confirmed) {
+                        window.location.href = 'homepage.php?auth=login&redirect=' + encodeURIComponent(window.location.href);
+                    }
+                });
+            }
+            function handleReportGuest(e) {
+                if (e) e.preventDefault();
+                customConfirm("You must log in to report this story. Would you like to log in now?").then((confirmed) => {
+                    if (confirmed) {
+                        window.location.href = 'homepage.php?auth=login&redirect=' + encodeURIComponent(window.location.href);
+                    }
+                });
+            }
+            function handleFavoriteGuest(e) {
+                if (e) e.preventDefault();
+                customConfirm("You must log in to favorite this story. Would you like to log in now?").then((confirmed) => {
+                    if (confirmed) {
+                        window.location.href = 'homepage.php?auth=login&redirect=' + encodeURIComponent(window.location.href);
+                    }
+                });
+            }
+            function handleSaveGuest(e) {
+                if (e) e.preventDefault();
+                customConfirm("You must log in to save this story. Would you like to log in now?").then((confirmed) => {
+                    if (confirmed) {
+                        window.location.href = 'homepage.php?auth=login&redirect=' + encodeURIComponent(window.location.href);
+                    }
+                });
+            }
+        </script>
     <?php endif; ?>
 </body>
 

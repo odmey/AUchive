@@ -269,15 +269,11 @@ try {
             <div class="slider">
                 <?php 
                 $displayPopular = count($popularStories) >= 1 ? $popularStories : $staticFallbackPopular;
-                $rank = 1;
                 foreach ($displayPopular as $s): 
                     $coverSrc = !empty($s['cover']) ? htmlspecialchars($s['cover']) : 'Pic/cover-placeholder.png';
                     $link = $s['story_id'] !== null ? "Detstory.php?id=" . $s['story_id'] : "Detstory.php";
                 ?>
                     <div class="card-slider">
-                        <?php if ($rank <= 3): ?>
-                            <div class="rank-badge rank-<?= $rank ?>"><?= $rank ?></div>
-                        <?php endif; ?>
                         <a href="<?= $link ?>" class="card-slider-link">
                             <img src="<?= $coverSrc ?>" alt="<?= htmlspecialchars($s['title']) ?>" onerror="this.src='Pic/cover-placeholder.png'">
                             <div class="card-slider-info">
@@ -290,7 +286,6 @@ try {
                         </div>
                     </div>
                 <?php 
-                    $rank++;
                 endforeach; 
                 ?>
             </div>
