@@ -64,9 +64,17 @@ try {
         case 'ban_user':
             $uid = (int)($body['user_id'] ?? 0);
             if ($uid <= 0) throw new Exception('Invalid user ID');
-            $stmt = $pdo->prepare("UPDATE users SET role = 'banned' WHERE user_id = ? AND role != 'admin'");
-            $stmt->execute([$uid]);
-            if ($stmt->rowCount() === 0) throw new Exception('User not found or already an admin');
+
+            // Cek user exist dan ambil role saat ini
+            $check = $pdo->prepare("SELECT role FROM users WHERE user_id = ?");
+            $check->execute([$uid]);
+            $userRow = $check->fetch();
+
+            if (!$userRow) throw new Exception('User not found.');
+            if ($userRow['role'] === 'admin') throw new Exception('Cannot ban an admin account.');
+            if ($userRow['role'] === 'banned') throw new Exception('User is already banned.');
+
+            $pdo->prepare("UPDATE users SET role = 'banned' WHERE user_id = ?")->execute([$uid]);
             echo json_encode(['success' => true, 'message' => 'User has been banned successfully']);
             break;
 

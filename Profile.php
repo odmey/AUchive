@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 require_once 'src/Core/PHP/database.php';
 
@@ -110,7 +110,7 @@ $followingList = $stmtFollowingList->fetchAll();
                 <a href="Notification.php" class="action-icon-btn" title="Notifications">
                     <span class="material-symbols-outlined">notifications</span>
                 </a>
-                <a href="Setting.php" class="action-icon-btn" title="Settings">
+                <a href="Setting.php?from=profile" class="action-icon-btn" title="Settings">
                     <span class="material-symbols-outlined">settings</span>
                 </a>
             </div>

@@ -325,9 +325,9 @@ body {
 }
 
 .filter-select {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
   padding: 12px 20px;
   border-radius: 10px;
   outline: none;
@@ -337,8 +337,27 @@ body {
   transition: var(--transition-smooth);
 }
 
+.filter-select:hover {
+  border-color: rgba(255, 244, 79, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .filter-select:focus {
   border-color: var(--accent-color);
+  box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.15);
+}
+
+/* Styling dropdown options menggunakan warna solid agar di-render sempurna oleh browser */
+.filter-select option {
+  background-color: #161616;
+  color: #ffffff;
+  padding: 10px;
+}
+
+.filter-select option:checked,
+.filter-select option:hover {
+  background-color: #2a2a20; /* Dark Lemon shadow tint */
+  color: #fff44f;
 }
 
 .tab-pill-row {

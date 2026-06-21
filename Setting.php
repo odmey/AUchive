@@ -1,24 +1,21 @@
-﻿<?php
+<?php
 session_start();
 require_once 'src/Core/PHP/database.php';
 
-$name = 'Guest';
-$email = '';
-$pic = 'Pic/PP kosongan.jpg';
-$isLoggedIn = false;
-
-if (isset($_SESSION['user_id'])) {
-    $isLoggedIn = true;
-    $pdo = getDB();
-    $stmt = $pdo->prepare('SELECT name, email, profile_pic FROM users WHERE user_id = ?');
-    $stmt->execute([$_SESSION['user_id']]);
-    $u = $stmt->fetch();
-    if ($u) {
-        $name = $u['name'];
-        $email = $u['email'];
-        $pic = $u['profile_pic'] ?: $pic;
-    }
+if (!isset($_SESSION['user_id'])) {
+    header("Location: homepage.php");
+    exit;
 }
+
+$pdo = getDB();
+$stmt = $pdo->prepare('SELECT name, email, profile_pic FROM users WHERE user_id = ?');
+$stmt->execute([$_SESSION['user_id']]);
+$u = $stmt->fetch();
+$name = $u['name'] ?? 'User';
+$email = $u['email'] ?? '';
+$pic = $u['profile_pic'] ?: 'Pic/PP kosongan.jpg';
+// Determine where the back button should point
+$backUrl = ($_GET['from'] ?? '') === 'profile' ? 'Profile.php' : 'homepage.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +53,7 @@ if (isset($_SESSION['user_id'])) {
 
     <header>
         <div class="left">
-            <a href="<?= $isLoggedIn ? 'Profile.php' : 'homepage.php' ?>" class="back-link" aria-label="Back">
+            <a href="<?= $backUrl ?>" class="back-link" aria-label="Back">
                 <span class="material-symbols-outlined">arrow_back</span>
             </a>
         </div>
@@ -64,35 +61,7 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="plain">
 
-        <!-- GUEST VIEW: PHP langsung hide/show — tidak perlu tunggu JS -->
-        <div class="guest-view" style="display:<?= $isLoggedIn ? 'none' : 'block' ?>;">
-            <div class="profile-card">
-                <img src="Pic/PP kosongan.jpg" alt="Profile icon">
-                <div class="profile-desc">
-                    <h3>Welcome</h3>
-                    <p>Please login first</p>
-                </div>
-            </div>
-
-            <div class="section-settings">
-                <div class="item-set" onclick="goLogin()">
-                    <span>Login</span>
-                </div>
-                <div class="item-set" onclick="goSignup()">
-                    <span>Sign Up</span>
-                </div>
-            </div>
-
-            <div class="section-settings">
-                <h4>Help</h4>
-                <div class="item-set" data-popup="faq">
-                    <span>FAQ</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- USER VIEW: PHP langsung hide/show — tidak perlu tunggu JS -->
-        <div class="user-view" style="display:<?= $isLoggedIn ? 'block' : 'none' ?>;">
+        <div class="user-view">
             <div class="profile-card">
                 <img src="<?= htmlspecialchars($pic) ?>" alt="Profile icon">
                 <div class="profile-desc">

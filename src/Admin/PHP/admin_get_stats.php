@@ -19,14 +19,7 @@ try {
     $totalStories = (int)$pdo->query("SELECT COUNT(*) FROM stories")->fetchColumn();
     $pendingReview = (int)$pdo->query("SELECT COUNT(*) FROM stories WHERE status = 'draft'")->fetchColumn();
     $bannedUsers  = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'banned'")->fetchColumn();
-
-    // Reports (table may not exist yet)
-    $totalReports = 0;
-    try {
-        $totalReports = (int)$pdo->query("SELECT COUNT(*) FROM reports WHERE status = 'pending'")->fetchColumn();
-    } catch (PDOException $e) {
-        $totalReports = 0;
-    }
+    $totalReports = (int)$pdo->query("SELECT COUNT(*) FROM reports WHERE status = 'pending'")->fetchColumn();
 
     // Recent 10 stories
     $recentStories = $pdo->query("
@@ -47,7 +40,7 @@ try {
             'total_stories' => $totalStories,
             'total_reports' => $totalReports,
             'pending_review'=> $pendingReview,
-            'banned_users'  => $bannedUsers,
+
         ],
         'recent_stories' => $recentStories,
     ]);
