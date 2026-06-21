@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============================================================
  * admin.js – Core Controller for AUchive Admin Portal
  * ============================================================
@@ -231,38 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>@${escapeHtml(story.author)}</td>
         <td>${escapeHtml(story.category)}</td>
         <td><span class="status ${statusClass}">${statusLabel}</span></td>
-        <td>
-          <div class="btn-action-row">
-            ${isDraft ? `
-              <button class="btn-icon approve" title="Approve & Publish" data-id="${story.story_id}">
-                <span class="material-symbols-outlined">check</span>
-              </button>
-            ` : `
-              <button class="btn-icon reject" title="Revert to Draft" data-id="${story.story_id}">
-                <span class="material-symbols-outlined">undo</span>
-              </button>
-            `}
-            <button class="btn-icon delete" title="Permanently Delete" data-id="${story.story_id}">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
-          </div>
-        </td>
       `;
-
-      // Event bindings
-      const approveBtn = tr.querySelector(".approve");
-      const rejectBtn = tr.querySelector(".reject");
-      const deleteBtn = tr.querySelector(".delete");
-
-      if (approveBtn) {
-        approveBtn.addEventListener("click", () => confirmAction("approve_story", story.story_id, `Are you sure you want to approve and publish "${story.title}"?`));
-      }
-      if (rejectBtn) {
-        rejectBtn.addEventListener("click", () => confirmAction("reject_story", story.story_id, `Are you sure you want to revert "${story.title}" to draft mode?`));
-      }
-      if (deleteBtn) {
-        deleteBtn.addEventListener("click", () => confirmAction("delete_story", story.story_id, `WARNING: Are you absolutely sure you want to permanently delete the story "${story.title}"? This cannot be undone.`));
-      }
 
       el.recentStoriesTable.appendChild(tr);
     });
@@ -398,15 +367,11 @@ document.addEventListener("DOMContentLoaded", function () {
         <td>❤️ ${story.total_likes}</td>
         <td>
           <div class="btn-action-row" style="justify-content: flex-end;">
-            ${isDraft ? `
-              <button class="btn-icon approve" title="Approve & Publish" data-id="${story.story_id}">
-                <span class="material-symbols-outlined">check</span>
-              </button>
-            ` : `
+            ${!isDraft ? `
               <button class="btn-icon reject" title="Revert to Draft" data-id="${story.story_id}">
                 <span class="material-symbols-outlined">undo</span>
               </button>
-            `}
+            ` : ''}
             <button class="btn-icon delete" title="Permanently Delete" data-id="${story.story_id}">
               <span class="material-symbols-outlined">delete</span>
             </button>
@@ -415,13 +380,8 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
 
       // Event bindings
-      const approveBtn = tr.querySelector(".approve");
       const rejectBtn = tr.querySelector(".reject");
       const deleteBtn = tr.querySelector(".delete");
-
-      if (approveBtn) {
-        approveBtn.addEventListener("click", () => confirmAction("approve_story", story.story_id, `Are you sure you want to approve and publish "${story.title}"?`));
-      }
       if (rejectBtn) {
         rejectBtn.addEventListener("click", () => confirmAction("reject_story", story.story_id, `Are you sure you want to revert "${story.title}" to draft?`));
       }

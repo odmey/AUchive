@@ -993,7 +993,7 @@
                   <div class="algo-step"><div class="algo-step-num">d</div><div class="algo-step-text"><code>delete_user</code>: FK Checks OFF → Hapus relasi → Hapus user → FK Checks ON</div></div>
                   <div class="algo-step"><div class="algo-step-num">e</div><div class="algo-step-text"><code>approve_story</code>: SET status='published', published_at=NOW()</div></div>
                   <div class="algo-step"><div class="algo-step-num">f</div><div class="algo-step-text"><code>delete_story</code>: Hapus berantai — bubbles → roomchats → chapter_blocks → comments → chapters → story</div></div>
-                  <div class="algo-step"><div class="algo-step-num">g</div><div class="algo-step-text"><code>update_system_settings</code>: UPDATE system_settings untuk key: site_name, engine_version, server_mode</div></div>
+
                 </div>
               </div>
               <div class="file-links">

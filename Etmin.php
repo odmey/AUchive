@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// Etmin.php  –  Dynamic Administrative Portal for AUchive
-// ============================================================
 session_start();
 
 // Ensure only logged-in administrators can access this dashboard
@@ -157,13 +154,12 @@ $adminUsername = htmlspecialchars($_SESSION['username'] ?? 'admin');
               <th>Author</th>
               <th>Category</th>
               <th>Status</th>
-              <th style="width: 120px;">Actions</th>
             </tr>
           </thead>
           <tbody id="recent-stories-table-body">
             <!-- Dynamically populated via JS -->
             <tr>
-              <td colspan="5" style="text-align:center; padding: 40px 0;">Loading dashboard statistics...</td>
+              <td colspan="4" style="text-align:center; padding: 40px 0;">Loading dashboard statistics...</td>
             </tr>
           </tbody>
         </table>

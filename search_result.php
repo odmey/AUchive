@@ -45,17 +45,7 @@ $stmtStories = $pdo->prepare($sqlStories);
 $stmtStories->execute([$pattern, $tagPattern]);
 $stories = $stmtStories->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch system warning
-$systemWarning = '';
-try {
-    $warnStmt = $pdo->query("SELECT setting_value FROM system_settings WHERE setting_key = 'system_warning' LIMIT 1");
-    $warnRow = $warnStmt ? $warnStmt->fetch() : false;
-    if ($warnRow && !empty(trim($warnRow['setting_value'] ?? ''))) {
-        $systemWarning = htmlspecialchars(trim($warnRow['setting_value']));
-    }
-} catch (Exception $e) {
-    // Table may not exist yet, ignore
-}
+
 
 function formatNumberShorthand($num) {
     $num = (float)$num;
@@ -91,106 +81,7 @@ function formatNumberShorthand($num) {
 
 <body>
 
-    <?php if (!empty($systemWarning)): ?>
-    <!-- SYSTEM WARNING BANNER -->
-    <style>
-    .warning-banner-marquee {
-        background: linear-gradient(90deg, #d32f2f, #f57c00);
-        color: #fff;
-        padding: 10px 0;
-        font-family: 'Poppins', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        position: relative;
-        z-index: 9998;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        border-bottom: 1.5px solid rgba(255, 244, 79, 0.25);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    .marquee-container {
-        width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        position: relative;
-        padding-right: 50px;
-    }
-    .marquee-content {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        padding-left: 100%;
-        animation: marquee-scroll 25s linear infinite;
-        cursor: default;
-    }
-    .marquee-content:hover {
-        animation-play-state: paused;
-    }
-    .marquee-icon {
-        font-size: 18px;
-        color: #fff44f;
-        animation: pulse-warn 1.5s infinite ease-in-out;
-        vertical-align: middle;
-    }
-    .marquee-close-btn {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: #fff;
-        font-size: 18px;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .marquee-close-btn:hover {
-        background: #e74c3c;
-        border-color: #e74c3c;
-        transform: translateY(-50%) scale(1.1);
-        box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
-    }
-    @keyframes marquee-scroll {
-        0% { transform: translate3d(0, 0, 0); }
-        100% { transform: translate3d(-100%, 0, 0); }
-    }
-    @keyframes pulse-warn {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.15); filter: drop-shadow(0 0 4px #fff44f); }
-    }
-    </style>
-    <div id="systemWarningBanner" class="warning-banner-marquee">
-        <div class="marquee-container">
-            <div class="marquee-content">
-                <span class="material-symbols-outlined marquee-icon">warning</span>
-                <span><?= $systemWarning ?></span>
-            </div>
-        </div>
-        <button onclick="dismissWarningBanner(this)" class="marquee-close-btn">&times;</button>
-    </div>
-    <script>
-    function dismissWarningBanner(btn) {
-        const banner = document.getElementById('systemWarningBanner');
-        if (banner) {
-            banner.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            banner.style.opacity = '0';
-            banner.style.transform = 'translateY(-100%)';
-            setTimeout(() => {
-                banner.style.display = 'none';
-            }, 400);
-        }
-    }
-    </script>
-    <?php endif; ?>
+
 
     <!-- NAVBAR -->
     <div class="header-wrapper" style="position: sticky; top: 0; z-index: 100;">
