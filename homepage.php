@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Admin tidak boleh mengakses homepage — redirect ke panel admin
+if (isset($_SESSION['user_id']) && ($_SESSION['role'] ?? '') === 'admin') {
+    header("Location: Etmin.php");
+    exit;
+}
+
 $isLoggedIn = isset($_SESSION["user_id"]);
 
 // Include database & fetch dynamic stories
