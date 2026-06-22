@@ -12,7 +12,7 @@ AUchive combines all AU writing needs in one website so writers do not need to u
 
 1. [Features](#features)
 2. [Actors](#actors)
-3. [DFD and System Flow](#dfd-and-system-flow)
+3. [System Flow](#system-flow)
 4. [Folder Structure](#folder-structure)
 5. [Tech Stack](#tech-stack)
 6. [Database Management System](#database-management-system)
@@ -137,7 +137,7 @@ AUchive uses **MySQL** as its relational DBMS. Database connections are handled 
 | `library` / `library_stories` | Tracks user reading lists and bookmarks. |
 | `story_likes` / `chapter_likes` | Monitors user engagement through likes. |
 | `reports` | Manages reported contents and users for moderation reviews. |
-| `system_settings` | Holds environment and server-wide configurations. |
+
 
 Main relationships:
 - One user can create many stories, comments, likes, and followers.
@@ -152,9 +152,9 @@ All contributors worked as **Fullstack Developers**, covering frontend, backend,
 
 | Contributor | Student ID | Role | Main Responsibilities |
 |---|---|---|---|
-| [Aleiandra Carrissa Irawan](https://github.com/aleiandra-lin) | F1D02410034 | Fullstack Developer - Reader Side Specialist | Developing reader-focused features, reading page layouts, interactive reading preview modes, user library/bookmarking, and reader-related database structures. |
-| [Raissa Bunga Astrella](https://github.com/astrelacha) | F1D02410087 | Fullstack Developer - Writer Side Specialist | Developing story creation UIs, bubble chat customizer/builder, chapter text and block editors, story draft/publishing workflows, and writer-related preview utilities. |
-| [Meisya Ananda Puteri](https://github.com/odmey) | F1D02410072 | Fullstack Developer - System / Platform Side Specialist | Developing authentication (login/register), notifications, settings, user profiles, database schema integration, Cloudinary API integration, and admin dashboard operations. |
+| [Aleiandra Carrissa Irawan]| F1D02410034 | Fullstack Developer - Reader Side Specialist | Developing reader-focused features, reading page layouts, interactive reading preview modes, user library/bookmarking, and reader-related database structures. |
+| [Raissa Bunga Astrella] | F1D02410087 | Fullstack Developer - Writer Side Specialist | Developing story creation UIs, bubble chat customizer/builder, chapter text and block editors, story draft/publishing workflows, and writer-related preview utilities. |
+| [Meisya Ananda Puteri]| F1D02410072 | Fullstack Developer - System / Platform Side Specialist | Developing authentication (login/register), notifications, settings, user profiles, database schema integration, Cloudinary API integration, and admin dashboard operations. |
 
 ## Author Notes
 This project was developed as part of the final project requirement for the Web Programming course. It presents the implementation of AUchive, a web-based information system designed to bridge narrative writing and bubble chat storytelling in a clean and integrated platform, improving the overall workflow of both AU authors and readers.
